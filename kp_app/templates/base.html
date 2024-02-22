@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Django App
+      {% endblock %}
+    </title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/output.css' %}" type="text/css">
+    <script type="text/javascript" src="{% static '/htmx.min.js' %}"></script>
+    <script type="text/javascript" src="{% static '/alpine.min.js' %}" defer ></script>
+  </head>
+  <body>
+    <nav>
+      <a class="font-normal text-gray-500" href="#">My Django App</a>
+      <div>
+        <ul>
+          <li>
+            <a href="#">Home</a>
+          </li>
+          <li>
+            <a href="#">About</a>
+          </li>
+          <li>
+            <a href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div>{% block content %} {% endblock %}</div>
+  </body>
+</html>
+

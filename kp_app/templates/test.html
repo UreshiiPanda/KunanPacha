@@ -1,0 +1,30 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<h1 class="text-4xl font-extrabold"> Todo List </h1>
+<ul>
+    {% for test in tests %}
+    <li>
+        {{tests.info}}: 
+            {% if test.ready %}
+                Completed
+            {% else %}
+                Not Completed
+            {% endif %}
+    </li>
+</ul>
+    {% endfor %}
+
+
+    <div id="catfact"></div>
+    <button hx-get="https://catfact.ninja/fact" hx-swap="innerHTML" hx-target="#catfact">
+        Get a random fact about cats
+    </button>
+
+
+    <div x-data="{ count: 0 }">
+        <button x-on:click="count++">Increment</button>
+        <span x-text="count"></span>
+    </div>
+{% endblock %}
+
