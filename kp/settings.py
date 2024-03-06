@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import io
+import os
+
+import environ
+import google.auth
+from google.cloud import secretmanager, storage
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,18 +25,75 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+=(*pcze(p_fee!6144v5cxp0l-=obp0+&c-is!mx9r$m!5vz9"
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
-# Application definition
+# if in Development env
+if os.getenv("KP_PROD") == "false":
+    print("meow")
+    DEBUG = True
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("POSTGRES_NAME"),
+            'USER': os.getenv("POSTGRES_USER"),
+            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+            'HOST': "db",
+            'PORT': 5432,
+        }
+    }
 
+
+# if in Production env
+else:
+    print("nya")
+    DEBUG = False
+    env = environ.Env(
+        SECRET_KEY=(str, os.getenv("SECRET_KEY")),
+        DATABASE_URL=(str, os.getenv("DATABASE_URL")),
+        GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+    )
+
+
+    env = environ.Env(DEBUG=(bool, True))
+    env_file = os.path.join(BASE_DIR, ".env")
+
+    # Attempt to load the Project ID into the environment, safely failing on error.
+    try:
+        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+    except google.auth.exceptions.DefaultCredentialsError:
+        pass
+
+    if os.path.isfile(env_file):
+        # Use a local secret file, if provided
+
+        env.read_env(env_file)
+    elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+        # Pull secrets from Secret Manager
+        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+        client = secretmanager.SecretManagerServiceClient()
+        settings_name = os.environ.get("SETTINGS_NAME", "kp-django-settings")
+        name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+        payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+        env.read_env(io.StringIO(payload))
+    else:
+        raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+
+
+    # Define static BLOB storage via django-storages[google]
+    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    GS_DEFAULT_ACL = "publicRead"
+
+
+ALLOWED_HOSTS = ["*"]
+
+
+# Application definitions
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,6 +101,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "storages", 
     "kp_app",
 ]
 
@@ -71,17 +136,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "kp.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -103,7 +157,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -115,10 +168,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+STATIC_URL = "/static/"
 
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+
+
