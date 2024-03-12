@@ -4,7 +4,8 @@ FROM python:3.12-bullseye
 WORKDIR /
 
 # Copy the dependencies file to the working directory
-COPY ./requirements.txt ./requirements.txt
+#COPY ./requirements.txt ./requirements.txt
+COPY . .
 
 #ENV PATH="/py/bin:$PATH"
 # allows for more space in the container
@@ -15,9 +16,9 @@ ENV PYTHONUNBUFFERED 1
 
 RUN python3 -m pip install --upgrade pip setuptools
 RUN pip install -r requirements.txt
+RUN python manage.py collectstatic --noinput
 
-
-COPY . .
+#COPY . .
 
 CMD exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application
 

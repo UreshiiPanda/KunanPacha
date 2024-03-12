@@ -29,17 +29,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
+env = environ.Env(DEBUG=False)
+env_file = os.path.join(BASE_DIR, ".env")
+env.read_env(env_file)
 # if in Development env
-if os.getenv("KP_PROD") == "false":
-    print("meow")
+if env("KP_PROD") == "false":
+    print("meow meow")
     DEBUG = True
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = env("SECRET_KEY")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("POSTGRES_NAME"),
-            'USER': os.getenv("POSTGRES_USER"),
-            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+            'NAME': env("POSTGRES_NAME"),
+            'USER': env("POSTGRES_USER"),
+            'PASSWORD': env("POSTGRES_PASSWORD"),
             'HOST': "db",
             'PORT': 5432,
         }
@@ -48,16 +51,18 @@ if os.getenv("KP_PROD") == "false":
 
 # if in Production env
 else:
-    print("nya")
-    DEBUG = False
-    env = environ.Env(
-        SECRET_KEY=(str, os.getenv("SECRET_KEY")),
-        DATABASE_URL=(str, os.getenv("DATABASE_URL")),
-        GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
-    )
+    print("nya nya")
+   # you may not want these cuz it looks like the env_file is read after this
+   # env = environ.Env(
+   #     SECRET_KEY=(str, os.getenv("SECRET_KEY")),
+   #     DATABASE_URL=(str, os.getenv("DATABASE_URL")),
+   #     GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+   # )
 
 
-    env = environ.Env(DEBUG=(bool, True))
+    env = environ.Env(DEBUG=False)
+    #env = environ.Env(DEBUG=(bool, False))
+    #DEBUG = False
     env_file = os.path.join(BASE_DIR, ".env")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
@@ -168,7 +173,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Default primary key field type
