@@ -13,5 +13,12 @@ services:
       - .env
     depends_on:
       - db
-    restart: always
+        # restart: no
+        # entrypoint: entrypoint.sh
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py createsuperuser --username=${DJANGO_SUPERUSER_USERNAME} --email=${DJANGO_SUPERUSER_EMAIL} --noinput &&
+             exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application"
 

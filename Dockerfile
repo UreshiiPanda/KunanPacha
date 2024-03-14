@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN python3 -m pip install --upgrade pip setuptools
 RUN pip install -r requirements.txt
-RUN python manage.py collectstatic --noinput
+#RUN python manage.py collectstatic --noinput
 
 #COPY . .
 

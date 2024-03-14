@@ -32,9 +32,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=False)
 env_file = os.path.join(BASE_DIR, ".env")
 env.read_env(env_file)
+
 # if in Development env
 if env("KP_PROD") == "false":
-    print("meow meow")
+    print("App starting in Development Mode")
     DEBUG = True
     SECRET_KEY = env("SECRET_KEY")
     DATABASES = {
@@ -51,7 +52,7 @@ if env("KP_PROD") == "false":
 
 # if in Production env
 else:
-    print("nya nya")
+    print("App starting in Production Mode")
    # you may not want these cuz it looks like the env_file is read after this
    # env = environ.Env(
    #     SECRET_KEY=(str, os.getenv("SECRET_KEY")),
@@ -59,11 +60,14 @@ else:
    #     GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
    # )
 
+    SECRET_KEY = env("SECRET_KEY")
+    DATABASE_URL = env("DATABASE_URL")
+    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 
-    env = environ.Env(DEBUG=False)
+    #env = environ.Env(DEBUG=False)
     #env = environ.Env(DEBUG=(bool, False))
     #DEBUG = False
-    env_file = os.path.join(BASE_DIR, ".env")
+    #env_file = os.path.join(BASE_DIR, ".env")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
@@ -73,12 +77,12 @@ else:
 
     if os.path.isfile(env_file):
         # Use a local secret file, if provided
-
+        print("Pulling secrets from local secrets file")
         env.read_env(env_file)
     elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
         # Pull secrets from Secret Manager
+        print("Pulling secrets from GCP Secret Manager")
         project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.environ.get("SETTINGS_NAME", "kp-django-settings")
         name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
@@ -89,10 +93,15 @@ else:
 
 
     # Define static BLOB storage via django-storages[google]
-    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    GS_DEFAULT_ACL = "publicRead"
+    STATICFILES_DIRS = []
+    # IAM creds are being used to access the bucket, so the bucket should not
+    # be open for "public reading"
+    #GS_DEFAULT_ACL = "publicRead"
+
+    # Use django-environ to parse the connection string
+    DATABASES = {"default": env.db()}
 
 
 ALLOWED_HOSTS = ["*"]
@@ -143,7 +152,6 @@ WSGI_APPLICATION = "kp.wsgi.application"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -163,11 +171,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
