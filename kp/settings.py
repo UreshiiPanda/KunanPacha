@@ -69,7 +69,9 @@ else:
     GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME"))
     DEBUG=False
 
-    # env_file = os.path.join(BASE_DIR, ".env")
+    env = environ.Env(DEBUG=False)
+    env_file = os.path.join(BASE_DIR, ".env")
+    env.read_env(env_file)
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
