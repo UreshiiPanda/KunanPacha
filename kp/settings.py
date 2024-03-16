@@ -34,7 +34,7 @@ env_file = os.path.join(BASE_DIR, ".env")
 env.read_env(env_file)
 
 # if in Development env
-if env("KP_PROD") == "false":
+if os.environ.get("KP_PROD", "true") == "false":
     print("App starting in Development Mode")
     DEBUG = True
     SECRET_KEY = env("SECRET_KEY")
