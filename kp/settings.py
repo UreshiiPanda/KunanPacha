@@ -21,6 +21,7 @@ from google.cloud import secretmanager, storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -64,14 +65,53 @@ else:
    # )
 
 
-    SECRET_KEY=(str, os.environ.get("SECRET_KEY"))
-    DATABASE_URL=(str, os.environ.get("DATABASE_URL"))
-    GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME"))
-    DEBUG=False
+#    SECRET_KEY=(str, os.environ.get("SECRET_KEY"))
+#    DATABASE_URL=(str, os.environ.get("DATABASE_URL"))
+#    GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME"))
+#    DEBUG=False
+#
+#    env = environ.Env(DEBUG=False)
+#    env_file = os.path.join(BASE_DIR, ".env")
+#    env.read_env(env_file)
+#
+#    # Attempt to load the Project ID into the environment, safely failing on error.
+#    try:
+#        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+#    except google.auth.exceptions.DefaultCredentialsError:
+#        pass
+#
+#    if os.path.isfile(env_file):
+#        # Use a local secret file, if provided
+#        print("Pulling secrets from local secrets file")
+#        env.read_env(env_file)
+#    elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+#        # Pull secrets from Secret Manager
+#        print("Pulling secrets from GCP Secret Manager")
+#        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+#        client = secretmanager.SecretManagerServiceClient()
+#        settings_name = os.environ.get("SETTINGS_NAME", "kp-django-settings")
+#        name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+#        payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+#        env.read_env(io.StringIO(payload))
+#    else:
+#        raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+#
+#
+#
+#
 
-    env = environ.Env(DEBUG=False)
-    env_file = os.path.join(BASE_DIR, ".env")
-    env.read_env(env_file)
+
+    ###############
+
+
+
+    DEBUG = False
+
+    env = environ.Env(
+        SECRET_KEY=(str, os.getenv("SECRET_KEY")),
+        DATABASE_URL=(str, os.getenv("DATABASE_URL")),
+        GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+    )
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
@@ -79,21 +119,40 @@ else:
     except google.auth.exceptions.DefaultCredentialsError:
         pass
 
-    if os.path.isfile(env_file):
-        # Use a local secret file, if provided
-        print("Pulling secrets from local secrets file")
-        env.read_env(env_file)
-    elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-        # Pull secrets from Secret Manager
+    # Use local .env file in dev mode
+    #if os.getenv("PYTHON_ENV") == "dev":
+    #    DEBUG = True
+
+    # Use GCP secret manager in prod mode
+    if os.getenv("GOOGLE_CLOUD_PROJECT", None):
         print("Pulling secrets from GCP Secret Manager")
-        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
-        settings_name = os.environ.get("SETTINGS_NAME", "kp-django-settings")
+        settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
         name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-        payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+        payload = client.access_secret_version(name=name).payload.data.decode(
+            "UTF-8"
+        )
+
         env.read_env(io.StringIO(payload))
     else:
-        raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+        raise Exception(
+            "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
+        )
+
+    SECRET_KEY = env("SECRET_KEY")
+
+
+    ##############
+
+
+
+
+
+
+
+
+
 
 
     # Define static BLOB storage via django-storages[google]
