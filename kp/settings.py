@@ -53,16 +53,15 @@ if os.environ.get("KP_PROD", "true") == "false":
 # if in Production env
 else:
     print("App starting in Production Mode")
-   # you may not want these cuz it looks like the env_file is read after this
-   # env = environ.Env(
-   #     SECRET_KEY=(str, os.getenv("SECRET_KEY")),
-   #     DATABASE_URL=(str, os.getenv("DATABASE_URL")),
-   #     GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
-   # )
+    env = environ.Env(
+        SECRET_KEY=(str, os.getenv("SECRET_KEY")),
+        DATABASE_URL=(str, os.getenv("DATABASE_URL")),
+        GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+    )
 
-    SECRET_KEY = env("SECRET_KEY")
-    DATABASE_URL = env("DATABASE_URL")
-    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+   # SECRET_KEY = env("SECRET_KEY")
+   # DATABASE_URL = env("DATABASE_URL")
+   # GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 
     #env = environ.Env(DEBUG=False)
     #env = environ.Env(DEBUG=(bool, False))
