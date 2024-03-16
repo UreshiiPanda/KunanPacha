@@ -56,14 +56,20 @@ if os.environ.get("KP_PROD", "true") == "false":
 else:
     print("App starting in Production Mode")
 
-    env = environ.Env(
-        SECRET_KEY=(str, os.environ.get("SECRET_KEY")),
-        DATABASE_URL=(str, os.environ.get("DATABASE_URL")),
-        GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME")),
-        DEBUG=False
-    )
+   # env = environ.Env(
+   #     SECRET_KEY=(str, os.environ.get("SECRET_KEY")),
+   #     DATABASE_URL=(str, os.environ.get("DATABASE_URL")),
+   #     GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME")),
+   #     DEBUG=False
+   # )
 
-    env_file = os.path.join(BASE_DIR, ".env")
+
+    SECRET_KEY=(str, os.environ.get("SECRET_KEY"))
+    DATABASE_URL=(str, os.environ.get("DATABASE_URL"))
+    GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME"))
+    DEBUG=False
+
+    # env_file = os.path.join(BASE_DIR, ".env")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
