@@ -13,8 +13,7 @@ services:
       - .env
     depends_on:
       - db
-        # restart: no
-        # entrypoint: entrypoint.sh
+    restart: always
     command: >
       sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
