@@ -29,13 +29,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-env = environ.Env(DEBUG=False)
-env_file = os.path.join(BASE_DIR, ".env")
-env.read_env(env_file)
 
 # if in Development env
 if os.environ.get("KP_PROD", "true") == "false":
+    env = environ.Env(DEBUG=False)
+    env_file = os.path.join(BASE_DIR, ".env")
+    env.read_env(env_file)
+
     print("App starting in Development Mode")
+
     DEBUG = True
     SECRET_KEY = env("SECRET_KEY")
     DATABASES = {
@@ -53,20 +55,15 @@ if os.environ.get("KP_PROD", "true") == "false":
 # if in Production env
 else:
     print("App starting in Production Mode")
+
     env = environ.Env(
-        SECRET_KEY=(str, os.getenv("SECRET_KEY")),
-        DATABASE_URL=(str, os.getenv("DATABASE_URL")),
-        GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+        SECRET_KEY=(str, os.environ.get("SECRET_KEY")),
+        DATABASE_URL=(str, os.environ.get("DATABASE_URL")),
+        GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME")),
+        DEBUG=False
     )
 
-   # SECRET_KEY = env("SECRET_KEY")
-   # DATABASE_URL = env("DATABASE_URL")
-   # GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-
-    #env = environ.Env(DEBUG=False)
-    #env = environ.Env(DEBUG=(bool, False))
-    #DEBUG = False
-    #env_file = os.path.join(BASE_DIR, ".env")
+    env_file = os.path.join(BASE_DIR, ".env")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
