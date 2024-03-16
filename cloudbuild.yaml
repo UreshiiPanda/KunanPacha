@@ -21,7 +21,7 @@ steps:
   # 2. Make migrations
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-i'
+      - '--image'
       - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
@@ -36,7 +36,7 @@ steps:
   # 3. Migrate
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-i'
+      - '--image'
       - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
@@ -51,7 +51,7 @@ steps:
     # 4. Collect static
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-i'
+      - '--image'
       - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
