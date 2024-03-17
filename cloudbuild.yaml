@@ -23,7 +23,7 @@ steps:
     entrypoint: 'bash'
     args:     
       - '-c'
-      - 'python manage.py makemigrations'
+      - 'python3 manage.py makemigrations'
     id: Make migrations
 
   # 3. Migrate
@@ -31,7 +31,7 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'python manage.py migrate'
+      - 'python3 manage.py migrate'
     id: Migrate
 
   # 4. Collect static
@@ -39,7 +39,7 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'python manage.py collectstatic --no-input'
+      - 'python3 manage.py collectstatic --no-input'
     id: Collect static
 
   # 5. Deploy to Cloud Run
