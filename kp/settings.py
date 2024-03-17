@@ -140,6 +140,8 @@ else:
             "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
         )
 
+    print("Django Settings completed")
+
     SECRET_KEY = env("SECRET_KEY")
 
 
