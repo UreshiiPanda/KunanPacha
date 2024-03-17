@@ -114,10 +114,10 @@ else:
     )
 
     # Attempt to load the Project ID into the environment, safely failing on error.
-    try:
-        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
-    except google.auth.exceptions.DefaultCredentialsError:
-        pass
+   # try:
+   #     _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+   # except google.auth.exceptions.DefaultCredentialsError:
+   #     pass
 
     # Use local .env file in dev mode
     #if os.getenv("PYTHON_ENV") == "dev":
