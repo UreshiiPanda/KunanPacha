@@ -127,12 +127,17 @@ else:
     if os.getenv("GOOGLE_CLOUD_PROJECT", None):
         print("Pulling secrets from GCP Secret Manager")
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+        print("nya 1")
         client = secretmanager.SecretManagerServiceClient()
+        print("nya 2")
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
+        print("nya 3")
         name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+        print("nya 4")
         payload = client.access_secret_version(name=name).payload.data.decode(
             "UTF-8"
         )
+        print("nya 5")
 
         env.read_env(io.StringIO(payload))
     else:
