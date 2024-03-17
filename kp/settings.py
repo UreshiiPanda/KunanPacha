@@ -16,7 +16,7 @@ import os
 
 import environ
 import google.auth
-from google.cloud import secretmanager, storage
+from google.cloud import secretmanager
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,6 +51,16 @@ if os.environ.get("KP_PROD", "true") == "false":
             'PORT': 5432,
         }
     }
+
+    # Define static BLOB storage via django-storages[google]
+    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    STATICFILES_DIRS = []
+    # in dev mode, IAM creds are being used to access the bucket, so the bucket should not
+    # be open for "public reading"
+    # GS_DEFAULT_ACL = "publicRead"
+
 
 
 # if in Production env
@@ -143,7 +153,7 @@ else:
     print(f"db_url: {DATABASE_URL}")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     print(f"gs_bucket_name: {GS_BUCKET_NAME}")
-    print(f"db: {env.db}")
+    print(f"db: {env.db()}")
 
 
 
@@ -163,12 +173,11 @@ else:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    # IAM creds are being used to access the bucket, so the bucket should not
-    # be open for "public reading"
-    #GS_DEFAULT_ACL = "publicRead"
+    GS_DEFAULT_ACL = "publicRead"
 
     # Use django-environ to parse the connection string
     DATABASES = {"default": env.db()}
+
 
 
 ALLOWED_HOSTS = ["*"]
