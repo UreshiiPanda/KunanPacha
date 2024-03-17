@@ -18,54 +18,101 @@ steps:
       - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
     id: Push
 
+
   # 2. Make migrations
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
+  - name: gcr.io/google-appengine/exec-wrapper
     args:
-      # - '--image'
-      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #- '-s'
-      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #- '-e'
-      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-c'
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
       - 'python'
       - 'manage.py'
       - 'makemigrations'
     id: Make migrations
 
   # 3. Migrate
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
+  - name: gcr.io/google-appengine/exec-wrapper
     args:
-      # - '--image'
-      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #- '-s'
-      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #- '-e'
-      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-c'
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
       - 'python'
       - 'manage.py'
       - 'migrate'
     id: Migrate
 
     # 4. Collect static
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
+  - name: gcr.io/google-appengine/exec-wrapper
     args:
-      # - '--image'
-      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #- '-s'
-      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #- '-e'
-      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-c'
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
       - 'python'
       - 'manage.py'
       - 'collectstatic'
       - '--no-input'
     id: Collect static
+
+      #  # 2. Make migrations
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:
+      #      # - '--image'
+      #      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      #      #- '-s'
+      #      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      #      #- '-e'
+      #      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      #      - '-c'
+      #      - 'python'
+      #      - 'manage.py'
+      #      - 'makemigrations'
+      #    id: Make migrations
+      #
+      #  # 3. Migrate
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:
+      #      # - '--image'
+      #      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      #      #- '-s'
+      #      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      #      #- '-e'
+      #      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      #      - '-c'
+      #      - 'python'
+      #      - 'manage.py'
+      #      - 'migrate'
+      #    id: Migrate
+      #
+      #    # 4. Collect static
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:
+      #      # - '--image'
+      #      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      #      #- '-s'
+      #      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      #      #- '-e'
+      #      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      #      - '-c'
+      #      - 'python'
+      #      - 'manage.py'
+      #      - 'collectstatic'
+      #      - '--no-input'
+      #    id: Collect static
 
   # 5. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
