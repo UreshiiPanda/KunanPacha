@@ -86,9 +86,7 @@ steps:
       #- '-e'
       #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '-c'
-      - 'python'
-      - 'manage.py'
-      - 'makemigrations'
+      - 'python manage.py makemigrations && echo hi'
     id: Make migrations
 
   # 4. Migrate
