@@ -65,6 +65,7 @@ steps:
       - '--no-input'
     id: Collect static
 
+
       #  # 2. Make migrations
       #  - name: gcr.io/cloud-builders/gcloud
       #    entrypoint: 'sh'
