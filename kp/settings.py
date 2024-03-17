@@ -143,6 +143,7 @@ else:
     print(f"db_url: {DATABASE_URL}")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     print(f"gs_bucket_name: {GS_BUCKET_NAME}")
+    print(f"db: {env.db}")
 
 
 
