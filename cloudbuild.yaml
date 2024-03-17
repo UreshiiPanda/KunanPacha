@@ -20,7 +20,6 @@ steps:
 
   # 2. Make migrations
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
     args:
       - '-c'
       - 'python manage.py makemigrations'
@@ -28,35 +27,16 @@ steps:
 
   # 3. Migrate
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
     args:
-      # - '--image'
-      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #- '-s'
-      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #- '-e'
-      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '-c'
-      - 'python'
-      - 'manage.py'
-      - 'migrate'
+      - 'python manage.py migrate'
     id: Migrate
 
   # 4. Collect static
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
     args:
-      # - '--image'
-      # - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #- '-s'
-      #- '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #- '-e'
-      #- 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '-c'
-      - 'python'
-      - 'manage.py'
-      - 'collectstatic'
-      - '--no-input'
+      - 'python manage.py collectstatic --no-input'
     id: Collect static
 
   # 5. Deploy to Cloud Run
