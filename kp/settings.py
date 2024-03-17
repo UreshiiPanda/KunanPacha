@@ -95,27 +95,24 @@ else:
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
-        print(f"settings name: {settings_name}")
         name = f"projects/{project_id}/secrets/{settings_name}/versions/1"
         payload = client.access_secret_version(name=name).payload.data.decode(
             "UTF-8"
         )
 
         env.read_env(io.StringIO(payload))
-        print(f"env {env}")
     else:
         raise Exception(
             "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
         )
 
     
-    print("# # # # # # # # # # # # # # # # # # # # # # # # ## # # # ## # ## #")
-
     SECRET_KEY = env("SECRET_KEY")
     DATABASE_URL = env("DATABASE_URL")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-    print(f"db: {env.db()}")
 
+
+    print(f"env {env.db()}")
 
     # Define static BLOB storage via django-storages[google]
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
