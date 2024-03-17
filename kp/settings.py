@@ -96,7 +96,7 @@ else:
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
         print(f"settings name: {settings_name}")
-        name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+        name = f"projects/{project_id}/secrets/{settings_name}/versions/1"
         payload = client.access_secret_version(name=name).payload.data.decode(
             "UTF-8"
         )
