@@ -120,7 +120,7 @@ else:
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
-        print(settings_name)
+        print(f"settings name: {settings_name}")
         name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
         payload = client.access_secret_version(name=name).payload.data.decode(
             "UTF-8"
@@ -139,8 +139,11 @@ else:
 
     SECRET_KEY = env("SECRET_KEY")
     print("secret_key:", SECRET_KEY)
-    #SECRET_KEY = os.getenv("SECRET_KEY")
-    #print("secret_key:", SECRET_KEY)
+    DATABASE_URL = env("DATABASE_URL")
+    print(f"db_url: {DATABASE_URL}")
+    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    print(f"gs_bucket_name: {GS_BUCKET_NAME}")
+
 
 
     ##############
