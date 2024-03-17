@@ -62,51 +62,16 @@ if os.environ.get("KP_PROD", "true") == "false":
     # GS_DEFAULT_ACL = "publicRead"
 
 
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/5.0/howto/static-files/
+    STATIC_URL = "static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
 
 # if in Production env
 else:
     print("App starting in Production Mode")
-
-
-#    SECRET_KEY=(str, os.environ.get("SECRET_KEY"))
-#    DATABASE_URL=(str, os.environ.get("DATABASE_URL"))
-#    GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME"))
-#    DEBUG=False
-#
-#    env = environ.Env(DEBUG=False)
-#    env_file = os.path.join(BASE_DIR, ".env")
-#    env.read_env(env_file)
-#
-#    # Attempt to load the Project ID into the environment, safely failing on error.
-#    try:
-#        _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
-#    except google.auth.exceptions.DefaultCredentialsError:
-#        pass
-#
-#    if os.path.isfile(env_file):
-#        # Use a local secret file, if provided
-#        print("Pulling secrets from local secrets file")
-#        env.read_env(env_file)
-#    elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
-#        # Pull secrets from Secret Manager
-#        print("Pulling secrets from GCP Secret Manager")
-#        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
-#        client = secretmanager.SecretManagerServiceClient()
-#        settings_name = os.environ.get("SETTINGS_NAME", "kp-django-settings")
-#        name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-#        payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
-#        env.read_env(io.StringIO(payload))
-#    else:
-#        raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
-#
-#
-#
-#
-
-
-    ###############
-
-
 
     DEBUG = True
 
@@ -144,36 +109,22 @@ else:
         )
 
     
-
     print("# # # # # # # # # # # # # # # # # # # # # # # # ## # # # ## # ## #")
 
     SECRET_KEY = env("SECRET_KEY")
-    print("secret_key:", SECRET_KEY)
     DATABASE_URL = env("DATABASE_URL")
-    print(f"db_url: {DATABASE_URL}")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-    print(f"gs_bucket_name: {GS_BUCKET_NAME}")
     print(f"db: {env.db()}")
-
-
-
-    ##############
-
-
-
-
-
-
-
-
-
 
 
     # Define static BLOB storage via django-storages[google]
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    GS_DEFAULT_ACL = "publicRead"
+    GS_DEFAULT_ACL = "publicRead" 
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    # STATIC_URL = 'https://your-bucket-name.storage.googleapis.com/'
+    #GS_PROJECT_ID = 'your-project-id'
 
     # Use django-environ to parse the connection string
     DATABASES = {"default": env.db()}
@@ -250,12 +201,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Default primary key field type
