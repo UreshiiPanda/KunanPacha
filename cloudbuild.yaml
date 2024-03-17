@@ -20,7 +20,7 @@ steps:
 
   # 2. Make migrations
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:     
       - '-c'
       - 'python3 manage.py makemigrations'
@@ -28,7 +28,7 @@ steps:
 
   # 3. Migrate
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - 'python3 manage.py migrate'
@@ -36,7 +36,7 @@ steps:
 
   # 4. Collect static
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - 'python3 manage.py collectstatic --no-input'
