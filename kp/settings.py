@@ -137,9 +137,12 @@ else:
 
     
 
-    print("Django Settings completed")
+    print("# # # # # # # # # # # # # # # # # # # # # # # # ## # # # ## # ## #")
 
     SECRET_KEY = env("SECRET_KEY")
+    print("secret_key:", SECRET_KEY)
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    print("secret_key:", SECRET_KEY)
 
 
     ##############
