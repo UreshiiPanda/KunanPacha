@@ -57,13 +57,6 @@ if os.environ.get("KP_PROD", "true") == "false":
 else:
     print("App starting in Production Mode")
 
-   # env = environ.Env(
-   #     SECRET_KEY=(str, os.environ.get("SECRET_KEY")),
-   #     DATABASE_URL=(str, os.environ.get("DATABASE_URL")),
-   #     GS_BUCKET_NAME=(str, os.environ.get("GS_BUCKET_NAME")),
-   #     DEBUG=False
-   # )
-
 
 #    SECRET_KEY=(str, os.environ.get("SECRET_KEY"))
 #    DATABASE_URL=(str, os.environ.get("DATABASE_URL"))
@@ -111,6 +104,7 @@ else:
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
         DATABASE_URL=(str, os.getenv("DATABASE_URL")),
         GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+
     )
 
     # Attempt to load the Project ID into the environment, safely failing on error.
@@ -124,22 +118,24 @@ else:
     #    DEBUG = True
 
     # Use GCP secret manager in prod mode
-    if os.getenv("GOOGLE_CLOUD_PROJECT", None):
-        print("Pulling secrets from GCP Secret Manager")
-        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-        client = secretmanager.SecretManagerServiceClient()
-        settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
-        print(settings_name)
-        name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
-        payload = client.access_secret_version(name=name).payload.data.decode(
-            "UTF-8"
-        )
+    #if os.getenv("GOOGLE_CLOUD_PROJECT", None):
+    #    print("Pulling secrets from GCP Secret Manager")
+    #    project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+    #    client = secretmanager.SecretManagerServiceClient()
+    #    settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
+    #    print(settings_name)
+    #    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    #    payload = client.access_secret_version(name=name).payload.data.decode(
+    #        "UTF-8"
+    #    )
 
-        env.read_env(io.StringIO(payload))
-    else:
-        raise Exception(
-            "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
-        )
+    #    env.read_env(io.StringIO(payload))
+    #else:
+    #    raise Exception(
+    #        "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
+    #    )
+
+    
 
     print("Django Settings completed")
 
