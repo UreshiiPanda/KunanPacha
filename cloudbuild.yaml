@@ -21,21 +21,18 @@ steps:
   # 2. Make migrations
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-c'
       - 'python manage.py makemigrations'
     id: Make migrations
 
   # 3. Migrate
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-c'
       - 'python manage.py migrate'
     id: Migrate
 
   # 4. Collect static
   - name: gcr.io/cloud-builders/gcloud
     args:
-      - '-c'
       - 'python manage.py collectstatic --no-input'
     id: Collect static
 
