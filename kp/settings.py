@@ -128,7 +128,7 @@ else:
         print("Pulling secrets from GCP Secret Manager")
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
-        settings_name = os.getenv("SETTINGS_NAME", "kp-env-vars")
+        settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
         print(settings_name)
         name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
         payload = client.access_secret_version(name=name).payload.data.decode(
