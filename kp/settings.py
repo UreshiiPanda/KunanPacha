@@ -119,7 +119,7 @@ else:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    GS_DEFAULT_ACL = "publicRead" 
+    #GS_DEFAULT_ACL = "publicRead" 
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
     # STATIC_URL = 'https://your-bucket-name.storage.googleapis.com/'
     #GS_PROJECT_ID = 'your-project-id'
