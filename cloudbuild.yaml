@@ -29,76 +29,76 @@ steps:
     id: ping db
 
 
-      #  # 3. Make migrations
-      #  - name: gcr.io/google-appengine/exec-wrapper
-      #    args:
-      #      - '-i'
-      #      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #      - '-s'
-      #      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #      - '-e'
-      #      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      #      - '--'
-      #      - 'python'
-      #      - 'manage.py'
-      #      - 'makemigrations'
+  # 3. Make migrations
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'makemigrations'
+    id: Make migrations
+
+  # 4. Migrate
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'migrate'
+    id: Migrate
+
+  # 5. Collect static
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'collectstatic'
+      - '--no-input'
+    id: Collect static
+
+
+      #  # 2. Make migrations
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:     
+      #      - '-c'
+      #      - 'python3 manage.py makemigrations'
       #    id: Make migrations
       #
-      #  # 4. Migrate
-      #  - name: gcr.io/google-appengine/exec-wrapper
+      #  # 3. Migrate
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
       #    args:
-      #      - '-i'
-      #      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #      - '-s'
-      #      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #      - '-e'
-      #      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      #      - '--'
-      #      - 'python'
-      #      - 'manage.py'
-      #      - 'migrate'
+      #      - '-c'
+      #      - 'python3 manage.py migrate'
       #    id: Migrate
       #
-      #  # 5. Collect static
-      #  - name: gcr.io/google-appengine/exec-wrapper
+      #  # 4. Collect static
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
       #    args:
-      #      - '-i'
-      #      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      #      - '-s'
-      #      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      #      - '-e'
-      #      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      #      - '--'
-      #      - 'python'
-      #      - 'manage.py'
-      #      - 'collectstatic'
-      #      - '--no-input'
+      #      - '-c'
+      #      - 'python3 manage.py collectstatic --no-input'
       #    id: Collect static
-
-
-  # 3. Make migrations
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
-    args:     
-      - '-c'
-      - 'python3 manage.py makemigrations'
-    id: Make migrations
-  
-  # 4. Migrate
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - 'python3 manage.py migrate'
-    id: Migrate
-  
-  # 5. Collect static
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - 'python3 manage.py collectstatic --no-input'
-    id: Collect static
 
   # 6. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
