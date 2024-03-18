@@ -124,7 +124,19 @@ else:
     #GS_PROJECT_ID = 'your-project-id'
 
     # Use django-environ to parse the connection string
-    DATABASES = {"default": env.db()}
+    #DATABASES = {"default": env.db()}
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            #'HOST': '10.90.80.3',
+            'HOST': env.db().get('HOST', None),
+            'USER': env.db().get('USER', None),
+            'PASSWORD': env.db().get('PASSWORD', None),
+            'NAME': env.db().get('NAME', None),
+            'SSLMODE': 'require'
+        }
+    }
 
 
 
