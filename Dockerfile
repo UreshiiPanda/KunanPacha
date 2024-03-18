@@ -7,15 +7,18 @@ WORKDIR /
 #COPY ./requirements.txt ./requirements.txt
 COPY . .
 
-ENV PATH="/py/bin:$PATH"
+#ENV PATH="/py/bin:$PATH"
 # allows for more space in the container
 ENV PYTHONDONTWRITEBYTECODE 1
 # have Python output directly to terminal
 ENV PYTHONUNBUFFERED 1
 
-RUN python -m venv /py
-RUN py/bin/pip install --upgrade pip setuptools
-RUN py/bin/pip install -r requirements.txt
+
+RUN python3 -m pip install --upgrade pip setuptools
+RUN pip install -r requirements.txt
+#RUN python manage.py collectstatic --noinput
+
+#COPY . .
 
 CMD exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application
 

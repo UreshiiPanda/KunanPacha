@@ -19,28 +19,75 @@ steps:
     id: Push
 
   # 2. Make migrations
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
-    args:     
-      - '-c'
-      - 'python3 manage.py makemigrations'
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'makemigrations'
     id: Make migrations
 
   # 3. Migrate
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
+  - name: gcr.io/google-appengine/exec-wrapper
     args:
-      - '-c'
-      - 'python3 manage.py migrate'
+      - '-i'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'migrate'
     id: Migrate
 
   # 4. Collect static
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: 'sh'
+  - name: gcr.io/google-appengine/exec-wrapper
     args:
-      - '-c'
-      - 'python3 manage.py collectstatic --no-input'
+      - '-i'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'collectstatic'
+      - '--no-input'
     id: Collect static
+
+
+      #  # 2. Make migrations
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:     
+      #      - '-c'
+      #      - 'python3 manage.py makemigrations'
+      #    id: Make migrations
+      #
+      #  # 3. Migrate
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:
+      #      - '-c'
+      #      - 'python3 manage.py migrate'
+      #    id: Migrate
+      #
+      #  # 4. Collect static
+      #  - name: gcr.io/cloud-builders/gcloud
+      #    entrypoint: 'sh'
+      #    args:
+      #      - '-c'
+      #      - 'python3 manage.py collectstatic --no-input'
+      #    id: Collect static
 
   # 5. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
@@ -57,6 +104,7 @@ steps:
       - '--quiet'
     id: Deploy
     entrypoint: gcloud
+
 
 # Store images in Google Artifact Registry
 images:
