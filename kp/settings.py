@@ -130,12 +130,12 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': env.db().get('HOST', None) + ':10.90.80.3',
+            'HOST': '10.90.80.3',
             'USER': env.db().get('USER', None),
             'PASSWORD': env.db().get('PASSWORD', None),
             'NAME': env.db().get('NAME', None),
-            'PORT': 5432,
-        }
+            'SSLMODE': 'require'
+            }
     }
 
 
