@@ -113,6 +113,7 @@ else:
 
 
     print(f"env {env.db()}")
+    print(f"env USER: {env.db().get('USER', None)}")
 
     # Define static BLOB storage via django-storages[google]
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
@@ -134,7 +135,8 @@ else:
             'USER': env.db().get('USER', None),
             'PASSWORD': env.db().get('PASSWORD', None),
             'NAME': env.db().get('NAME', None),
-            'SSLMODE': 'require'
+            'PORT': 5432,
+            # 'SSLMODE': 'require'
         }
     }
 
