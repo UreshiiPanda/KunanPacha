@@ -13,9 +13,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # have Python output directly to terminal
 ENV PYTHONUNBUFFERED 1
 
-
-RUN python3 -m pip install --upgrade pip setuptools
-RUN pip3 install -r requirements.txt
+RUN python -m venv /py
+RUN py/bin/pip install --upgrade pip setuptools
+RUN py/bin/pip install -r requirements.txt
 #RUN python manage.py collectstatic --noinput
 
 #COPY . .
