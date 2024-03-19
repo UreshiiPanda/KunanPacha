@@ -118,7 +118,7 @@ else:
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
     # IAM creds are being used to access the bucket, so the bucket should not
     # be open for "public reading"
-    # GS_DEFAULT_ACL = "publicRead" 
+    GS_DEFAULT_ACL = "publicRead" 
 
     # Use django-environ to parse the connection string
     DATABASES = {"default": env.db()}
