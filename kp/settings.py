@@ -24,13 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECURITY WARNING: don't run with debug turned on in production!
-
-
-
 # if in Development env
 if os.environ.get("KP_PROD", "true") == "false":
     env = environ.Env(DEBUG=False)
@@ -58,11 +51,10 @@ if os.environ.get("KP_PROD", "true") == "false":
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     STATICFILES_DIRS = []
     # STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    # GS_DEFAULT_ACL = "publicRead"
+    GS_DEFAULT_ACL = "publicRead"
 
 
     # Static files (CSS, JavaScript, Images)
-    # https://docs.djangoproject.com/en/5.0/howto/static-files/
     STATIC_URL = "static/"
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -72,7 +64,7 @@ if os.environ.get("KP_PROD", "true") == "false":
 else:
     print("App starting in Production Mode")
 
-    DEBUG = True
+    DEBUG = False
 
     env = environ.Env(
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
@@ -116,8 +108,7 @@ else:
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    # IAM creds are being used to access the bucket, so the bucket should not
-    # be open for "public reading"
+    # bucket must be set to allow ACLs and it must not prevent public access
     GS_DEFAULT_ACL = "publicRead" 
 
     # Use django-environ to parse the connection string
