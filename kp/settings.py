@@ -46,12 +46,12 @@ if os.environ.get("KP_PROD", "true") == "false":
     }
 
     # Define static BLOB storage via django-storages[google]
-    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
-    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-    STATICFILES_DIRS = []
+    #DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    #STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    #GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    #STATICFILES_DIRS = []
     # STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    GS_DEFAULT_ACL = "publicRead"
+    #GS_DEFAULT_ACL = "publicRead"
 
 
     # Static files (CSS, JavaScript, Images)

@@ -1,7 +1,7 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<h1 class="text-4xl font-extrabold"> Todo List </h1>
+<h1 class="text-4xl font-extrabold"> Home Page </h1>
 <ul>
     {% for test in tests %}
     <li>
@@ -15,13 +15,13 @@
 </ul>
     {% endfor %}
 
-
+    <!-- HTMX example -->
     <div id="catfact"></div>
     <button hx-get="https://catfact.ninja/fact" hx-swap="innerHTML" hx-target="#catfact">
         Get a random fact about cats
     </button>
 
-
+    <!-- Alpine example -->
     <div x-data="{ count: 0 }">
         <button x-on:click="count++">Increment</button>
         <span x-text="count"></span>

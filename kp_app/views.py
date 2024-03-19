@@ -11,7 +11,7 @@ class Tester:
 test1 = Tester("meow", False)
 test2 = Tester("nya", True)
 
-def test(request):
+def home(request):
     #items = Test.objects.all() 
-    return render(request, "test.html", {"tests": [test1, test2]})
+    return render(request, "home.html", {"tests": [test1, test2]})
 

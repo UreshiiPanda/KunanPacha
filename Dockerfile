@@ -4,7 +4,8 @@ FROM python:3.12-bullseye
 WORKDIR /
 
 # Copy the dependencies file to the working directory
-COPY . .
+# the chown is needed for Docker Watch
+COPY --chown=root:root . .
 
 # allows for more space in the container
 ENV PYTHONDONTWRITEBYTECODE 1
