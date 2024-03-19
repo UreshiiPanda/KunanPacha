@@ -57,8 +57,7 @@ if os.environ.get("KP_PROD", "true") == "false":
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     STATICFILES_DIRS = []
-    # in dev mode, IAM creds are being used to access the bucket, so the bucket should not
-    # be open for "public reading"
+    # STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
     # GS_DEFAULT_ACL = "publicRead"
 
 
@@ -112,17 +111,14 @@ else:
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
 
 
-    print(f"env {env.db()}")
-    print(f"env USER: {env.db().get('USER', None)}")
-
     # Define static BLOB storage via django-storages[google]
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    #GS_DEFAULT_ACL = "publicRead" 
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-    # STATIC_URL = 'https://your-bucket-name.storage.googleapis.com/'
-    #GS_PROJECT_ID = 'your-project-id'
+    # IAM creds are being used to access the bucket, so the bucket should not
+    # be open for "public reading"
+    # GS_DEFAULT_ACL = "publicRead" 
 
     # Use django-environ to parse the connection string
     DATABASES = {"default": env.db()}
