@@ -1,30 +1,53 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<h1 class="text-4xl font-extrabold"> Home Page </h1>
-<ul>
-    {% for test in tests %}
-    <li>
-        {{tests.info}}: 
-            {% if test.ready %}
-                Completed
-            {% else %}
-                Not Completed
-            {% endif %}
-    </li>
-</ul>
-    {% endfor %}
 
-    <!-- HTMX example -->
-    <div id="catfact"></div>
-    <button hx-get="https://catfact.ninja/fact" hx-swap="innerHTML" hx-target="#catfact">
-        Get a random fact about cats
-    </button>
+    {% load static %}
+    {% static 'kp_app/images/bg1.jpg' as bg_url %}
+    
+    <!-- this bg-image is for when you want it to be dynamically generated  -->
+    <div 
+        style="--background-image-url: url('{{ bg_url }}')" 
+        class="bg-[image:var(--background-image-url)] 
+               bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center">
 
-    <!-- Alpine example -->
-    <div x-data="{ count: 0 }">
-        <button x-on:click="count++">Increment</button>
-        <span x-text="count"></span>
+            <!-- Django example -->
+            <h1 class="text-4xl font-extrabold text-white"> Home Page </h1>
+            <ul class="text-white">
+                {% for test in tests %}
+                <li>
+                    {{tests.info}}: 
+                        {% if test.ready %}
+                            Completed
+                        {% else %}
+                            Not Completed
+                        {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+
+            <!-- HTMX example -->
+            <div id="catfact" class="text-white"></div>
+            <button 
+                class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white hover:text-black hover:bg-white hover:border-black"
+                hx-get="https://catfact.ninja/fact" 
+                hx-swap="innerHTML" 
+                hx-target="#catfact">
+                Get a random fact about cats
+            </button>
+
+            <!-- Alpine example -->
+            <div x-data="{ count: 0 }" class="text-white">
+                <button
+                    class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white-200 hover:text-black hover:bg-white hover:border-black"
+                    x-on:click="count++">
+                    Increment
+                </button>
+                <span x-text="count"></span>
+            </div>
+
     </div>
+
+
 {% endblock %}
 

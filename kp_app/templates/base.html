@@ -13,23 +13,41 @@
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
   </head>
-  <body>
-    <nav>
-      <a class="font-normal text-gray-500" href="#">My Django App</a>
-      <div>
-        <ul>
-          <li>
-            <a href="#">Home</a>
-          </li>
-          <li>
-            <a href="#">About</a>
-          </li>
-          <li>
-            <a href="#">Contact</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <body class="h-screen w-screen">
+
+
+        <nav class="flex items-center justify-between flex-wrap bg-white-500 p-6 border-black shadow-lg">
+          <div class="flex items-center flex-shrink-0 text-black mr-6">
+            <svg class="fill-current h-8 w-8 mr-2" width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z"/></svg>
+          </div>
+          <div class="block md:hidden text-white">
+            <button class="flex items-center px-3 py-2 border-2 rounded bg-black text-white-200 border-white-400 hover:text-black-200 hover:bg-white hover:border-black-400">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+            </button>
+          </div>
+          <div class="w-full block flex-grow md:flex md:items-center md:w-auto">
+            <div class="text-sm md:flex-grow">
+              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
+                Home
+              </a>
+              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
+                Art
+              </a>
+              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
+                Blog
+              </a>
+              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
+                Contact
+              </a>
+            </div>
+            <div>
+              <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white rounded text-white bg-black hover:border-black hover:text-black hover:bg-white mt-4 md:mt-0">Edit Page</a>
+            </div>
+          </div>
+        </nav>
+
+
+
     <div>{% block content %} {% endblock %}</div>
   </body>
 </html>
