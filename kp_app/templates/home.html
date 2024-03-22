@@ -14,8 +14,12 @@
         class="bg-[image:var(--home1-image-url)] 
                bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center">
 
+            <!-- Horizontal lines -->
+            <h1 class="text-4xl font-extrabold text-white relative z-10 mb-6"> Home Page </h1>
+            <div class="absolute top-1/2 w-20 h-px bg-black left-6 transform -translate-y-1/2"></div>
+            <div class="absolute top-1/2 w-20 h-px bg-black right-6 transform -translate-y-1/2"></div>
+
             <!-- Django example -->
-            <h1 class="text-4xl font-extrabold text-white"> Home Page </h1>
             <ul class="text-white">
                 {% for test in tests %}
                 <li>
@@ -113,7 +117,7 @@
               <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" rows="3" placeholder="Enter your message"></textarea>
             </div>
             <div class="flex items-center justify-center">
-              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+              <button class="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                 Submit
               </button>
             </div>
@@ -172,7 +176,7 @@
                 <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" rows="3" placeholder="Enter your message"></textarea>
               </div>
               <div class="flex items-center justify-center">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                <button class="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                   Submit
                 </button>
               </div>
