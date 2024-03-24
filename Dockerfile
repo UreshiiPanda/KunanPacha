@@ -17,5 +17,4 @@ RUN python3 -m pip install --upgrade pip setuptools
 RUN pip install -r requirements.txt
 
 # Gunicorn as app server
-CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 0 kp.wsgi:application
-
+CMD exec gunicorn --bind 0.0.0.0:$PORT --capture-output --workers 1 --threads 8 --timeout 0 kp.wsgi:application
