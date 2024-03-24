@@ -33,9 +33,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jojohoughton22@gmail.com'
-#EMAIL_HOST_PASSWORD = 's4ltv3rnb3rk'
-EMAIL_HOST_PASSWORD = 'ofpo fjzi mmpg sylp'
 
 
 
@@ -47,6 +44,8 @@ if os.environ.get("KP_PROD", "true") == "false":
 
     print("App starting in Development Mode")
 
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
     DEBUG = True
     SECRET_KEY = env("SECRET_KEY")
     DATABASES = {
@@ -85,6 +84,8 @@ else:
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
         DATABASE_URL=(str, os.getenv("DATABASE_URL")),
         GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+        EMAIL_HOST_USER=(str, os.getenv("EMAIL_HOST_USER")),
+        EMAIL_HOST_PASSWORD=(str, os.getenv("EMAIL_HOST_PASSWORD")),
 
     )
 
@@ -116,6 +117,8 @@ else:
     SECRET_KEY = env("SECRET_KEY")
     DATABASE_URL = env("DATABASE_URL")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 
     # Define static BLOB storage via django-storages[google]

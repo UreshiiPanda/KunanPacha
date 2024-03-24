@@ -13,7 +13,7 @@
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
   </head>
-  <body class="h-screen w-screen">
+  <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
 
         <nav class="fixed top-0 left-0 w-full flex items-center justify-between flex-wrap bg-white p-6 border-b border-black shadow-lg z-50">

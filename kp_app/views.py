@@ -37,7 +37,7 @@ def send_email(request):
                 print("Email successfully sent")
             except BadHeaderError:
                 return HttpResponse("Invalid header found when sending email")
-            return HttpResponse("send_email finished")
+            return HttpResponse('Email sent successfully')
         else:
             # In reality we'd use a form class
             # to get proper validation errors.

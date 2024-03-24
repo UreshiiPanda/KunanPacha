@@ -176,9 +176,9 @@
                     class="w-full" 
                     hx-post="{% url 'send_email' %}" 
                     hx-swap="none"
-                    hx-trigger="emailAlert from:body">
+                    htmx:afterRequest="emailAlert from:body"
+                    >
 
-                      {% csrf_token %}
                       <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2" for="name-input">
                           Name
@@ -209,12 +209,13 @@
         </div>
 
 
-<script>
-    document.body.addEventListener("emailAlert", function(evt){
-        alert("Email successfully sent");
-    })
-</script>
 
+<script>
+     document.body.addEventListener("htmx:afterRequest", function(evt){
+        console.log("in email alert");
+        alert("Email successfully sent");
+     }) 
+</script>
 
 
 {% endblock %}
