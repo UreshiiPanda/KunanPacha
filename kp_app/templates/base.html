@@ -15,36 +15,85 @@
   </head>
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
-
-      <nav class="fixed top-0 left-0 w-full flex items-center justify-between flex-wrap bg-white p-6 border-b border-black shadow-lg z-50">
+      <!--
+      <nav x-data="{ smallMenu: false }" class="fixed top-0 left-0 w-full flex items-center justify-between bg-white p-6 border-b border-black shadow-lg z-50">
           <div class="flex items-center flex-shrink-0 text-black mr-6">
-            <svg class="fill-current h-8 w-8 mr-2" width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z"/></svg>
+            <svg class="fill-current h-8 w-8 mr-2" width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z" />
+            </svg>
           </div>
-          <div class="block md:hidden text-white">
-            <button class="flex items-center px-3 py-2 border-2 rounded bg-black text-white-200 border-white-400 hover:text-black-200 hover:bg-white hover:border-black-400">
-              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+
+          <div class="block sm:hidden text-white">
+            <button x-on:click="smallMenu = !smallMenu" class="flex items-center px-3 py-2 border-2 bg-black text-white-200 border-white-400 hover:text-black-200 hover:bg-white hover:border-black-400">
+              <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <title>Menu</title>
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+              </svg>
             </button>
           </div>
-          <div class="w-full block flex-grow md:flex md:items-center md:w-auto">
-            <div class="text-sm md:flex-grow">
-              <a href="#homepage" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
-                Home
-              </a>
-              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
-                Art
-              </a>
-              <a href="#responsive-header" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
-                Blog
-              </a>
-              <a href="#contact" class="block mt-4 md:inline-block md:mt-0 text-black-200 hover:text-gray-500 mr-4">
-                Contact
-              </a>
+
+          <div class="hidden sm:flex sm:flex-grow sm:items-center">
+            <div class="text-sm flex flex-grow">
+              <a href="#homepage" class="block mt-4 sm:inline-block sm:mt-0 text-black-200 hover:text-gray-500 mr-4">Home</a>
+              <a href="#responsive-header" class="block mt-4 sm:inline-block sm:mt-0 text-black-200 hover:text-gray-500 mr-4">Art</a>
+              <a href="#responsive-header" class="block mt-4 sm:inline-block sm:mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
+              <a href="#contact" class="block mt-4 sm:inline-block sm:mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
             </div>
             <div>
-              <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white mt-4 md:mt-0">Edit Page</a>
+              <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white mt-4 sm:mt-0">Edit Page</a>
             </div>
           </div>
-      </nav>    
+
+
+            <div x-show="smallMenu">
+                  <div class="flex flex-grow items-center">
+                    <div class="text-sm flex flex-grow">
+                      <a href="#homepage" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Home</a>
+                      <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Art</a>
+                      <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
+                      <a href="#contact" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
+                    </div>
+                    <div>
+                      <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white mt-4 sm:mt-0">Edit Page</a>
+                    </div>
+                  </div>      
+            </div>
+        </nav>
+      -->
+
+
+        <div x-data="{ isOpen: false }">
+            <nav class="flex items-center justify-between bg-gray-800 p-4">
+                <div class="text-white">Logo</div>
+                <div class="flex items-center">
+                    <button @click="isOpen = !isOpen" class="block sm:hidden text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="hidden sm:flex items-center space-x-4">
+                    <a href="#" class="text-white">Home</a>
+                    <a href="#" class="text-white">About</a>
+                    <a href="#" class="text-white">Services</a>
+                    <a href="#" class="text-white">Contact</a>
+                </div>
+            </nav>
+
+            <div x-show="isOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-1/2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-1/2" class="bg-gray-800 text-white sm:hidden fixed inset-x-0 top-0 p-4">
+                <button @click="isOpen = !isOpen" class="block sm:hidden text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+                <div class="flex flex-col items-center space-y-4">
+                    <a href="#" class="text-white">Home</a>
+                    <a href="#" class="text-white">About</a>
+                    <a href="#" class="text-white">Services</a>
+                    <a href="#" class="text-white">Contact</a>
+                </div>
+            </div>
+        </div>
 
 
 
