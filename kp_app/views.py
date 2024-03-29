@@ -4,10 +4,6 @@ from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from .models import Test
 from .forms import EmailForm
-import sys
-import logging
-
-logger = logging.getLogger(__name__)
 
 class Tester:
     def __init__(self, info="woof", ready=False):
@@ -36,12 +32,18 @@ def send_email(request):
                 send_mail(email_subject, email_body, from_email, ["jojohoughton22@gmail.com"], fail_silently=False)
                 print("Email successfully sent")
             except BadHeaderError:
-                return HttpResponse("Invalid header found when sending email")
-            return HttpResponse('Email sent successfully')
+                response = HttpResponse(status=500, content="Invalid header found when sending email")
+                response['HX-Trigger'] = 'emailFailureHeaders'
+                return response
+            response = HttpResponse(status=200, content="Email successfully sent")
+            response['HX-Trigger'] = 'emailSuccess'
+            return response
         else:
             # In reality we'd use a form class
             # to get proper validation errors.
-            return HttpResponse("Please make sure all fields are entered and valid")
-    return HttpResponse("send_email finished")
+            response = HttpResponse(status=400, content="Please make sure all fields are entered and valid")
+            response['HX-Trigger'] = 'emailFailureFields'
+            return response
+
 
 
