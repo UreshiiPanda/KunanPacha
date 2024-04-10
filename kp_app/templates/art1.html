@@ -1,0 +1,30 @@
+{% extends "base.html" %} 
+
+{% block content %}
+
+    {% load static %}
+
+
+        <div class="container mx-auto mt-24 px-4">
+            <div id="image-container" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {% for image in images %}
+                <div>
+                    <div class="relative border-2 border-black overflow-hidden image-container">
+                        <img src="{% static 'kp_app/images/' %}{{ image }}" alt="{{ image }}" class="p-4 object-cover">
+                    </div>
+
+
+                    <div class="p-4 flex justify-between">
+                        <h3 class="text-lg text-center m-2">Image Title</h3>
+                        <a href="mailto:your-email@example.com" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                            <svg class="h-10 w-10 text-black"  width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <rect x="3" y="5" width="18" height="14" rx="1" />  <polyline points="3 7 12 13 21 7" /></svg>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+{% endblock %}
+

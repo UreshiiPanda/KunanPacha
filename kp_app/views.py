@@ -4,6 +4,7 @@ from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from .models import Test
 from .forms import EmailForm
+import os
 
 class Tester:
     def __init__(self, info="woof", ready=False):
@@ -17,6 +18,11 @@ test2 = Tester("nya", True)
 def home(request):
     #items = Test.objects.all() 
     return render(request, "home.html", {"tests": [test1, test2]})
+
+def art1(request):
+    images_dir = os.path.join('static/kp_app/images')      
+    images = os.listdir(images_dir)
+    return render(request, "art1.html", {"images": images})
 
 
 def send_email(request):
