@@ -24,6 +24,31 @@ def art1(request):
     images = os.listdir(images_dir)
     return render(request, "art1.html", {"images": images})
 
+# def art2(request, image_id):
+def art2(request):
+    # if the image comes from a DB
+    #image = get_object_or_404(Image, id=image_id)
+    #context = {
+    #    'image': image,
+    #    'image_url': image.image.url,
+    #    'title': image.title,
+    #    'description': image.description,
+    #    'price': image.price,
+    #}
+
+
+    # mocking the image locally 
+    images_dir = os.path.join('static/kp_app/images')      
+    image_obj = {
+        'image': os.listdir(images_dir)[0],
+        'title': "Image Title",
+        'desc': "This is the image description",
+        'print_price': "40",
+        'original_price': "100"
+    }
+
+    return render(request, 'art2.html', {"image_obj": image_obj})
+
 
 def send_email(request):
     if request.method == "POST":

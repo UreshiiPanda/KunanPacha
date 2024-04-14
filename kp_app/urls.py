@@ -8,6 +8,8 @@ urlpatterns = [
         # this says: when we're at the "/" (root) URL extension, call this home func
         path("", views.home, name="home"),
         path("art1", views.art1, name="art1"),
+        #path('art2/<int:image_id>/', views.art2, name='art2'),
+        path('art2', views.art2, name='art2'),
         path("send_email", views.send_email, name="send_email"),
         ]
 
