@@ -5,17 +5,27 @@
 {% block content %}
 
 
+
+
     <div class="container mx-auto mt-24 px-4">
         <div class="flex flex-col md:flex-row">
-            <div class="md:w-2/5 md:pr-4">
-                <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-auto max-w-full border-2 border-black">
-                <div class="flex justify-between">
-                    <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="w-32 h-32 border-2 border-black">
-                    <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="w-32 h-32 border-2 border-black">
-                    <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="w-32 h-32 border-2 border-black">
+            <div class="md:w-3/5 mt-20">
+                <div class="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] border-1 border-black overflow-hidden">
+                    <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 object-cover h-full w-full border-2 border-black">
+                </div>
+                <div class="flex justify-between mt-10">
+                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] sm:w-[150px] sm:h-[150px] border-1 border-black overflow-hidden">
+                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
+                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] sm:w-[150px] sm:h-[150px] border-1 border-black overflow-hidden">
+                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
+                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] sm:w-[150px] sm:h-[150px] border-1 border-black overflow-hidden">
+                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
                 </div>
             </div>
-            <div class="md:w-3/5 md:pl-4">
+            <div class="md:w-2/5 mt-20">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-2xl font-bold">{{ image_obj.title }}</h2>
                     <a href="mailto:your-email@example.com" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
@@ -26,12 +36,18 @@
                         </svg>
                     </a>
                 </div>
-                <p class="text-lg mb-4">{{ image_obj.desc }}</p>
-                <p class="text-xl font-semibold">Print Price: ${{ image_obj.print_price }}</p>
-                <p class="text-xl font-semibold">Original Price: ${{ image_obj.original_price }}</p>
+                <p class="text-lg mb-6">{{ image_obj.desc }}</p>
+                <div class="flex justify-end">
+                    <div>
+                        <p class="text-xl mb-4 font-semibold">Print Price: ${{ image_obj.print_price }}</p>
+                        <p class="text-xl font-semibold">Original Price: ${{ image_obj.original_price }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+
 
 
 {% endblock %}

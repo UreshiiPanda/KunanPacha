@@ -42,7 +42,7 @@ def art2(request):
     image_obj = {
         'image': os.listdir(images_dir)[0],
         'title': "Image Title",
-        'desc': "This is the image description",
+        'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
         'print_price': "40",
         'original_price': "100"
     }
