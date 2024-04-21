@@ -5,17 +5,21 @@
     {% load static %}
 
 
+    <div id="art-main">
 
         <div class="container mx-auto mt-24 px-4">
             <div class="flex flex-wrap justify-between">
                 {% for image in images %}
                 <div class="flex flex-col items-center mx-auto md:w-1/2 lg:w-1/3 p-4">
-                    <div class="relative border-2 border-black overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px]">
-                        <!--  url 'art2' image.id   -->
-                        <a href="{% url 'art2' %}">
+                    <div
+                        hx-get="{% url 'art2' %}"
+                        hx-swap="innerHTML" 
+                        hx-target="#art-main"
+                        hx-push-url="/art2"
+                        class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px]">
+                        <!--  href= url 'art2' image.id   -->
+                        <!-- href= url 'art2' -->
                             <img src="{% static 'kp_app/images/' %}{{ image }}" alt="{{ image }}" class="p-4 h-full w-full object-cover">
-                        </a>
-                        <!--        <img src="{% static 'kp_app/images/' %}{{ image }}" alt="{{ image }}" class="p-4 h-full w-full object-cover">    -->
                     </div>
                     <div class="p-4 flex w-[275px] md:w-[325px] lg:w-[300px] justify-between">
                         <h3 class="text-lg text-center m-2">Image Title</h3>
@@ -32,6 +36,7 @@
             </div>
         </div>
 
+    </div>
 
 
 
