@@ -7,7 +7,11 @@ from . import views
 urlpatterns = [
         # this says: when we're at the "/" (root) URL extension, call this home func
         path("", views.home, name="home"),
+        path("home-content", views.home_content, name="home_content"),
+        path("contact", views.contact_content, name="contact_content"),
+        path("contact-content", views.contact, name="contact"),
         path("art1", views.art1, name="art1"),
+        path("art1-content", views.art1_content, name="art1_content"),
         #path('art2/<int:image_id>/', views.art2, name='art2'),
         path('art2', views.art2, name='art2'),
         path("send_email", views.send_email, name="send_email"),

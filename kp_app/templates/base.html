@@ -37,10 +37,35 @@
 
                 <div class="hidden sm:flex sm:flex-grow items-center">
                     <div class="flex flex-grow text-sm">
-                        <a href="{% url 'home' %}" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Home</a>
-                          <a href="{% url 'art1' %}" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Art</a>
+                          <a 
+                              class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                              href="{% url 'home_content' %}"
+                              hx-boost="true"
+                              hx-swap="innerHTML" 
+                              hx-target="#content"
+                              hx-push-url="true"
+                              >Home
+                          </a>
+                          <a 
+                              class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                              href="{% url 'art1_content' %}"
+                              hx-boost="true"
+                              hx-swap="innerHTML" 
+                              hx-target="#content"
+                              hx-push-url="true"
+                              >Art
+                          </a>
                           <a href="#responsive-header" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Blog</a>
-                          <a href="#contact" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Contact</a>
+                          <a 
+                              class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                              href="{% url 'contact_content' %}"
+                              hx-boost="true"
+                              hx-swap="innerHTML" 
+                              hx-target="#content"
+                              hx-push-url="true"
+                              >Contact
+                          </a>
+
                     </div>
                     <div>
                           <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white mt-4 sm:mt-0">Edit Page</a>
@@ -70,15 +95,15 @@
                 <div class="flex flex-col items-center space-y-4">
                     <a href="{% url 'home' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Home</a>
                     <a href="{% url 'art1' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Art</a>
-                      <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
-                      <a href="#contact" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
+                    <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
+                    <a href="{% url 'contact' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
                 </div>
             </div>
         </div>
 
 
+        <div id="content"> {% block content %} {% endblock %} </div>
 
-    <div>{% block content %} {% endblock %}</div>
   </body>
 </html>
 

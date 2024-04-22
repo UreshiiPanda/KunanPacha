@@ -19,6 +19,22 @@ def home(request):
     #items = Test.objects.all() 
     return render(request, "home.html", {"tests": [test1, test2]})
 
+def contact(request):
+    return render(request, "contact.html")
+
+
+def home_content(request):
+    return render(request, "home_content.html")
+
+def contact_content(request):
+    return render(request, "contact_content.html")
+
+
+def art1_content(request):
+    images_dir = os.path.join('static/kp_app/images')      
+    images = os.listdir(images_dir)
+    return render(request, "art1_content.html", {"images": images})
+
 def art1(request):
     images_dir = os.path.join('static/kp_app/images')      
     images = os.listdir(images_dir)
