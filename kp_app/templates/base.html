@@ -39,30 +39,27 @@
                     <div class="flex flex-grow text-sm">
                           <a 
                               class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
-                              href="{% url 'home_content' %}"
-                              hx-boost="true"
+                              hx-get="{% url 'home' %}"
                               hx-swap="innerHTML" 
                               hx-target="#content"
-                              hx-push-url="true"
+                              hx-push-url="/"
                               >Home
                           </a>
                           <a 
                               class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
-                              href="{% url 'art1_content' %}"
-                              hx-boost="true"
+                              hx-get="{% url 'art1' %}"
                               hx-swap="innerHTML" 
                               hx-target="#content"
-                              hx-push-url="true"
+                              hx-push-url="/art1"
                               >Art
                           </a>
                           <a href="#responsive-header" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Blog</a>
                           <a 
                               class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
-                              href="{% url 'contact_content' %}"
-                              hx-boost="true"
+                              hx-get="{% url 'contact' %}"
                               hx-swap="innerHTML" 
                               hx-target="#content"
-                              hx-push-url="true"
+                              hx-push-url="/contact"
                               >Contact
                           </a>
 
@@ -104,8 +101,8 @@
 
         <div id="content"> {% block content %} {% endblock %} </div>
 
+
   </body>
 </html>
-
 
 

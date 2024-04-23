@@ -16,29 +16,33 @@ test2 = Tester("nya", True)
 
 
 def home(request):
-    #items = Test.objects.all() 
-    return render(request, "home.html", {"tests": [test1, test2]})
+    if request.headers.get('HX-Request') == 'true':
+        print("home page came from HTMX")
+        return render(request, "home_content.html")
+    else:
+        print("home page did NOT come from HTMX")
+        return render(request, "home.html")
 
 def contact(request):
-    return render(request, "contact.html")
-
-
-def home_content(request):
-    return render(request, "home_content.html")
-
-def contact_content(request):
-    return render(request, "contact_content.html")
-
-
-def art1_content(request):
-    images_dir = os.path.join('static/kp_app/images')      
-    images = os.listdir(images_dir)
-    return render(request, "art1_content.html", {"images": images})
+    if request.headers.get('HX-Request') == 'true':
+        print("contact page came from HTMX")
+        return render(request, "contact_content.html")
+    else:
+        print("contact page did NOT come from HTMX")
+        return render(request, "contact.html")
 
 def art1(request):
-    images_dir = os.path.join('static/kp_app/images')      
-    images = os.listdir(images_dir)
-    return render(request, "art1.html", {"images": images})
+    if request.headers.get('HX-Request') == 'true':
+        print("art1 page came from HTMX")
+        images_dir = os.path.join('static/kp_app/images')      
+        images = os.listdir(images_dir)
+        return render(request, "art1_content.html", {"images": images})
+    else:
+        print("art1 page did NOT come from HTMX")
+        images_dir = os.path.join('static/kp_app/images')      
+        images = os.listdir(images_dir)
+        return render(request, "art1.html", {"images": images})
+
 
 # def art2(request, image_id):
 def art2(request):
@@ -53,17 +57,32 @@ def art2(request):
     #}
 
 
-    # mocking the image locally 
-    images_dir = os.path.join('static/kp_app/images')      
-    image_obj = {
-        'image': os.listdir(images_dir)[0],
-        'title': "Image Title",
-        'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
-        'print_price': "40",
-        'original_price': "100"
-    }
+    if request.headers.get('HX-Request') == 'true':
+        print("art2 page came from HTMX")
+        # mocking the image locally 
+        images_dir = os.path.join('static/kp_app/images')      
+        image_obj = {
+            'image': os.listdir(images_dir)[0],
+            'title': "Image Title",
+            'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
+            'print_price': "40",
+            'original_price': "100"
+        }
 
-    return render(request, 'art2.html', {"image_obj": image_obj})
+        return render(request, 'art2_content.html', {"image_obj": image_obj})
+    else:
+        print("art2 page did NOT come from HTMX")
+        # mocking the image locally 
+        images_dir = os.path.join('static/kp_app/images')      
+        image_obj = {
+            'image': os.listdir(images_dir)[0],
+            'title': "Image Title",
+            'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
+            'print_price': "40",
+            'original_price': "100"
+        }
+
+        return render(request, 'art2.html', {"image_obj": image_obj})
 
 
 def send_email(request):
