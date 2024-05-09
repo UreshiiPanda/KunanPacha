@@ -12,6 +12,7 @@ urlpatterns = [
         #path('art2/<int:image_id>/', views.art2, name='art2'),
         path('art2', views.art2, name='art2'),
         path("send_email", views.send_email, name="send_email"),
+        path('login', views.login, name='login'),
         ]
 
 

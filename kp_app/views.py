@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from .models import Test
-from .forms import EmailForm
+from django.contrib.auth import authenticate, login, logout
+from .forms import LoginForm
 import os
 
 class Tester:
@@ -110,6 +111,32 @@ def send_email(request):
             response = HttpResponse(status=400, content="Please make sure all fields are entered and valid")
             response['HX-Trigger'] = 'emailFailureFields'
             return response
+
+
+def login(request):
+    if request.method == 'POST':
+        # request was a POST to log the user in
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # user auth was successful
+                # send user to home page
+                login(request, user)
+                return render(request, "home.html")
+            else:
+                # user auth has failed
+                # return an HTMX failure response
+                response = HttpResponse(status=400, content="Invalid Login Credentials")
+                response['HX-Trigger'] = 'loginFailure'
+                return response              
+    else:
+        # request was a GET to get the login page
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
 
 
 
