@@ -1,21 +1,34 @@
 #!/bin/bash
 
 
+# make sure Docker is running
+if ! docker info > /dev/null 2>&1;
+then
+    open -a Docker
+    echo opening Docker
+    sleep 4
+    # close the Docker window
+    osascript -e 'tell application "System Events" to keystroke "w" using command down'
+else
+    echo Docker already running
+fi
+
+
 # Check if Kitty is running (this script may be run from a workflow)
-if pgrep -q "Kitty" > /dev/null
+if ! pgrep -q "kitty";
 then
     # if Kitty is not running
-    # switch to Desktop 3
-    osascript -e 'tell application "System Events" to key code 20 using {control down, shift down, option down, command down}'
+    # switch to Desktop 1
+    osascript -e 'tell application "System Events" to key code 18 using {control down, shift down, option down, command down}'
     # open Kitty
-    open -a "Kitty"
+    open -a Kitty
     # wait for Kitty to fully open
     sleep 1
     echo opening kitty nya
 else
     # if Kitty is running, then it should be running in Desktop 3
-    # switch to Desktop 3
-    osascript -e 'tell application "System Events" to key code 20 using {control down, shift down, option down, command down}'
+    # switch to Desktop 1
+    osascript -e 'tell application "System Events" to key code 18 using {control down, shift down, option down, command down}'
     echo kitty already open nya
     sleep 1
 fi
@@ -60,7 +73,9 @@ kitten @ send-text --match=title:nya1 git checkout feat'\n'
 sleep 1
 
 # run Docker watcher in second tab
+echo spinning up containers
 kitten @ send-text --match=title:nya4 docker compose watch'\n'
+sleep 5
 
 # run Tailwind watcher in second tab
 kitten @ send-text --match=title:nya5 tailwindcss -i ./kp_app/static/kp_app/css/input.css -o ./kp_app/static/kp_app/css/output.css --watch'\n'

@@ -6,6 +6,10 @@ from .models import Test
 from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm
 import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 class Tester:
     def __init__(self, info="woof", ready=False):
@@ -113,30 +117,36 @@ def send_email(request):
             return response
 
 
-def login(request):
+
+def login_admin(request):
     if request.method == 'POST':
-        # request was a POST to log the user in
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            print(username == os.getenv("SITE_USER"))
+            print(password == os.getenv("SITE_PASSWORD"))
             user = authenticate(request, username=username, password=password)
-            if user is not None:
+            if user is not None and username == os.getenv("SITE_USER") and password == os.getenv("SITE_PASSWORD"):
                 # user auth was successful
-                # send user to home page
-                login(request, user)
-                return render(request, "home.html")
+                # return an HTMX success response
+                    login(request, user)
+                    response = HttpResponse(status=200, content="Successful Admin Login")
+                    response['HX-Trigger'] = 'loginSuccess'
+                    #return response
+                    return render(request, "home.html")
             else:
                 # user auth has failed
                 # return an HTMX failure response
                 response = HttpResponse(status=400, content="Invalid Login Credentials")
                 response['HX-Trigger'] = 'loginFailure'
-                return response              
+                return response
+
+
     else:
         # request was a GET to get the login page
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
-
 
 
 

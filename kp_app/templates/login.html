@@ -1,10 +1,11 @@
+
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
 
 
-<div class="flex flex-col items-center justify-center h-screen bg-gray-100 px-4 sm:px-6 md:px-8">
+<div id="login-form" class="flex flex-col items-center justify-center h-screen bg-gray-100 px-4 sm:px-6 md:px-8">
     <div class="container bg-white p-8 border-2 border-black shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
         <div hx-target="#login-form">
@@ -14,8 +15,8 @@
             </div>
             {% endif %}
         </div>
-        <div 
-            hx-post="{% url 'login' %}" 
+        <form
+            hx-post="{% url 'login_admin' %}" 
             hx-target="#login-form" 
             hx-swap="outerHTML" 
             method="post" 
@@ -34,9 +35,8 @@
             <button type="submit" class="w-full py-2 px-4 bg-black hover:bg-white hover:text-black text-white font-bold rounded outline outline-2 outline-black">
                 Login
             </button>
-        </div>
+        </form>
     </div>
-
 
 
     <!-- Login Alerts Event Listeners -->
@@ -49,8 +49,10 @@
 
 
 
-
 </div>
 
 
 {% endblock %}
+
+
+

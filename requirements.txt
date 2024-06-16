@@ -28,6 +28,7 @@ psycopg2-binary==2.9.9
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pytailwindcss==0.2.0
+python-dotenv==1.0.1
 requests==2.31.0
 rsa==4.9
 setuptools==69.1.1
