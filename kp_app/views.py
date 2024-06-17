@@ -126,7 +126,8 @@ def login_admin(request):
             password = form.cleaned_data['password']
             print(username == os.getenv("SITE_USER"))
             print(password == os.getenv("SITE_PASSWORD"))
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request=request, username=username, password=password)
+            print(f"user is: {user}")
             if user is not None and username == os.getenv("SITE_USER") and password == os.getenv("SITE_PASSWORD"):
                 # user auth was successful
                 # return an HTMX success response
