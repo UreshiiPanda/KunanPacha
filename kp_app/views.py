@@ -124,13 +124,11 @@ def login_admin(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            print(username == os.getenv("SITE_USER"))
-            print(password == os.getenv("SITE_PASSWORD"))
-            user = authenticate(request=request, username=username, password=password)
-            print(f"user is: {user}")
+            user = authenticate(request, username=username, password=password)
             if user is not None and username == os.getenv("SITE_USER") and password == os.getenv("SITE_PASSWORD"):
                 # user auth was successful
                 # return an HTMX success response
+                    print(f"user login successful for user: {user}")
                     login(request, user)
                     response = HttpResponse(status=200, content="Successful Admin Login")
                     response['HX-Trigger'] = 'loginSuccess'
@@ -139,6 +137,7 @@ def login_admin(request):
             else:
                 # user auth has failed
                 # return an HTMX failure response
+                print(f"user login failed for user: {user}")
                 response = HttpResponse(status=400, content="Invalid Login Credentials")
                 response['HX-Trigger'] = 'loginFailure'
                 return response
