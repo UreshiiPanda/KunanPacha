@@ -5,6 +5,8 @@ services:
     image: postgres:16.2
     env_file:
       - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   web:
     build: .
     ports:
@@ -33,3 +35,5 @@ services:
         - action: rebuild
           path: requirements.txt
 
+volumes:
+  postgres_data:

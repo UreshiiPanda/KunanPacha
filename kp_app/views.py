@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
-from .models import Test
+from .models import UserCredential
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password, check_password
 from .forms import LoginForm
+from .forms import RegistrationForm
 import os
 from dotenv import load_dotenv
 
@@ -128,12 +130,17 @@ def login_admin(request):
             if user is not None and username == os.getenv("SITE_USER") and password == os.getenv("SITE_PASSWORD"):
                 # user auth was successful
                 # return an HTMX success response
-                    print(f"user login successful for user: {user}")
-                    login(request, user)
-                    response = HttpResponse(status=200, content="Successful Admin Login")
-                    response['HX-Trigger'] = 'loginSuccess'
-                    #return response
-                    return render(request, "home.html")
+                # hash the password before saving it to the database
+                hashed_password = make_password(password)
+                UserCredential.objects.create(username=username, password=hashed_password)
+                print(f"user login successful for user: {user}")
+                # save the user credentials to the database
+                UserCredential.objects.create(username=username, password=password)
+                login(request, user)
+                response = HttpResponse(status=200, content="Successful Admin Login")
+                response['HX-Trigger'] = 'loginSuccess'
+                #return response
+                return render(request, "home.html")
             else:
                 # user auth has failed
                 # return an HTMX failure response
@@ -147,6 +154,19 @@ def login_admin(request):
         # request was a GET to get the login page
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
+
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
 
 
 
