@@ -18,8 +18,8 @@ urlpatterns = [
         path('login_admin', views.login_admin, name='login_admin'),
         path('register/', register, name='register'),
         path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-        path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-        #path("accounts/", include("django.contrib.auth.urls")),
+        #path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+        path("accounts/", include("django.contrib.auth.urls")),
         ]
 
 

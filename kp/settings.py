@@ -147,6 +147,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "storages", 
     "kp_app",
+    'widget_tweaks',
 ]
 
 AUTH_USER_MODEL = 'auth.User'
@@ -245,6 +246,9 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # End session when browser closes
 
+# end a session automatically after 3 hours
+SESSION_COOKIE_AGE = 10800  # in seconds (e.g., 3 hour)
 
 
