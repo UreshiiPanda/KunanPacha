@@ -169,8 +169,6 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-def custom_logout(request):
-    logout(request)
-    messages.success(request, 'You have been successfully logged out.')
-    return redirect('home')  # Replace 'home' with the name of your home page URL pattern
+
+
 
