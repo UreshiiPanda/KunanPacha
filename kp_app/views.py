@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from .models import UserCredential
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from .forms import LoginForm
@@ -168,5 +169,8 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-
+def custom_logout(request):
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('home')  # Replace 'home' with the name of your home page URL pattern
 

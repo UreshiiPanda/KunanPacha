@@ -9,6 +9,7 @@
       {% endblock %}
     </title>
     {% load static %}
+    {% load auth_tags %}
     <link rel="stylesheet" href="{% static 'kp_app/css/output.css' %}" type="text/css">
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}" defer ></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
@@ -65,6 +66,7 @@
                         </a>
                     </div>
                     {% if user.is_authenticated %}
+                        {% if request.user|has_group:"Editor" %}
                     <div class="flex items-center">
                         <form action="{% url 'logout' %}" method="post" class="mr-2">
                             {% csrf_token %}
@@ -72,6 +74,7 @@
                         </form>
                         <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Edit Page</a>
                     </div>
+                        {% endif %}
                     {% endif %}
                 </div>
 
