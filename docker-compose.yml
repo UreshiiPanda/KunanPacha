@@ -17,7 +17,8 @@ services:
       - db
     restart: always
     command: >
-      sh -c "python manage.py makemigrations &&
+      sh -c "python manage.py migrate --fake &&
+             python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              python manage.py makesuperuser ${DJANGO_SUPERUSER_USERNAME} ${DJANGO_SUPERUSER_EMAIL} ${DJANGO_SUPERUSER_PASSWORD} &&
@@ -34,6 +35,10 @@ services:
         # completely re-build the django container if there are any changes to requirements.txt
         - action: rebuild
           path: requirements.txt
+        # completely re-build the django container if there are any changes to models.py
+        # in order to re-run makemigrations and migrate
+        - action: rebuild
+          path: kp_app/models.py
 
 volumes:
   postgres_data:

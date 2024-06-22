@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
-from .models import UserCredential
+from .models import UserCredential, Art1PageSettings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -40,16 +40,32 @@ def contact(request):
         return render(request, "contact.html")
 
 def art1(request):
+    # Fetch the page settings from the DB
+    # Assuming you want the first (or only) set of settings
+    try:
+        settings = Art1PageSettings.objects.first()
+        page_settings = {
+            'font': settings.font,
+            'font_color': settings.font_color,
+            'edu_email': settings.edu_email,
+        }
+    except Art1PageSettings.DoesNotExist:
+        # Provide default values if no settings are found
+        page_settings = {
+            'font': 'sans-serif',
+            'font_color': '#000000',
+            'edu_email': 'jojohoughton22@gmail.com',
+        }
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
         images_dir = os.path.join('static/kp_app/images')      
         images = os.listdir(images_dir)
-        return render(request, "art1_content.html", {"images": images})
+        return render(request, "art1_content.html", {"images": images, "page_settings": page_settings})
     else:
         print("art1 page did NOT come from HTMX")
         images_dir = os.path.join('static/kp_app/images')      
         images = os.listdir(images_dir)
-        return render(request, "art1.html", {"images": images})
+        return render(request, "art1.html", {"images": images, "page_settings": page_settings})
 
 
 # def art2(request, image_id):

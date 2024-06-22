@@ -6,7 +6,7 @@
     {% load static %}
 
 
-    <div id="art-content">
+    <div id="art-content" class="font-[{{ page_settings.font|default:'sans-serif' }}] text-[{{ page_settings.font_color|default:'#000000' }}]">
 
         <div class="container mx-auto mt-24 px-4">
             <div class="flex flex-wrap justify-between">
@@ -24,7 +24,7 @@
                     </div>
                     <div class="p-4 flex w-[275px] md:w-[325px] lg:w-[300px] justify-between">
                         <h3 class="text-lg text-center m-2">Image Title</h3>
-                        <a href="mailto:your-email@example.com" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                        <a href="{{page_settings.edu_email}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                             <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
                                 <rect x="3" y="5" width="18" height="14" rx="1" />
