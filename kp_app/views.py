@@ -56,6 +56,7 @@ def art1(request):
             'font_color': '#000000',
             'edu_email': 'jojohoughton22@gmail.com',
         }
+        print(page_settings)
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
         images_dir = os.path.join('static/kp_app/images')      
@@ -187,4 +188,37 @@ def register(request):
 
 
 
-
+def art1_page_edit(request):
+    if request.method == 'POST':
+        font = request.POST.get('font')
+        font_color = request.POST.get('font_color')
+        email = request.POST.get('email')
+        
+        try:
+            # Try to get the existing record
+            # there whould only be 1 record for this, cuz the page settings are
+            # always replaced when the user input is valid
+            settings = Art1PageSettings.objects.first()
+            
+            if settings:
+                # If a record exists, update it
+                settings.font = font
+                settings.font_color = font_color
+                settings.email = email
+                settings.save()
+            else:
+                # If no record exists yet, create a new one
+                Art1PageSettings.objects.create(
+                    font=font,
+                    font_color=font_color,
+                    email=email
+                )
+           
+            # return HttpResponse(status=204, content="Art1 Page Settings successfully changed in the DB") 
+            return render(request, "art1.html")
+        except Exception as e:
+            print(f"Error saving settings: {e}")  # Log the error
+            # return HttpResponse(status=400, content="Art1 Page Settings update failed")  # Bad request
+            return render(request, "art1.html")
+    
+    return HttpResponse(status=405, content="the Art1 Page Edit view was not a POST")  # Method not allowed

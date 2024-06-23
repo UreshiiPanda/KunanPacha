@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="{% static 'kp_app/css/output.css' %}" type="text/css">
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}" defer ></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('editPageModal', {
+            on: false, 
+            toggle() {
+                this.on = ! this.on
+            }
+        })
+    })
+</script>
   </head>
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
@@ -72,7 +82,7 @@
                             {% csrf_token %}
                             <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
                         </form>
-                        <a href="#" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Edit Page</a>
+                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Edit Page</a>
                     </div>
                         {% endif %}
                     {% endif %}
@@ -105,6 +115,7 @@
                     <a href="{% url 'contact' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
                             
                     {% if user.is_authenticated %}
+                        {% if request.user|has_group:"Editor" %}
                     <div class="flex flex-col items-center space-y-2 mt-4">
                         <form action="{% url 'logout' %}" method="post" class="w-full mr-2">
                             {% csrf_token %}
@@ -112,6 +123,7 @@
                         </form>
                         <a href="#" class="mr-2 w-full text-center text-sm px-4 py-2 border border-white text-white hover:bg-white hover:text-black transition-colors duration-300">Edit Page</a>
                     </div>
+                        {% endif %}
                     {% endif %}
 
                 </div>
