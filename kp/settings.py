@@ -17,7 +17,7 @@ import os
 import environ
 import google.auth
 from google.cloud import secretmanager
-
+import socket
 import logging
 
 logger = logging.getLogger(__name__)
@@ -43,6 +43,8 @@ if os.environ.get("KP_PROD", "true") == "false":
     env.read_env(env_file)
 
     print("App starting in Development Mode")
+    print(f"postgres details: name: {env("POSTGRES_NAME")}, user: {env("POSTGRES_USER")}, pass: {env("POSTGRES_PASSWORD")}")
+
 
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
@@ -58,6 +60,16 @@ if os.environ.get("KP_PROD", "true") == "false":
             'PORT': 5432,
         }
     }
+
+    
+    # Add this after your DATABASES configuration
+    db_host = DATABASES['default']['HOST']
+    try:
+        db_ip = socket.gethostbyname(db_host)
+        print(f"Database host '{db_host}' resolves to IP: {db_ip}")
+    except socket.gaierror:
+        print(f"Could not resolve host: {db_host}")
+
 
     # Define static BLOB storage via django-storages[google]
     #DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"

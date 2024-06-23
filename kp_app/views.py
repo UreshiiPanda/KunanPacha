@@ -41,30 +41,33 @@ def contact(request):
 
 def art1(request):
     # Fetch the page settings from the DB
-    # Assuming you want the first (or only) set of settings
-    try:
-        settings = Art1PageSettings.objects.first()
-        page_settings = {
-            'font': settings.font,
-            'font_color': settings.font_color,
-            'edu_email': settings.edu_email,
-        }
-    except Art1PageSettings.DoesNotExist:
-        # Provide default values if no settings are found
-        page_settings = {
-            'font': 'sans-serif',
-            'font_color': '#000000',
-            'edu_email': 'jojohoughton22@gmail.com',
-        }
-        print(page_settings)
+    # First check if any Art1PageSettings object exists
+    settings = Art1PageSettings.objects.first()
+
+    if not settings:
+        # If no settings exist yet in the DB, create a default one
+        settings = Art1PageSettings.objects.create(
+            font='sans-serif',
+            font_color='#000000',
+            edu_email='jojohoughton22@gmail.com'
+        )
+
+    # Now that there is for sure a settings object, set the vars to pass into template
+    page_settings = {
+        'font': settings.font,
+        'font_color': settings.font_color,
+        'edu_email': settings.edu_email,
+    }
+    print(page_settings)
+
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
-        images_dir = os.path.join('static/kp_app/images')      
+        images_dir = os.path.join('static/kp_app/images') 
         images = os.listdir(images_dir)
         return render(request, "art1_content.html", {"images": images, "page_settings": page_settings})
     else:
         print("art1 page did NOT come from HTMX")
-        images_dir = os.path.join('static/kp_app/images')      
+        images_dir = os.path.join('static/kp_app/images') 
         images = os.listdir(images_dir)
         return render(request, "art1.html", {"images": images, "page_settings": page_settings})
 
@@ -193,7 +196,7 @@ def art1_page_edit(request):
         font = request.POST.get('font')
         font_color = request.POST.get('font_color')
         email = request.POST.get('email')
-        
+        print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {email}")
         try:
             # Try to get the existing record
             # there whould only be 1 record for this, cuz the page settings are
@@ -206,8 +209,10 @@ def art1_page_edit(request):
                 settings.font_color = font_color
                 settings.email = email
                 settings.save()
+                print("new art page settings from user input, new settings have been saved to the DB")
             else:
                 # If no record exists yet, create a new one
+                print("art page settings doesn't exist in DB yet, creating a new one")
                 Art1PageSettings.objects.create(
                     font=font,
                     font_color=font_color,
@@ -215,10 +220,17 @@ def art1_page_edit(request):
                 )
            
             # return HttpResponse(status=204, content="Art1 Page Settings successfully changed in the DB") 
+            print("Art1 Page Settings successfully changed in the DB")
             return render(request, "art1.html")
         except Exception as e:
             print(f"Error saving settings: {e}")  # Log the error
+            print("Art1 Page Settings update failed")
             # return HttpResponse(status=400, content="Art1 Page Settings update failed")  # Bad request
             return render(request, "art1.html")
     
     return HttpResponse(status=405, content="the Art1 Page Edit view was not a POST")  # Method not allowed
+
+
+
+
+

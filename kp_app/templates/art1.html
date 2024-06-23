@@ -10,9 +10,9 @@
 
 
         <!-- Modal backdrop -->
-        <div xcloak x-show="editPageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div xcloak x-show="$store.editPageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- Modal content -->
-          <div x-show="editPageModal" 
+          <div x-show="$store.editPageModal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -49,11 +49,13 @@
               </div>
               
               <div class="flex justify-end space-x-3">
-                <button type="button" @click="showModal = false"
+                <button type="button" 
+                        @click="$store.editPageModal = false"
                         class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
                   Cancel
                 </button>
                 <button type="submit"
+                        @click="$store.editPageModal = false" 
                         class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
                   Save Changes
                 </button>

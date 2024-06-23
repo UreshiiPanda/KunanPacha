@@ -25,7 +25,7 @@ idna==3.6
 packaging==23.2
 proto-plus==1.23.0
 protobuf==4.25.3
-psycopg2-binary==2.9.9
+psycopg==3.1.19
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pytailwindcss==0.2.0
