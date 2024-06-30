@@ -10,7 +10,8 @@ class Test(models.Model):
 
 class Art1PageSettings(models.Model):
     font = models.CharField(max_length=100)
-    font_color = models.CharField(max_length=7)  # Assuming HEX color
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
     edu_email = models.EmailField()
 
 

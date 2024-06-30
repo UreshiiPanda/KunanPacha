@@ -58,7 +58,7 @@ def art1(request):
         'font_color': settings.font_color,
         'edu_email': settings.edu_email,
     }
-    print(page_settings)
+    print(f"current page settings coming into the art1 view: {page_settings}")
 
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
@@ -195,19 +195,18 @@ def art1_page_edit(request):
     if request.method == 'POST':
         font = request.POST.get('font')
         font_color = request.POST.get('font_color')
-        email = request.POST.get('email')
-        print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {email}")
+        edu_email = request.POST.get('email')
+        print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {edu_email}")
         try:
             # Try to get the existing record
-            # there whould only be 1 record for this, cuz the page settings are
+            # there should only be 1 record for this, cuz the page settings are
             # always replaced when the user input is valid
             settings = Art1PageSettings.objects.first()
-            
             if settings:
                 # If a record exists, update it
                 settings.font = font
                 settings.font_color = font_color
-                settings.email = email
+                settings.edu_email = edu_email
                 settings.save()
                 print("new art page settings from user input, new settings have been saved to the DB")
             else:
@@ -216,17 +215,18 @@ def art1_page_edit(request):
                 Art1PageSettings.objects.create(
                     font=font,
                     font_color=font_color,
-                    email=email
+                    edu_email=edu_email
                 )
            
-            # return HttpResponse(status=204, content="Art1 Page Settings successfully changed in the DB") 
-            print("Art1 Page Settings successfully changed in the DB")
-            return render(request, "art1.html")
+            response = HttpResponse(status=204, content="Art1 Page Settings successfully changed in the DB") 
+            return response
+            #return render(request, "art1.html")
         except Exception as e:
             print(f"Error saving settings: {e}")  # Log the error
             print("Art1 Page Settings update failed")
-            # return HttpResponse(status=400, content="Art1 Page Settings update failed")  # Bad request
-            return render(request, "art1.html")
+            response = HttpResponse(status=400, content="Art1 Page Settings update failed")  # Bad request
+            return response
+            #return render(request, "art1.html")
     
     return HttpResponse(status=405, content="the Art1 Page Edit view was not a POST")  # Method not allowed
 

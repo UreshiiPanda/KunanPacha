@@ -13,14 +13,29 @@
     <link rel="stylesheet" href="{% static 'kp_app/css/output.css' %}" type="text/css">
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}" defer ></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
-    <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('editPageModal', false)
-    })
-</script>
   </head>
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
+<!--
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('editPageModal', false)
+            })
+        </script>
+-->
+
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('editPageModal', {
+                    showModal: false,
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("an edit page modal has just been toggled to", this.showModal)
+                    }
+                })
+            })
+        </script>
 
 
         <div x-data="{ smallMenu: false }">
@@ -77,7 +92,7 @@
                             {% csrf_token %}
                             <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
                         </form>
-                        <a x-data @click="$store.editPageModal = true" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a
+                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a
                     </div>
                         {% endif %}
                     {% endif %}
