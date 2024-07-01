@@ -1,15 +1,31 @@
-    {% load static %}
+ 
+
+{% load static %}
 
 
+<!--
+<div x-data="{
+    font: '{{ font|default:'sans-serif' }}',
+    fontColor: '{{ font_color|default:'text-black' }}',
+    fontVariants: {
+        'sans-serif': 'font-sans',
+        'serif': 'font-serif',
+        'mono': 'font-mono',
+        // Add more font variants as needed
+    },
+    colorVariants: {
+        'text-red-500': 'text-red-500',
+        'text-blue-500': 'text-blue-500',
+        'text-green-500': 'text-green-500',
+        'text-black': 'text-black',
+        // Add all possible color variants here
+    }
+}" 
+    :class="[fontVariants[font] || 'font-sans', colorVariants[fontColor] || 'text-black']"
+    id="art-content">
+-->
 
-                <div x-data="{
-            pageSettings: {
-                font: '{{ page_settings.font|default:'sans-serif' }}',
-                fontColor: '{{ page_settings.font_color|default:'black' }}'
-            }
-        }" id="art-content"
-            :class="`font-[${pageSettings.font}] text-[${pageSettings.fontColor}]`">
-
+    <div x-data id="art-content" class="font-{{ page_settings.font|default:'sans-serif' }} text-{{ page_settings.font_color|default:'black' }}">
 
 
       <!-- Modal backdrop -->
@@ -31,6 +47,7 @@
                 hx-target="#art-content"
                 hx-swap="innerHTML"
                 >
+                {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
               
               <div class="mb-4">
@@ -90,7 +107,7 @@
                     </div>
                     <div class="p-4 flex w-[275px] md:w-[325px] lg:w-[300px] justify-between">
                         <h3 class="text-lg text-center m-2">Image Title</h3>
-                        <a href="mailto:your-email@example.com" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                        <a href="mailto:jojohoughton22@gmail.com" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                             <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
                                 <rect x="3" y="5" width="18" height="14" rx="1" />

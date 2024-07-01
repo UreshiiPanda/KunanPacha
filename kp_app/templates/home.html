@@ -137,7 +137,7 @@
                             hx-post="{% url 'send_email' %}" 
                             hx-swap="none"
                             >
-
+                            {% csrf_token %}
                               <div class="mb-8">
                                 <label class="block text-black font-bold" for="name-input">
                                   Name

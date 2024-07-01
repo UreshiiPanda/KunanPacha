@@ -8,11 +8,6 @@
 
     <div x-data id="art-content" class="font-{{ page_settings.font|default:'sans-serif' }} text-{{ page_settings.font_color|default:'black' }}">
 
-          <!-- Debug output -->
-  <p class="hidden">
-    Font: {{ page_settings.font|default:'sans-serif' }}, 
-    Color: {{ page_settings.font_color|default:'black' }}
-  </p>
 
         <!-- Modal backdrop -->
         <div xcloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -33,6 +28,7 @@
                 hx-target="#art-content"
                 hx-swap="innerHTML"
                 >
+                {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
               
               <div class="mb-4">
