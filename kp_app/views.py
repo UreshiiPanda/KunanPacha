@@ -198,8 +198,6 @@ def art1_page_edit(request):
         font = request.POST.get('font')
         font_color = request.POST.get('font_color')
         edu_email = request.POST.get('email')
-        color_opts = ["black", "white", "gray-100", "gray-200", "gray-300", "gray-400", "gray-500", "gray-600",
-                      "gray-700", "gray-800", "gray-900"]
         print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {edu_email}")
         try:
             # Try to get the existing record
@@ -207,11 +205,6 @@ def art1_page_edit(request):
             # always replaced when the user input is valid
             settings = Art1PageSettings.objects.first()
             if settings:
-               # if font_color not in color_opts:
-               #     print(f"the user-input font_color was not black/white/gray, but was: {font_color}")
-               #     response = HttpResponse(status=400, content="Art1 Page Settings update failed with bad font_color")                    
-               #     return response
-               #     #return render(request, "art1.html")
                # # If a record exists, update it
                 settings.font = font
                 settings.font_color = font_color
@@ -227,10 +220,6 @@ def art1_page_edit(request):
                     edu_email=edu_email
                 )
            
-            #html_content = render_to_string('art1_content.html', request)
-            #response = HttpResponse(status=200, content="Art1 Page Settings successfully changed in the DB") 
-            #response = HttpResponse(status=200, content=html_content) 
-            #return response
             print("Art1 Page Settings successfully changed in the DB")
             return HttpResponseRedirect(reverse('art1'))
             #return render(request, "art1_content.html")
