@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -86,6 +86,26 @@ def art2(request):
     #    'price': image.price,
     #}
 
+    # Fetch the page settings from the DB
+    # First check if any Art1PageSettings object exists
+    settings = Art2PageSettings.objects.first()
+
+    if not settings:
+        # If no settings exist yet in the DB, create a default one
+        settings = Art2PageSettings.objects.create(
+            font='sans-serif',
+            font_color='#000000',
+            edu_email='jojohoughton22@gmail.com'
+        )
+
+    # Now that there is for sure a settings object, set the vars to pass into template
+    page_settings = {
+        'font': settings.font,
+        'font_color': settings.font_color,
+        'edu_email': settings.edu_email,
+    }
+    print(f"current page settings coming into the art2 view: {page_settings}")
+
 
     if request.headers.get('HX-Request') == 'true':
         print("art2 page came from HTMX")
@@ -99,7 +119,7 @@ def art2(request):
             'original_price': "100"
         }
 
-        return render(request, 'art2_content.html', {"image_obj": image_obj})
+        return render(request, 'art2_content.html', {"image_obj": image_obj, "page_settings": page_settings})
     else:
         print("art2 page did NOT come from HTMX")
         # mocking the image locally 
@@ -112,7 +132,7 @@ def art2(request):
             'original_price': "100"
         }
 
-        return render(request, 'art2.html', {"image_obj": image_obj})
+        return render(request, 'art2.html', {"image_obj": image_obj, "page_settings": page_settings})
 
 
 def send_email(request):
@@ -231,6 +251,44 @@ def art1_page_edit(request):
             #return render(request, "art1.html")
     
     return HttpResponse(status=405, content="the Art1 Page Edit view was not a POST")  # Method not allowed
+
+
+def art2_page_edit(request):
+    if request.method == 'POST':
+        font = request.POST.get('font').lower()
+        font_color = request.POST.get('font_color').lower()
+        edu_email = request.POST.get('email')
+        print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {edu_email}")
+        try:
+            # Try to get the existing record
+            # there should only be 1 record for this, cuz the page settings are
+            # always replaced when the user input is valid
+            settings = Art2PageSettings.objects.first()
+            if settings:
+               # # If a record exists, update it
+                settings.font = font
+                settings.font_color = font_color
+                settings.edu_email = edu_email
+                settings.save()
+                print("new art page 2 settings from user input, new settings have been saved to the DB")
+            else:
+                # If no record exists yet, create a new one
+                print("art page 2 settings doesn't exist in DB yet, creating a new one")
+                Art2PageSettings.objects.create(
+                    font=font,
+                    font_color=font_color,
+                    edu_email=edu_email
+                )
+           
+            print("Art2 Page Settings successfully changed in the DB")
+            return HttpResponseRedirect(reverse('art2'))
+        except Exception as e:
+            print(f"Error saving settings: {e}")  # Log the error
+            print("Art2 Page Settings update failed")
+            response = HttpResponse(status=400, content="Art2 Page Settings update failed")  # Bad request
+            return response
+    
+    return HttpResponse(status=405, content="the Art2 Page Edit view was not a POST")  # Method not allowed
 
 
 

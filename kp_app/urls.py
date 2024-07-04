@@ -21,6 +21,7 @@ urlpatterns = [
         path('logout/', auth_views.LogoutView.as_view(), name='logout'),
         #path("accounts/", include("django.contrib.auth.urls")),
         path("art1_page_edit", views.art1_page_edit, name="art1_page_edit"),
+        path("art2_page_edit", views.art2_page_edit, name="art2_page_edit"),
         ]
 
 
