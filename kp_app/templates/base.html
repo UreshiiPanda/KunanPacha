@@ -27,7 +27,7 @@
          
                     toggle() {
                         this.showModal = ! this.showModal
-                        console.log("an edit page modal has just been toggled to", this.showModal)
+                        console.log("an edit page modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
                     }
                 })
             })
@@ -57,6 +57,7 @@
                     <div class="flex items-center text-sm">
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
                             hx-get="{% url 'home' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -65,15 +66,21 @@
                         </a>
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
                             hx-get="{% url 'art1' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
                             hx-push-url="/art1"
                             >Art
                         </a>
-                        <a href="#responsive-header" class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4">Blog</a>
+                        <a href="#responsive-header" 
+                            class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
+                            >Blog
+                        </a>
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
                             hx-get="{% url 'contact' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
