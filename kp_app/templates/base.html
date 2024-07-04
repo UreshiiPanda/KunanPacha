@@ -13,15 +13,11 @@
     <link rel="stylesheet" href="{% static 'kp_app/css/output.css' %}" type="text/css">
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}" defer ></script>
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
+
+
   </head>
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
-        <!-- include CSRF token in every HTMX call -->
-        <script>
-            document.body.addEventListener('htmx:configRequest', (event) => {
-                event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-            });
-        </script>
 
         <!-- setup a global Alpine var for edit_page popups -->
         <script>
@@ -146,5 +142,25 @@
 
   </body>
 </html>
+
+
+<!-- Email Alerts Event Listeners for Contact Form -->
+<script>
+     document.body.addEventListener("emailSuccess", function(evt){
+        console.log("email alert success");
+        alert("Email successfully sent");
+     }) 
+     document.body.addEventListener("emailFailureFields", function(evt){
+        console.log("email alert failure input fields");
+        alert("Please make sure all input fields are entered and valid");
+     }) 
+     document.body.addEventListener("emailFailureHeaders", function(evt){
+        console.log("email alert failure header fields");
+        alert("Email sending failed due to server issues");
+     }) 
+</script>
+
+
+
 
 

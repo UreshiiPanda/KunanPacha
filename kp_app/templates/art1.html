@@ -26,7 +26,6 @@
             <form 
                 hx-post="{% url 'art1_page_edit' %}" 
                 hx-target="#art-content"
-                hx-swap="innerHTML"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
@@ -103,7 +102,7 @@
                     'white': 'text-white',
                     // Add all possible color variants here
                 }
-                }" 
+        }" 
                 :class="[
                     fontVariants[currentFont] || 'font-sans', 
                     colorVariants[currentColor] || 'text-black', 

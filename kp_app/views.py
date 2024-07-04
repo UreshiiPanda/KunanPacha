@@ -195,8 +195,8 @@ def register(request):
 
 def art1_page_edit(request):
     if request.method == 'POST':
-        font = request.POST.get('font')
-        font_color = request.POST.get('font_color')
+        font = request.POST.get('font').lower()
+        font_color = request.POST.get('font_color').lower()
         edu_email = request.POST.get('email')
         print(f"incoming user settings for art1 page: font: {font}, font_color: {font_color}, email: {edu_email}")
         try:

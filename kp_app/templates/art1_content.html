@@ -24,7 +24,6 @@
             <form 
                 hx-post="{% url 'art1_page_edit' %}" 
                 hx-target="#art-content"
-                hx-swap="innerHTML"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
@@ -87,12 +86,20 @@
                     'red-500': 'text-red-500',
                     'blue-500': 'text-blue-500',
                     'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
                     'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
                     'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
                     'black': 'text-black',
+                    'white': 'text-white',
                     // Add all possible color variants here
                 }
-                }" 
+        }" 
                 :class="[
                     fontVariants[currentFont] || 'font-sans', 
                     colorVariants[currentColor] || 'text-black', 

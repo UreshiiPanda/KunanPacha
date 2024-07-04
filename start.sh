@@ -81,7 +81,7 @@ sleep 5
 kitten @ send-text --match=title:nya5 tailwindcss -i ./kp_app/static/kp_app/css/input.css -o ./kp_app/static/kp_app/css/output.css --watch'\n'
 
 # run Docker logs in third terminal
-kitten @ send-text --match=title:nya3 docker-compose logs --tail 500 -f web'\n'
+kitten @ send-text --match=title:nya3 docker-compose logs --tail 500 -f '\n'
 
 # switch focus back to first tab
 kitten @ focus-window --match=title:nya1
