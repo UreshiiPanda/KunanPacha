@@ -21,9 +21,7 @@ services:
     networks:
       - kp_net
     command: >
-      sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
+      sh -c "python manage.py collectstatic --noinput &&
              python manage.py makesuperuser ${DJANGO_SUPERUSER_USERNAME} ${DJANGO_SUPERUSER_EMAIL} ${DJANGO_SUPERUSER_PASSWORD} &&
              exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application"
     develop:
