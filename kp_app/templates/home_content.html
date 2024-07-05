@@ -8,7 +8,20 @@
         <div  
             style="--home1-image-url: url('{{ bg_url }}')" 
             class="bg-[image:var(--home1-image-url)] 
-                   mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center">
+                   mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative">
+
+
+
+            <button 
+                x-data 
+                @click="home1_modal = true" 
+                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Edit Page
+            </button>
+
+
+
+
 
                 <!-- Horizontal lines with arrows -->
                 <h1 class="text-4xl font-extrabold text-white relative z-10 mb-6"> Home Page </h1>

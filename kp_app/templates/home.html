@@ -1,4 +1,4 @@
-{% extends "base.html" %} 
+{% extends "base_home.html" %} 
 
 {% block content %}
 
@@ -7,22 +7,32 @@
     {% static 'kp_app/images/art1.jpg' as art1_url %}
 
 
-    <!-- HOME PAGE SCREEN 1 -->
-    <!-- this bg-image is for when you want it to be dynamically generated  -->
 
-    <div  x-data="{home1_modal:false, home2_modal:false}"  id="home-content">
+    <div  x-data="{home1_modal:false, home2_modal:false, home3_modal:false, home4_modal:false, home_contact:false}"
+          id="home-content">
 
+
+
+            <!-- HOME PAGE SCREEN 1 -->
+            <!-- this bg-image is for when you want it to be dynamically generated  -->
             <div 
-                x-data="{home1_modal:true, home2_modal:false}"
                 id="homepage1" 
                 style="--home1-image-url: url('{{ bg_url }}')" 
                 class="bg-[image:var(--home1-image-url)] 
-                       mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center">
+                       mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative">
+
+
+            <button 
+                x-data 
+                @click="home1_modal = true" 
+                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Edit Page
+            </button>
 
 
                 <!-- Edit Page Modal -->
-                <div xcloak x-show="$store.editPageModal.showModal && home1_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div x-show="$store.editPageModal.showModal && home1_modal" 
+                <div xcloak x-show="home1_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-show="home1_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
                        x-transition:enter-end="opacity-100 scale-100"
@@ -32,7 +42,17 @@
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 
 
-                      <form id="imageForm" enctype="multipart/form-data" hx-post="/your-django-endpoint/" hx-encoding="multipart/form-data" hx-swap="outerHTML">
+                    <form 
+                        id="imageForm1" 
+                        enctype="multipart/form-data"
+                        hx-encoding="multipart/form-data"
+                        hx-post="{% url 'home_page_1_edit' %}"
+                        hx-swap="none"
+                    >
+                    {% csrf_token %}
+
+
+
                         <div class="mb-4">
                           <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
                           <input type="text" id="title" name="title" value="Edu Suarez" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -55,7 +75,7 @@
                               <input type="file" id="imageInput1" name="image1" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview1')">
                               <img id="imagePreview1" src="placeholder.jpg" alt="Select Background Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInput1').click()">
                               <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper1')">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                               </button>
@@ -66,17 +86,15 @@
 
                       <div class="mt-6 flex space-x-4">
                         <button type="button" 
-                            @click="$store.editPageModal.toggle()" 
                             @click="home1_modal = false" 
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Cancel
                         </button>
 
                         <button 
                             type="submit"
-                            @click="$store.editPageModal.toggle()" 
                             @click="home1_modal = false" 
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Submit
                         </button>
                       </div>
@@ -84,28 +102,6 @@
                     </form>
                 </div>
             </div>
-
-                <!-- for image thumbnails & for removing them -->
-                <script>
-                    function previewImage(input, previewId) {
-                      const file = input.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                          document.getElementById(previewId).src = e.target.result;
-                        }
-                        reader.readAsDataURL(file);
-                      }
-                    }
-
-                    function removeImage(wrapperId) {
-                      const wrapper = document.getElementById(wrapperId);
-                      const input = wrapper.querySelector('input[type="file"]');
-                      const img = wrapper.querySelector('img');
-                      input.value = '';
-                      img.src = 'placeholder.jpg';
-                    }
-                </script>
 
 
 
@@ -154,15 +150,14 @@
 
             <!-- HOME PAGE SCREEN 2 -->
             <div
-                x-data="{home2_modal:true, home1_modal:false}" 
                 id="homepage2" 
                 class="grid grid-cols-2">
 
 
 
                 <!-- Edit Page Modal -->
-                <div xcloak x-show="$store.editPageModal.showModal && home2_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div x-show="$store.editPageModal.showModal && home2_modal" 
+                <div xcloak x-show="home2_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-show="home2_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
                        x-transition:enter-end="opacity-100 scale-100"
@@ -172,7 +167,14 @@
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 
 
-                      <form id="imageForm2" enctype="multipart/form-data" hx-post="/your-django-endpoint/" hx-encoding="multipart/form-data" hx-swap="outerHTML">
+                <form 
+                    id="imageForm2" 
+                    enctype="multipart/form-data"
+                    hx-encoding="multipart/form-data"
+                    hx-post="{% url 'home_page_2_edit' %}"
+                    hx-swap="none"
+                >
+                {% csrf_token %}
                         <div class="mb-4">
                           <label for="homepage2_text" class="block text-sm font-medium text-gray-700">Home Page 2 Text:</label>
                           <input type="text" id="homepage2_text" name="homepage2_text" value="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -206,7 +208,6 @@
 
                       <div class="mt-6 flex space-x-4">
                         <button type="button" 
-                            @click="$store.editPageModal.toggle()" 
                             @click="home2_modal = false"
                             class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Cancel
@@ -214,7 +215,6 @@
 
                         <button 
                             type="submit"
-                            @click="$store.editPageModal.toggle()" 
                             @click="home2_modal = false"
                             class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Submit
@@ -224,28 +224,6 @@
                     </form>
                 </div>
             </div>
-
-                <!-- for image thumbnails & for removing them -->
-                <script>
-                    function previewImage(input, previewId) {
-                      const file = input.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                          document.getElementById(previewId).src = e.target.result;
-                        }
-                        reader.readAsDataURL(file);
-                      }
-                    }
-
-                    function removeImage(wrapperId) {
-                      const wrapper = document.getElementById(wrapperId);
-                      const input = wrapper.querySelector('input[type="file"]');
-                      const img = wrapper.querySelector('img');
-                      input.value = '';
-                      img.src = 'placeholder.jpg';
-                    }
-                </script>
 
 
 
@@ -361,6 +339,8 @@
 
 
 
+
+
                 <!-- Email Alerts Event Listeners -->
                 <!--
                 <script>
@@ -380,6 +360,31 @@
                 -->
 
     </div>
+
+
+
+                <!-- for image thumbnails & for removing them in the modals -->
+                <script>
+                    function previewImage(input, previewId) {
+                      const file = input.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                          document.getElementById(previewId).src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                      }
+                    }
+
+                    function removeImage(wrapperId) {
+                      const wrapper = document.getElementById(wrapperId);
+                      const input = wrapper.querySelector('input[type="file"]');
+                      const img = wrapper.querySelector('img');
+                      input.value = '';
+                      img.src = 'placeholder.jpg';
+                    }
+                </script>
+
 
 
 {% endblock %}

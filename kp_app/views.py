@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -16,22 +16,44 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Tester:
-    def __init__(self, info="woof", ready=False):
-        self.info = info
-        self.ready = ready
-
-test1 = Tester("meow", False)
-test2 = Tester("nya", True)
-
 
 def home(request):
+    home_page_1_settings = HomePage1Settings.objects.first()
+    home_page_2_settings = HomePage2Settings.objects.first()
+
+    if not home_page_1_settings:
+        # If no settings exist yet in the DB, create a default one
+        home_page_1_settings = HomePage1Settings.objects.create(
+            title='Edu Suarez',
+            #background_image=os.path.join("static/kp_app/images/bg1.jpg")
+        )
+    if not home_page_2_settings:
+        # If no settings exist yet in the DB, create a default one
+        home_page_2_settings = HomePage2Settings.objects.create(
+            homepage2_text='Text for home page 2 here',
+            #homepage_2_image_1=os.path.join("static/kp_app/images/bg1.jpg")
+        )
+
+
+    page_settings = {
+        "title": home_page_1_settings.title,
+        "background_image": os.path.join("static/kp_app/images/bg1.jpg"),
+        "homepage2_text": home_page_2_settings.homepage2_text,
+        "homepage_2_image_1": os.path.join("static/kp_app/images/bg1.jpg")
+        }
+
+
+    # Now that there is for sure a settings object, set the vars to pass into template
+    print(f"current home_page_1 settings coming into the home view: {home_page_1_settings}")
+    print(f"current home_page_2 settings coming into the home view: {home_page_2_settings}")
+
     if request.headers.get('HX-Request') == 'true':
         print("home page came from HTMX")
-        return render(request, "home_content.html")
+        return render(request, "home_content.html", {"page_settings": page_settings})
     else:
         print("home page did NOT come from HTMX")
-        return render(request, "home.html")
+        return render(request, "home.html", {"page_settings": page_settings})
+
 
 def contact(request):
     if request.headers.get('HX-Request') == 'true':
@@ -40,6 +62,7 @@ def contact(request):
     else:
         print("contact page did NOT come from HTMX")
         return render(request, "contact.html")
+
 
 def art1(request):
     # Fetch the page settings from the DB
@@ -291,6 +314,76 @@ def art2_page_edit(request):
     return HttpResponse(status=405, content="the Art2 Page Edit view was not a POST")  # Method not allowed
 
 
+
+
+def home_page_1_edit(request):
+    title = request.POST.get('title')
+    background_image = request.FILES.get('background_image')
+    
+    print(f"Incoming settings for home page 1: title: {title}, background image: {'Provided' if background_image else 'Not provided'}")
+    
+    try:
+        # Try to get the existing record
+        home_page = HomePage1Settings.objects.first()
+        if home_page:
+            # If a record exists, update it
+            home_page.title = title
+            if background_image:
+                home_page.background_image = background_image
+            home_page.save()
+            print("Home page 1 settings updated with new user input and saved to the DB")
+        else:
+            # If no record exists yet, create a new one
+            print("Home page 1 settings don't exist in DB yet, creating a new one")
+            home_page = HomePage1Settings.objects.create(
+                title=title,
+                background_image=background_image
+            )
+        
+        print("Home Page 1 Settings successfully changed in the DB")
+        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
+    
+    except Exception as e:
+        print(f"Error saving Home Page 1 settings: {e}")  # Log the error
+        print("Home Page 1 Settings update failed")
+        response = HttpResponse(status=400, content="Home Page 1 Settings update failed")  # Bad request
+        return response
+
+
+
+
+def home_page_2_edit(request):
+    homepage2_text = request.POST.get('homepage2_text')
+    homepage_2_image_1 = request.FILES.get('homepage_2_image_1')
+    
+    print(f"Incoming settings for home page 2: text: {homepage2_text}, image: {'Provided' if homepage_2_image_1 else 'Not provided'}")
+    
+    try:
+        # Try to get the existing record
+        home_page_2 = HomePage2Settings.objects.first()
+        if home_page_2:
+            # If a record exists, update it
+            home_page_2.text = homepage2_text
+            if homepage_2_image_1:
+                home_page_2.image = homepage_2_image_1
+            home_page_2.save()
+            print("Home page 2 settings updated with new user input and saved to the DB")
+        else:
+            # If no record exists yet, create a new one
+            print("Home page 2 settings don't exist in DB yet, creating a new one")
+            home_page_2 = HomePage2Settings.objects.create(
+                text=homepage2_text,
+                image=homepage_2_image_1
+            )
+        
+        print("Home Page 2 Settings successfully changed in the DB")
+        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
+    
+    except Exception as e:
+        print(f"Error saving Home Page 2 settings: {e}")  # Log the error
+        print("Home Page 2 Settings update failed")
+        response = HttpResponse(status=400, content="Home Page 2 Settings update failed")  # Bad request
+        return response
 
 
 

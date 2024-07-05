@@ -22,6 +22,8 @@ urlpatterns = [
         #path("accounts/", include("django.contrib.auth.urls")),
         path("art1_page_edit", views.art1_page_edit, name="art1_page_edit"),
         path("art2_page_edit", views.art2_page_edit, name="art2_page_edit"),
+        path("home_page_1_edit", views.home_page_1_edit, name="home_page_1_edit"),
+        path("home_page_2_edit", views.home_page_2_edit, name="home_page_2_edit"),
         ]
 
 
