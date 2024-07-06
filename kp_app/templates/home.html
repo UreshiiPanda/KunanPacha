@@ -5,6 +5,10 @@
     {% load static %}
     {% static 'kp_app/images/bg1.jpg' as bg_url %}
     {% static 'kp_app/images/art1.jpg' as art1_url %}
+    {% static 'kp_app/images/art2.jpg' as art2_url %}
+    {% static 'kp_app/images/art3.jpg' as art3_url %}
+    {% static 'kp_app/images/art4.jpg' as art4_url %}
+    {% static 'kp_app/images/art5.jpg' as art5_url %}
 
 
 
@@ -72,7 +76,7 @@
                           <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
                           <div class="flex space-x-4" id="imageContainer">
                             <div class="relative" id="imageWrapper1">
-                              <input type="file" id="imageInput1" name="image1" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview1')">
+                              <input type="file" id="imageInput1" name="background_image" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview1')">
                               <img id="imagePreview1" src="placeholder.jpg" alt="Select Background Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInput1').click()">
                               <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper1')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
@@ -106,8 +110,9 @@
 
 
 
+
                     <!-- Horizontal lines with arrows -->
-                    <h1 class="text-4xl font-extrabold text-white relative z-10 mb-6"> Home Page </h1>
+                    <h1 class="text-4xl font-extrabold text-white relative z-10 mb-6"> {{page_settings.title}} </h1>
                     <div class="absolute top-1/2 w-24 h-px bg-black left-1/4 transform -translate-y-1/2"></div>
                     <div class="absolute top-1/2 w-24 h-px bg-black right-1/4 transform -translate-y-1/2"></div>
 
@@ -151,7 +156,17 @@
             <!-- HOME PAGE SCREEN 2 -->
             <div
                 id="homepage2" 
-                class="grid grid-cols-2">
+                class="grid grid-cols-2 relative">
+
+
+            <button 
+                x-data 
+                @click="home2_modal = true" 
+                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Edit Page
+            </button>
+
+
 
 
 
@@ -167,6 +182,7 @@
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 
 
+
                 <form 
                     id="imageForm2" 
                     enctype="multipart/form-data"
@@ -176,8 +192,8 @@
                 >
                 {% csrf_token %}
                         <div class="mb-4">
-                          <label for="homepage2_text" class="block text-sm font-medium text-gray-700">Home Page 2 Text:</label>
-                          <input type="text" id="homepage2_text" name="homepage2_text" value="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="homepage2_text" class="block text-sm font-medium text-gray-700">Page 2 Text:</label>
+                            <textarea id="homepage2_text" name="homepage2_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage2_text }}</textarea>
                         </div>
 <!--
                         <div class="mb-4">
@@ -194,9 +210,9 @@
                           <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
                           <div class="flex space-x-4" id="imageContainer2">
                             <div class="relative" id="image2Wrapper1">
-                              <input type="file" id="image2Input1" name="homepage_2_image_1" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview1')">
-                              <img id="imagePreview2" src="placeholder.jpg" alt="Select Page 2 Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInput1').click()">
-                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper1')">
+                              <input type="file" id="image2Input1" name="homepage_2_image_1" accept="image/*" class="hidden" onchange="previewImage(this, 'image2Preview1')">
+                              <img id="image2Preview1" src="placeholder.jpg" alt="Select Page 2 Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image2Input1').click()">
+                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image2Wrapper1')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -229,8 +245,9 @@
 
 
 
+
               <div class="flex items-center justify-center">
-                <p class="text-center">Your text goes here.</p>
+                  <p class="text-center"> {{page_settings.homepage2_text}} </p>
               </div>
               <div 
                 style="--home2-image-url: url('{{ art1_url }}')" 
@@ -240,27 +257,155 @@
             </div>
 
 
+
+
             <!-- HOME PAGE SCREEN 3 -->
-            <div id="homepage3" class="h-screen w-screen flex items-center justify-center">
-              <p class="text-center italic">Your text goes here.</p>
+            <div id="homepage3" class="h-screen w-screen flex items-center justify-center relative">
+
+                <button 
+                    x-data 
+                    @click="home3_modal = true" 
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    Edit Page
+                </button>
+
+                <!-- Edit Page Modal -->
+                <div xcloak x-show="home3_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-show="home3_modal" 
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 scale-90"
+                       x-transition:enter-end="opacity-100 scale-100"
+                       x-transition:leave="transition ease-in duration-300"
+                       x-transition:leave-start="opacity-100 scale-100"
+                       x-transition:leave-end="opacity-0 scale-90"
+                       class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+
+                    <form 
+                        id="imageForm3" 
+                        enctype="multipart/form-data"
+                        hx-encoding="multipart/form-data"
+                        hx-post="{% url 'home_page_3_edit' %}"
+                        hx-swap="none"
+                    >
+                    {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="homepage3_text" class="block text-sm font-medium text-gray-700">Page 3 Text:</label>
+                            <textarea id="homepage3_text" name="homepage3_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage3_text }}</textarea>
+                        </div>
+
+
+                      <div class="mt-6 flex space-x-4">
+                        <button type="button" 
+                            @click="home3_modal = false"
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Cancel
+                        </button>
+
+                        <button 
+                            type="submit"
+                            @click="home3_modal = false"
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Submit
+                        </button>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+
+
+
+                <p class="text-center italic"> {{page_settings.homepage3_text}} </p>
             </div>
+
+
 
 
             <!-- HOME PAGE SCREEN 4 -->
-            <div id="homepage4" class="grid grid-cols-2">
-              <div 
-                style="--home2-image-url: url('{{ art1_url }}')" 
-                class="bg-[image:var(--home2-image-url)] 
-                       bg-no-repeat bg-cover bg-center h-screen"> 
-              </div>
-              <div class="flex items-center justify-center">
-                <p class="text-center">Your text goes here.</p>
-              </div>
+            <div id="homepage4" class="grid grid-cols-2 relative h-screen overflow-hidden">
+
+                <button 
+                    x-data 
+                    @click="home4_modal = true" 
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    Edit Page
+                </button>
+
+                <!-- Edit Page Modal -->
+                <div xcloak x-show="home4_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-show="home4_modal" 
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 scale-90"
+                       x-transition:enter-end="opacity-100 scale-100"
+                       x-transition:leave="transition ease-in duration-300"
+                       x-transition:leave-start="opacity-100 scale-100"
+                       x-transition:leave-end="opacity-0 scale-90"
+                       class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+
+                    <form 
+                        id="imageForm4" 
+                        enctype="multipart/form-data"
+                        hx-encoding="multipart/form-data"
+                        hx-post="{% url 'home_page_4_edit' %}"
+                        hx-swap="none"
+                    >
+                    {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="homepage4_text" class="block text-sm font-medium text-gray-700">Page 4 Text:</label>
+                            <textarea id="homepage4_text" name="homepage4_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage4_text }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                          <div class="flex space-x-4" id="imageContainer4">
+                            <div class="relative" id="image4Wrapper1">
+                              <input type="file" id="image4Input1" name="homepage_4_image_1" accept="image/*" class="hidden" onchange="previewImage(this, 'image4Preview1')">
+                              <img id="image4Preview1" src="placeholder.jpg" alt="Select Page 4 Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image4Input1').click()">
+                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image4Wrapper1')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                      <div class="mt-6 flex space-x-4">
+                        <button type="button" 
+                            @click="home4_modal = false"
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Cancel
+                        </button>
+
+                        <button 
+                            type="submit"
+                            @click="home4_modal = false"
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Submit
+                        </button>
+                      </div>
+
+                    </form>
+                  </div>
+                </div>
+
+
+                <div 
+                    style="background-image: url('{{ art3_url }}');" 
+                    class="bg-no-repeat bg-fixed bg-cover bg-center h-screen w-full">
+                </div>
+
+                <div class="flex items-center justify-center">
+                    <p class="text-center">{{page_settings.homepage4_text}}</p>
+                </div>
             </div>
 
 
+
+
+
             <!-- HOME PAGE SCREEN 5 -->
-                <div id="contact" style="--home2-image-url: url('{{ art1_url }}')" class="bg-[image:var(--home2-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
+                <div id="contact" style="--home5-image-url: url('{{ art4_url }}')" class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
                   <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <h1 class="text-4xl font-bold mb-8">Contact</h1>
                     <div class="bg-white p-8  w-5/6 h-2/3 md:w-4/5 md:h-1/2 lg:w-3/4 lg:h-1/2 xl:h-1/2 flex flex-col sm:flex-row">

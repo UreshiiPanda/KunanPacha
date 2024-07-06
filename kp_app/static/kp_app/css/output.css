@@ -1051,6 +1051,10 @@ video {
   background-image: var(--home2-image-url);
 }
 
+.bg-\[image\:var\(--home5-image-url\)\] {
+  background-image: var(--home5-image-url);
+}
+
 .bg-cover {
   background-size: cover;
 }

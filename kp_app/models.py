@@ -27,6 +27,16 @@ class HomePage2Settings(models.Model):
     # homepage_2_image_1 from bucket
 
 
+class HomePage3Settings(models.Model):
+    homepage3_text = models.TextField()
+    # homepage_3_image_1 from bucket
+
+
+class HomePage4Settings(models.Model):
+    homepage4_text = models.TextField()
+    # homepage_4_image_1 from bucket
+
+
 class UserCredential(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)

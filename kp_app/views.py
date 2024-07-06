@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -20,6 +20,8 @@ load_dotenv()
 def home(request):
     home_page_1_settings = HomePage1Settings.objects.first()
     home_page_2_settings = HomePage2Settings.objects.first()
+    home_page_3_settings = HomePage3Settings.objects.first()
+    home_page_4_settings = HomePage4Settings.objects.first()
 
     if not home_page_1_settings:
         # If no settings exist yet in the DB, create a default one
@@ -33,19 +35,40 @@ def home(request):
             homepage2_text='Text for home page 2 here',
             #homepage_2_image_1=os.path.join("static/kp_app/images/bg1.jpg")
         )
+    if not home_page_3_settings:
+        # If no settings exist yet in the DB, create a default one
+        home_page_3_settings = HomePage3Settings.objects.create(
+            homepage3_text='Text for home page 3 here',
+            #homepage_2_image_1=os.path.join("static/kp_app/images/bg1.jpg")
+        )
+    if not home_page_4_settings:
+        # If no settings exist yet in the DB, create a default one
+        home_page_4_settings = HomePage4Settings.objects.create(
+            homepage4_text='Text for home page 4 here',
+            #homepage_2_image_1=os.path.join("static/kp_app/images/bg1.jpg")
+        )
 
 
-    page_settings = {
-        "title": home_page_1_settings.title,
-        "background_image": os.path.join("static/kp_app/images/bg1.jpg"),
-        "homepage2_text": home_page_2_settings.homepage2_text,
-        "homepage_2_image_1": os.path.join("static/kp_app/images/bg1.jpg")
-        }
+
+    if os.getenv("KP_PROD") == "true":
+        print("in home view in views.py, in PROD env, getting images from GCP")
+
+    else:
+        ### new image uploads in DEV env will only show on container restart, not on page reload
+        print("in home view in views.py, in DEV env, getting images from local files")
+        page_settings = {
+            "title": home_page_1_settings.title,
+            "background_image": os.path.join("static/kp_app/images/bg1.jpg"),
+            "homepage2_text": home_page_2_settings.homepage2_text,
+            "homepage_2_image_1": os.path.join("static/kp_app/images/art1.jpg"),
+            "homepage3_text": home_page_3_settings.homepage3_text,
+            "homepage4_text": home_page_4_settings.homepage4_text,
+            "homepage_4_image_1": os.path.join("static/kp_app/images/art3.jpg"),
+            }
 
 
     # Now that there is for sure a settings object, set the vars to pass into template
-    print(f"current home_page_1 settings coming into the home view: {home_page_1_settings}")
-    print(f"current home_page_2 settings coming into the home view: {home_page_2_settings}")
+    print(f"current home page settings coming into the home view: {page_settings}")
 
     if request.headers.get('HX-Request') == 'true':
         print("home page came from HTMX")
@@ -87,13 +110,24 @@ def art1(request):
 
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
-        images_dir = os.path.join('static/kp_app/images') 
-        images = os.listdir(images_dir)
+
+        if os.getenv("KP_PROD") == "true":
+            print("in Art1 view in views.py, in PROD env, getting images from GCP")
+        else:
+            print("in Art1 view in views.py, in DEV env, getting images from local files")
+            images_dir = os.path.join('static/kp_app/images') 
+            images = os.listdir(images_dir)
+
         return render(request, "art1_content.html", {"images": images, "page_settings": page_settings})
     else:
         print("art1 page did NOT come from HTMX")
-        images_dir = os.path.join('static/kp_app/images') 
-        images = os.listdir(images_dir)
+        if os.getenv("KP_PROD") == "true":
+            print("in Art1 view in views.py, in PROD env, getting images from GCP")
+        else:
+            print("in Art1 view in views.py, in DEV env, getting images from local files")
+            images_dir = os.path.join('static/kp_app/images') 
+            images = os.listdir(images_dir)
+
         return render(request, "art1.html", {"images": images, "page_settings": page_settings})
 
 
@@ -132,28 +166,38 @@ def art2(request):
 
     if request.headers.get('HX-Request') == 'true':
         print("art2 page came from HTMX")
-        # mocking the image locally 
-        images_dir = os.path.join('static/kp_app/images')      
-        image_obj = {
-            'image': os.listdir(images_dir)[0],
-            'title': "Image Title",
-            'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
-            'print_price': "40",
-            'original_price': "100"
-        }
+
+        if os.getenv("KP_PROD") == "true":
+            # if we're in PROD env, grab images from GCP
+            print("in Art2 view in views.py, in PROD env, getting images from GCP")
+        else:
+            print("in Art2 view in views.py, in DEV env, getting images from local files")
+            images_dir = os.path.join('static/kp_app/images')      
+            image_obj = {
+                'image': os.listdir(images_dir)[0],
+                'title': "Image Title",
+                'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
+                'print_price': "40",
+                'original_price': "100"
+            }
 
         return render(request, 'art2_content.html', {"image_obj": image_obj, "page_settings": page_settings})
     else:
         print("art2 page did NOT come from HTMX")
-        # mocking the image locally 
-        images_dir = os.path.join('static/kp_app/images')      
-        image_obj = {
-            'image': os.listdir(images_dir)[0],
-            'title': "Image Title",
-            'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
-            'print_price': "40",
-            'original_price': "100"
-        }
+
+        if os.getenv("KP_PROD") == "true":
+            # if we're in PROD env, grab images from GCP
+            print("in Art2 view in views.py, in PROD env, getting images from GCP")
+        else:
+            print("in Art2 view in views.py, in DEV env, getting images from local files")
+            images_dir = os.path.join('static/kp_app/images')      
+            image_obj = {
+                'image': os.listdir(images_dir)[0],
+                'title': "Image Title",
+                'desc': "Lorem ipsum dolor sit amet, consectetur estor adipi isicing elit, sed do eiusmod tempor este uterre incididui unt ut labore et dolore magna aliquaas. Ut enim ad minim veniam nostrud desto exercitation est ullamco laboris nisi ut se aliquip ex ea commodos consequat. Duis aute irure et dolor in reprehender itinse",
+                'print_price': "40",
+                'original_price': "100"
+            }
 
         return render(request, 'art2.html', {"image_obj": image_obj, "page_settings": page_settings})
 
@@ -329,7 +373,14 @@ def home_page_1_edit(request):
             # If a record exists, update it
             home_page.title = title
             if background_image:
-                home_page.background_image = background_image
+                ### new image uploads in DEV env will only show on container restart, not on page reload
+                # Save the image to the specific location
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'bg1.jpg')
+                with open(image_path, 'wb+') as destination:
+                    for chunk in background_image.chunks():
+                        destination.write(chunk)
+                #home_page.background_image = background_image
+            print(f"New background image saved to {image_path}")
             home_page.save()
             print("Home page 1 settings updated with new user input and saved to the DB")
         else:
@@ -337,7 +388,7 @@ def home_page_1_edit(request):
             print("Home page 1 settings don't exist in DB yet, creating a new one")
             home_page = HomePage1Settings.objects.create(
                 title=title,
-                background_image=background_image
+                #background_image=background_image
             )
         
         print("Home Page 1 Settings successfully changed in the DB")
@@ -363,9 +414,18 @@ def home_page_2_edit(request):
         home_page_2 = HomePage2Settings.objects.first()
         if home_page_2:
             # If a record exists, update it
-            home_page_2.text = homepage2_text
+            home_page_2.homepage2_text = homepage2_text
             if homepage_2_image_1:
-                home_page_2.image = homepage_2_image_1
+                ### new image uploads in DEV env will only show on container restart, not on page reload
+                # Save the image to the specific location
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art1.jpg')
+                with open(image_path, 'wb+') as destination:
+                    for chunk in homepage_2_image_1.chunks():
+                        print("printing image 2 chunk")
+                        destination.write(chunk)
+                #home_page.background_image = background_image
+            print(f"New background image saved to {image_path}")
+            #home_page_2.image = homepage_2_image_1
             home_page_2.save()
             print("Home page 2 settings updated with new user input and saved to the DB")
         else:
@@ -373,7 +433,7 @@ def home_page_2_edit(request):
             print("Home page 2 settings don't exist in DB yet, creating a new one")
             home_page_2 = HomePage2Settings.objects.create(
                 text=homepage2_text,
-                image=homepage_2_image_1
+                #image=homepage_2_image_1
             )
         
         print("Home Page 2 Settings successfully changed in the DB")
@@ -385,5 +445,82 @@ def home_page_2_edit(request):
         response = HttpResponse(status=400, content="Home Page 2 Settings update failed")  # Bad request
         return response
 
+
+
+
+
+def home_page_3_edit(request):
+    homepage3_text = request.POST.get('homepage3_text')
+
+    print(f"Incoming settings for home page 3: text: {homepage3_text}")
+    
+    try:
+        # Try to get the existing record
+        home_page_3 = HomePage3Settings.objects.first()
+        if home_page_3:
+            # If a record exists, update it
+            home_page_3.homepage3_text = homepage3_text
+            home_page_3.save()
+            print("Home page 4 settings updated with new user input and saved to the DB")
+        else:
+            # If no record exists yet, create a new one
+            print("Home page 4 settings don't exist in DB yet, creating a new one")
+            home_page_3 = HomePage4Settings.objects.create(
+                text=homepage3_text,
+            )
+        
+        print("Home Page 3 Settings successfully changed in the DB")
+        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
+    
+    except Exception as e:
+        print(f"Error saving Home Page 3 settings: {e}")  # Log the error
+        print("Home Page 3 Settings update failed")
+        response = HttpResponse(status=400, content="Home Page 3 Settings update failed")  # Bad request
+        return response
+
+
+
+
+
+def home_page_4_edit(request):
+    homepage4_text = request.POST.get('homepage4_text')
+    homepage_4_image_1 = request.FILES.get('homepage_4_image_1')
+    
+    print(f"Incoming settings for home page 4: text: {homepage4_text}, image: {'Provided' if homepage_4_image_1 else 'Not provided'}")
+    
+    try:
+        # Try to get the existing record
+        home_page_4 = HomePage4Settings.objects.first()
+        if home_page_4:
+            # If a record exists, update it
+            home_page_4.homepage4_text = homepage4_text
+            if homepage_4_image_1:
+                ### new image uploads in DEV env will only show on container restart, not on page reload
+                # Save the image to the specific location
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art3.jpg')
+                with open(image_path, 'wb+') as destination:
+                    for chunk in homepage_4_image_1.chunks():
+                        destination.write(chunk)
+                #home_page.background_image = background_image
+            print(f"New background image saved to {image_path}")
+            #home_page_4.image = homepage_4_image_1
+            home_page_4.save()
+            print("Home page 4 settings updated with new user input and saved to the DB")
+        else:
+            # If no record exists yet, create a new one
+            print("Home page 4 settings don't exist in DB yet, creating a new one")
+            home_page_4 = HomePage4Settings.objects.create(
+                text=homepage4_text,
+                #image=homepage_4_image_1
+            )
+        
+        print("Home Page 4 Settings successfully changed in the DB")
+        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
+    
+    except Exception as e:
+        print(f"Error saving Home Page 4 settings: {e}")  # Log the error
+        print("Home Page 4 Settings update failed")
+        response = HttpResponse(status=400, content="Home Page 4 Settings update failed")  # Bad request
+        return response
 
 
