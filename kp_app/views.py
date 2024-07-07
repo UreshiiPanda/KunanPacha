@@ -58,6 +58,7 @@ def home(request):
                 edu_instagram = "www.instagram.com",
                 font = "sans-serif",
                 font_color = "black",
+                font_style = "normal",
     #homepage_2_image_1=os.path.join("static/kp_app/images/bg1.jpg")
         )
 
@@ -84,6 +85,7 @@ def home(request):
             "contact_instagram": contact_page_settings.edu_instagram,
             "contact_font": contact_page_settings.font,
             "contact_font_color": contact_page_settings.font_color,
+            "contact_font_style": contact_page_settings.font_style,
             "contact_image": os.path.join("static/kp_app/images/art4.jpg"),
             }
 
@@ -545,65 +547,126 @@ def home_page_4_edit(request):
         return response
 
 
+#def contact_edit(request):
+#    contact_address = request.POST.get('contact_address')
+#    contact_phone = request.POST.get('contact_phone')
+#    contact_email = request.POST.get('contact_email')
+#    contact_facebook = request.POST.get('contact_facebook')
+#    contact_instagram = request.POST.get('contact_instagram')
+#    contact_font = request.POST.get('contact_font')
+#    contact_font_color = request.POST.get('contact_font_color')
+#    contact_image = request.FILES.get('contact_image')
+#    
+#    print(f"Incoming settings for Contact Page: text: {
+#        contact_address, 
+#        contact_phone, 
+#        contact_email,
+#        contact_facebook,
+#        contact_instagram,
+#        contact_font,
+#        contact_font_color
+#        }, image: {'Provided' if contact_image else 'Not provided'}")
+#    
+#    try:
+#        # Try to get the existing record
+#        contact_page = ContactPageSettings.objects.first()
+#        if contact_page:
+#            # If a record exists, update it
+#            contact_page.edu_address = contact_address
+#            contact_page.edu_phone = contact_phone
+#            contact_page.edu_email = contact_email
+#            contact_page.edu_facebook = contact_facebook
+#            contact_page.edu_instagram = contact_instagram
+#            contact_page.font = contact_font
+#            contact_page.font_color = contact_font_color
+#            if contact_image:
+#                ### new image uploads in DEV env will only show on container restart, not on page reload
+#                # Save the image to the specific location
+#                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
+#                with open(image_path, 'wb+') as destination:
+#                    for chunk in contact_image.chunks():
+#                        destination.write(chunk)
+#                #home_page.background_image = background_image
+#            print(f"New background image saved to {image_path}")
+#            #home_page_4.image = homepage_4_image_1
+#            contact_page.save()
+#            print("Contact Page settings updated with new user input and saved to the DB")
+#        else:
+#            # If no record exists yet, create a new one
+#            print("Contact Page settings don't exist in DB yet, creating a new one")
+#            contact_page = ContactPageSettings.objects.create(
+#                edu_address = contact_address,
+#                edu_phone = contact_phone,
+#                edu_email = contact_email,
+#                edu_facebook = contact_facebook,
+#                edu_instagram = contact_instagram,
+#                font = contact_font,
+#                font_color = contact_font_color,
+#                #image=homepage_4_image_1
+#            )
+#        
+#        print("Contact Page Settings successfully changed in the DB")
+#        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
+#    
+#    except Exception as e:
+#        print(f"Error saving Contact Page settings: {e}")  # Log the error
+#        print("Contact Page Settings update failed")
+#        response = HttpResponse(status=400, content="Contact Page Settings update failed")  # Bad request
+#        return response
+
+
 def contact_edit(request):
-    contact_address = request.POST.get('contact_address')
-    contact_phone = request.POST.get('contact_phone')
-    contact_email = request.POST.get('contact_email')
-    contact_facebook = request.POST.get('contact_facebook')
-    contact_instagram = request.POST.get('contact_instagram')
-    contact_font = request.POST.get('contact_font')
-    contact_font_color = request.POST.get('contact_font_color')
+    # Get the existing contact page settings
+    contact_page = ContactPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not contact_page:
+        contact_page = ContactPageSettings.objects.create(
+            edu_address="",
+            edu_phone="",
+            edu_email="",
+            edu_facebook="",
+            edu_instagram="",
+            font="sans-serif",
+            font_color="black",
+            font_style="",
+        )
+
+    # Update fields only if new values are provided, otherwise just use the prev value
+    contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
+    contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
+    contact_page.edu_email = request.POST.get('contact_email') or contact_page.edu_email
+    contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
+    contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
+    contact_page.font = request.POST.get('contact_font') or contact_page.font
+    contact_page.font_color = request.POST.get('contact_font_color') or contact_page.font_color
+    contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
+
     contact_image = request.FILES.get('contact_image')
     
-    print(f"Incoming settings for Contact Page: text: {
-        contact_address, 
-        contact_phone, 
-        contact_email,
-        contact_facebook,
-        contact_instagram,
-        contact_font,
-        contact_font_color
-        }, image: {'Provided' if contact_image else 'Not provided'}")
+    print(f"Updating Contact Page settings: {
+        contact_page.edu_address, 
+        contact_page.edu_phone, 
+        contact_page.edu_email,
+        contact_page.edu_facebook,
+        contact_page.edu_instagram,
+        contact_page.font,
+        contact_page.font_color,
+        contact_page.font_style,
+    }, image: {'Provided' if contact_image else 'Not provided'}")
     
     try:
-        # Try to get the existing record
-        contact_page = ContactPageSettings.objects.first()
-        if contact_page:
-            # If a record exists, update it
-            contact_page.edu_address = contact_address
-            contact_page.edu_phone = contact_phone
-            contact_page.edu_email = contact_email
-            contact_page.edu_facebook = contact_facebook
-            contact_page.edu_instagram = contact_instagram
-            contact_page.font = contact_font
-            contact_page.font_color = contact_font_color
-            if contact_image:
-                ### new image uploads in DEV env will only show on container restart, not on page reload
-                # Save the image to the specific location
-                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
-                with open(image_path, 'wb+') as destination:
-                    for chunk in contact_image.chunks():
-                        destination.write(chunk)
-                #home_page.background_image = background_image
+        if contact_image:
+            # Save the image to the specific location
+            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
+            with open(image_path, 'wb+') as destination:
+                for chunk in contact_image.chunks():
+                    destination.write(chunk)
             print(f"New background image saved to {image_path}")
-            #home_page_4.image = homepage_4_image_1
-            contact_page.save()
-            print("Contact Page settings updated with new user input and saved to the DB")
-        else:
-            # If no record exists yet, create a new one
-            print("Contact Page settings don't exist in DB yet, creating a new one")
-            contact_page = ContactPageSettings.objects.create(
-                edu_address = contact_address,
-                edu_phone = contact_phone,
-                edu_email = contact_email,
-                edu_facebook = contact_facebook,
-                edu_instagram = contact_instagram,
-                font = contact_font,
-                font_color = contact_font_color,
-                #image=homepage_4_image_1
-            )
+
+        contact_page.save()
+        print("Contact Page settings updated with new user input and saved to the DB")
         
-        print("Contact Page Settings successfully changed in the DB")
         return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
     
     except Exception as e:
@@ -611,6 +674,5 @@ def contact_edit(request):
         print("Contact Page Settings update failed")
         response = HttpResponse(status=400, content="Contact Page Settings update failed")  # Bad request
         return response
-
 
 

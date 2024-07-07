@@ -41,6 +41,7 @@ class ContactPageSettings(models.Model):
     font = models.CharField(max_length=100)
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
     edu_address = models.CharField(max_length=100)
     edu_phone = models.CharField(max_length=100)
     edu_email = models.EmailField()
