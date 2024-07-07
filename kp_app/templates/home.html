@@ -9,10 +9,11 @@
     {% static 'kp_app/images/art3.jpg' as art3_url %}
     {% static 'kp_app/images/art4.jpg' as art4_url %}
     {% static 'kp_app/images/art5.jpg' as art5_url %}
+    {% load auth_tags %}
 
 
 
-    <div  x-data="{home1_modal:false, home2_modal:false, home3_modal:false, home4_modal:false, home_contact:false}"
+    <div  x-data="{home1_modal:false, home2_modal:false, home3_modal:false, home4_modal:false, contact_modal:false}"
           id="home-content">
 
 
@@ -25,13 +26,16 @@
                 class="bg-[image:var(--home1-image-url)] 
                        mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative">
 
-
-            <button 
-                x-data 
-                @click="home1_modal = true" 
-                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
-                Edit Page
-            </button>
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
+                <button 
+                    x-data 
+                    @click="home1_modal = true" 
+                    class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    Edit Page
+                </button>
+                {% endif %}
+            {% endif %}
 
 
                 <!-- Edit Page Modal -->
@@ -158,13 +162,16 @@
                 id="homepage2" 
                 class="grid grid-cols-2 relative">
 
-
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
             <button 
                 x-data 
                 @click="home2_modal = true" 
                 class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                 Edit Page
             </button>
+                {% endif %}
+            {% endif %}
 
 
 
@@ -213,7 +220,7 @@
                               <input type="file" id="image2Input1" name="homepage_2_image_1" accept="image/*" class="hidden" onchange="previewImage(this, 'image2Preview1')">
                               <img id="image2Preview1" src="placeholder.jpg" alt="Select Page 2 Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image2Input1').click()">
                               <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image2Wrapper1')">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                               </button>
@@ -225,14 +232,14 @@
                       <div class="mt-6 flex space-x-4">
                         <button type="button" 
                             @click="home2_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Cancel
                         </button>
 
                         <button 
                             type="submit"
                             @click="home2_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Submit
                         </button>
                       </div>
@@ -262,12 +269,17 @@
             <!-- HOME PAGE SCREEN 3 -->
             <div id="homepage3" class="h-screen w-screen flex items-center justify-center relative">
 
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
                 <button 
                     x-data 
                     @click="home3_modal = true" 
                     class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                     Edit Page
                 </button>
+                {% endif %}
+            {% endif %}
+
 
                 <!-- Edit Page Modal -->
                 <div xcloak x-show="home3_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -297,14 +309,14 @@
                       <div class="mt-6 flex space-x-4">
                         <button type="button" 
                             @click="home3_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Cancel
                         </button>
 
                         <button 
                             type="submit"
                             @click="home3_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Submit
                         </button>
                       </div>
@@ -324,12 +336,16 @@
             <!-- HOME PAGE SCREEN 4 -->
             <div id="homepage4" class="grid grid-cols-2 relative h-screen overflow-hidden">
 
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
                 <button 
                     x-data 
                     @click="home4_modal = true" 
                     class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                     Edit Page
                 </button>
+                {% endif %}
+            {% endif %}
 
                 <!-- Edit Page Modal -->
                 <div xcloak x-show="home4_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -362,7 +378,7 @@
                               <input type="file" id="image4Input1" name="homepage_4_image_1" accept="image/*" class="hidden" onchange="previewImage(this, 'image4Preview1')">
                               <img id="image4Preview1" src="placeholder.jpg" alt="Select Page 4 Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image4Input1').click()">
                               <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image4Wrapper1')">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                               </button>
@@ -370,17 +386,18 @@
                           </div>
                         </div>
 
+
                       <div class="mt-6 flex space-x-4">
                         <button type="button" 
                             @click="home4_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Cancel
                         </button>
 
                         <button 
                             type="submit"
                             @click="home4_modal = false"
-                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
                             Submit
                         </button>
                       </div>
@@ -404,9 +421,165 @@
 
 
 
-            <!-- HOME PAGE SCREEN 5 -->
-                <div id="contact" style="--home5-image-url: url('{{ art4_url }}')" class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
-                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <!-- HOME PAGE SCREEN 5  - Contact Page -->
+            <div id="contact" style="--home5-image-url: url('{{ art4_url }}')" class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
+
+
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
+                <button 
+                    x-data 
+                    @click="contact_modal = true" 
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    Edit Page
+                </button>
+                {% endif %}
+            {% endif %}
+
+
+
+                <!-- Edit Page Modal -->
+                <div xcloak x-show="contact_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-show="contact_modal" 
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 scale-90"
+                       x-transition:enter-end="opacity-100 scale-100"
+                       x-transition:leave="transition ease-in duration-300"
+                       x-transition:leave-start="opacity-100 scale-100"
+                       x-transition:leave-end="opacity-0 scale-90"
+                       class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+
+                    <form 
+                        id="imageForm1" 
+                        enctype="multipart/form-data"
+                        hx-encoding="multipart/form-data"
+                        hx-post="{% url 'contact_edit' %}"
+                        hx-swap="none"
+                    >
+                    {% csrf_token %}
+
+                        <!-- New input fields -->
+                        <div class="mb-4">
+                          <label for="contact_address" class="block text-sm font-medium text-gray-700">Direccion:</label>
+                          <input type="text" id="contact_address" name="contact_address" placeholder="123 Montana Ave. Vilcabamba, Ecaudor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_phone" class="block text-sm font-medium text-gray-700">Celular:</label>
+                          <input type="text" id="contact_phone" name="contact_phone" placeholder="+61 123-456-789" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_email" class="block text-sm font-medium text-gray-700">Email:</label>
+                          <input type="email" id="contact_email" name="contact_email" placeholder="edusuarez@gmail.com" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_facebook" class="block text-sm font-medium text-gray-700">Facebook Link:</label>
+                          <input type="text" id="contact_facebook" name="contact_facebook" placeholder="https://www.facebook.com/meow" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_instagram" class="block text-sm font-medium text-gray-700">Instagram Link:</label>
+                          <input type="text" id="contact_instagram" name="contact_instagram" placeholder="https://www.instagram.com/meow" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_font" class="block text-sm font-medium text-gray-700">Font:</label>
+                          <input type="text" id="contact_font" name="contact_font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
+                          <input type="text" id="contact_font_color" name="contact_font_color" placeholder="gray-700" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <!-- Existing image input -->
+                        <div class="mb-4">
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                          <div class="flex space-x-4" id="imageContainerContact">
+                            <div class="relative" id="image1Wrapper5">
+                              <input type="file" id="image1Input5" name="contact_image" accept="image/*" class="hidden" onchange="previewImage(this, 'image1Preview5')">
+                              <img id="image1Preview5" src="placeholder.jpg" alt="Select Contact Photo" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image1Input5').click()">
+                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image1Wrapper5')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <!-- Repeat for imageWrapper2 and imageWrapper3 if needed -->
+                          </div>
+                        </div>
+
+                    <div class="mt-6 flex space-x-4">
+                      <button type="button" 
+                          @click="contact_modal = false" 
+                          class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                          Cancel
+                      </button>
+
+                      <button 
+                          type="submit"
+                          @click="contact_modal = false" 
+                          class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                          Submit
+                      </button>
+                    </div>
+
+                    </form>
+                  </div>
+                </div>
+
+
+
+
+
+                 <!-- Contact Page Content -->
+
+
+                    <!-- import dynamic fonts here -->
+                    <!-- this is a weird Tailwind bug where it has to read the actual static name of the class somewhere
+                         before it can handle dynamic classes like this. So you have to list off every class that
+                         the dynamic class may possibly be for that value to work in the app
+                    -->
+                    <div x-data="{
+                            currentFont: '{{page_settings.contact_font}}',
+                            currentColor: '{{page_settings.contact_font_color}}',
+                            fontVariants: {
+                                'sans-serif': 'font-sans',
+                                'serif': 'font-serif',
+                                'mono': 'font-mono',
+                                // Add more font variants as needed
+                            },
+                            colorVariants: {
+                                'red-500': 'text-red-500',
+                                'blue-500': 'text-blue-500',
+                                'green-500': 'text-green-500',
+                                'gray-900': 'text-gray-900',
+                                'gray-800': 'text-gray-800',
+                                'gray-700': 'text-gray-700',
+                                'gray-600': 'text-gray-600',
+                                'gray-500': 'text-gray-500',
+                                'gray-400': 'text-gray-400',
+                                'gray-300': 'text-gray-300',
+                                'gray-200': 'text-gray-200',
+                                'gray-100': 'text-gray-100',
+                                'black': 'text-black',
+                                'white': 'text-white',
+                                // Add all possible color variants here
+                            }
+                    }" 
+                            :class="[
+                                fontVariants[currentFont] || 'font-sans', 
+                                colorVariants[currentColor] || 'text-black', 
+                                'container', 'mx-auto', 'px-4'
+                            ]"
+                            >
+
+
+
+
+
                     <h1 class="text-4xl font-bold mb-8">Contact</h1>
                     <div class="bg-white p-8  w-5/6 h-2/3 md:w-4/5 md:h-1/2 lg:w-3/4 lg:h-1/2 xl:h-1/2 flex flex-col sm:flex-row">
                        <div class="w-full sm:w-1/2 mb-8 pr-4 flex flex-col items-center justify-center space-y-6 sm:space-y-8">
@@ -417,25 +590,25 @@
                                 <p>Phone:</p>
                               </div>
                               <div class="w-2/3 pl-6 flex flex-col justify-center items-start space-y-4">
-                                <p>123 Mountain Street, Villcabamba, Ecuador, 12345</p>
-                                <p>contact@example.com</p>
-                                <p>123-456-7890</p>
+                                  <p>{{page_settings.contact_address}}</p>
+                                  <p>{{page_settings.contact_email}}</p>
+                                  <p>{{page_settings.contact_phone}}</p>
                               </div>
                             </div>
                             <div class="flex justify-center space-x-4 sm:space-x-6">
-                              <a href="https://www.instagram.com/your_username" target="_blank" class="mr-2">
+                                <a href="{{page_settings.contact_instagram}}" target="_blank" class="mr-2">
                                 <svg class="h-10 w-10 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                                 </svg>
                               </a>
-                              <a href="https://www.facebook.com/your_username" target="_blank" class="mr-2">
+                              <a href="{{page_settings.contact_facebook}}" target="_blank" class="mr-2">
                                 <svg class="h-10 w-10 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                                 </svg>
                               </a>
-                              <a href="https://www.tiktok.com/@your_username" target="_blank">
+                              <a href="https://www.tiktok.com/@meow" target="_blank">
                                 <svg class="h-10 w-10 text-slate-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                   <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                                 </svg>
@@ -451,19 +624,19 @@
                             >
                             {% csrf_token %}
                               <div class="mb-8">
-                                <label class="block text-black font-bold" for="name-input">
+                                <label class="block font-bold" for="name-input">
                                   Name
                                 </label>
                                 <input class="appearance-none border-b border-black w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name-input" name="name" type="text" >
                               </div>
                               <div class="mb-8">
-                                <label class="block text-black font-bold" for="email-input">
+                                <label class="block font-bold" for="email-input">
                                   Email
                                 </label>
                                 <input class="appearance-none border-b border-black w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email-input" name="email" type="email" >
                               </div>
                               <div class="mb-8">
-                                <label class="block text-black font-bold" for="msg-input">
+                                <label class="block font-bold" for="msg-input">
                                   Message
                                 </label>
                                 <textarea class="appearance-none border-b border-black w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="msg-input" name="message" rows="3" ></textarea>

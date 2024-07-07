@@ -26,6 +26,7 @@ urlpatterns = [
         path("home_page_2_edit", views.home_page_2_edit, name="home_page_2_edit"),
         path("home_page_3_edit", views.home_page_3_edit, name="home_page_3_edit"),
         path("home_page_4_edit", views.home_page_4_edit, name="home_page_4_edit"),
+        path("contact_edit", views.contact_edit, name="contact_edit"),
         ]
 
 
