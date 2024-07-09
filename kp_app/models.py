@@ -8,6 +8,8 @@ class Art1PageSettings(models.Model):
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
     edu_email = models.EmailField()
+    font_style = models.CharField(max_length=100)
+
 
 
 class Art2PageSettings(models.Model):
@@ -15,25 +17,47 @@ class Art2PageSettings(models.Model):
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
     edu_email = models.EmailField()
+    font_style = models.CharField(max_length=100)
+
 
 
 class HomePage1Settings(models.Model):
     title = models.CharField(max_length=100)
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
     # background_image from bucket
 
 
 class HomePage2Settings(models.Model):
     homepage2_text = models.TextField()
+    font = models.CharField(max_length=100)
+   # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
     # homepage_2_image_1 from bucket
 
 
 class HomePage3Settings(models.Model):
     homepage3_text = models.TextField()
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
     # homepage_3_image_1 from bucket
 
 
 class HomePage4Settings(models.Model):
     homepage4_text = models.TextField()
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
     # homepage_4_image_1 from bucket
 
 
