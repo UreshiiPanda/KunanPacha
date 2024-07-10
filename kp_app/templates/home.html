@@ -38,15 +38,15 @@
                     hx-encoding="multipart/form-data"
                     hx-post="{% url 'home_page_menu_edit' %}"
                     hx-swap="none"
-                    hx-on::after-request="Alpine.store('menuSettings').updateSettings({
+                    hx-on::after-request="Alpine.store('editMenuModal').updateSettings({
                         font: document.getElementById('menu_font').value,
                         fontColor: document.getElementById('menu_font_color').value,
                         fontStyle: document.getElementById('menu_font_style').value
                         });
                         console.log(
-                            'here is the font', Alpine.store('menuSettings').font, 
-                            'here is the fontColor', Alpine.store('menuSettings').fontColor, 
-                            'and here is the fontStyle', Alpine.store('menuSettings').fontStyle
+                            'here is the font', Alpine.store('editMenuModal').font, 
+                            'here is the fontColor', Alpine.store('editMenuModal').fontColor, 
+                            'and here is the fontStyle', Alpine.store('editMenuModal').fontStyle
                         );"
                 >
 
@@ -117,7 +117,7 @@
                 <div 
                     id="homepage1" 
                     style="--home1-image-url: url('{{ bg_url }}')" 
-                    class="bg-[image:var(--home1-image-url)] mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative"
+                    class="bg-[image:var(--home1-image-url)] mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative object-cover"
                     x-data="{
                         currentFontStyle: '{{page_settings.homepage1_font_style}}',
                         currentFont: '{{page_settings.homepage1_font}}',
@@ -161,7 +161,7 @@
                     <button 
                         x-data 
                         @click="$store.editMenuModal.toggle()" 
-                        class="absolute top-4 left-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                        class="absolute top-4 left-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                         Edit Menu
                     </button>
                     {% endif %}
@@ -175,7 +175,7 @@
                     <button 
                         x-data 
                         @click="home1_modal = true" 
-                        class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                        class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                         Edit Page
                     </button>
                     {% endif %}
@@ -297,7 +297,7 @@
                     <!-- Alpine example -->
                     <div x-data="{ count: 0 }" class="text-white">
                         <button
-                            class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white-200 hover:text-black hover:bg-white hover:border-black"
+                            class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white-200 hover:text-black hover:bg-white hover:order-black"
                             x-on:click="count++">
                             Increment
                         </button>
@@ -358,7 +358,7 @@
             <button 
                 x-data 
                 @click="home2_modal = true" 
-                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                class="absolute top-4 right-4 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                 Edit Page
             </button>
                 {% endif %}
@@ -517,7 +517,7 @@
                 <button 
                     x-data 
                     @click="home3_modal = true" 
-                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                     Edit Page
                 </button>
                 {% endif %}
@@ -646,7 +646,7 @@
                 <button 
                     x-data 
                     @click="home4_modal = true" 
-                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                     Edit Page
                 </button>
                 {% endif %}
@@ -763,7 +763,10 @@
 
 
             <!-- HOME PAGE SCREEN 5  - Contact Page -->
-            <div id="contact" style="--home5-image-url: url('{{ art4_url }}')" class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
+            <div id="contact" 
+                  style="--home5-image-url: url('{{ art4_url }}')" 
+                  class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative"
+                  >
 
 
             {% if user.is_authenticated %}
@@ -771,7 +774,7 @@
                 <button 
                     x-data 
                     @click="contact_modal = true" 
-                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-black text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                    class="absolute top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                     Edit Page
                 </button>
                 {% endif %}
@@ -794,7 +797,7 @@
                         id="imageForm1" 
                         enctype="multipart/form-data"
                         hx-encoding="multipart/form-data"
-                        hx-post="{% url 'contact_edit' %}"
+                        hx-post="{% url 'contact_edit_home' %}"
                         hx-swap="none"
                     >
                     {% csrf_token %}

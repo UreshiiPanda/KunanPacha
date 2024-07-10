@@ -82,6 +82,22 @@
                     'black': 'text-black',
                     'white': 'text-white',
                 },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
                 styleVariants: {
                     'italic': 'italic',
                     'bold': 'font-bold',
@@ -92,14 +108,14 @@
             :class="[
                 styleVariants[currentFontStyle] || '',
                 fontVariants[currentFont] || 'font-sans', 
-                colorVariants[currentColor] || 'text-black'
+                colorVariants[currentColor] || 'text-black',
             ]"
 
             id="menu" >
 
 
             <nav class="fixed top-0 left-0 w-full flex items-center justify-between bg-white p-6 border-b border-black shadow-lg z-50">
-                    <div class="flex items-center flex-shrink-0 text-black mr-6">
+                    <div class="flex items-center flex-shrink-0 mr-6">
                         <img src={{ art5_url }} alt="Logo" class="h-8 w-8 mr-2 object-cover">
                     </div>
                 <div class="flex items-center">
@@ -116,7 +132,8 @@
                 <div class="hidden sm:flex sm:flex-grow items-center justify-between">
                     <div class="flex items-center text-sm">
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'home' %}"
@@ -126,7 +143,8 @@
                             >Home
                         </a>
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'art1' %}"
@@ -136,13 +154,15 @@
                             >Art
                         </a>
                         <a href="#responsive-header" 
-                            class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            class="block mt-2 inline-block mr-4"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
                             >Blog
                         </a>
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'contact' %}"
@@ -184,10 +204,39 @@
                 </div>
 
                 <div class="flex flex-col items-center space-y-4">
-                    <a href="{% url 'home' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Home</a>
-                    <a href="{% url 'art1' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Art</a>
+                    <a href="{% url 'home' %}" 
+                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'home' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/"
+                            >Home
+                        </a>
+
+                    <a href="{% url 'art1' %}" 
+                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'art1' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/art1"
+                            >Art
+                        </a>
+
                     <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
-                    <a href="{% url 'contact' %}" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Contact</a>
+
+                    <a href="{% url 'contact' %}" 
+                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'contact' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/contact"
+                    >Contact</a>
                             
                     {% if user.is_authenticated %}
                         {% if request.user|has_group:"Editor" %}

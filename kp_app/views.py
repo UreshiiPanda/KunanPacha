@@ -127,17 +127,39 @@ def home(request):
 
 
 
-
-
-
-
 def contact(request):
+    contact_page_settings = ContactPageSettings.objects.first()
+    if not contact_page_settings:
+        contact_page_settings = ContactPageSettings.objects.create(
+            edu_address="Vilcabamba, Ecuador",
+            edu_phone="+61 123-456-789",
+            edu_email="edu@gmail.com",
+            edu_facebook="www.facebook.com",
+            edu_instagram="www.instagram.com",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
+    page_settings = {
+        "contact_address": contact_page_settings.edu_address,
+        "contact_phone": contact_page_settings.edu_phone,
+        "contact_email": contact_page_settings.edu_email,
+        "contact_facebook": contact_page_settings.edu_facebook,
+        "contact_instagram": contact_page_settings.edu_instagram,
+        "contact_font": contact_page_settings.font,
+        "contact_font_color": contact_page_settings.font_color,
+        "contact_font_style": contact_page_settings.font_style,
+        "contact_image": os.path.join("static/kp_app/images/art4.jpg"),
+    }
+
     if request.headers.get('HX-Request') == 'true':
         print("contact page came from HTMX")
-        return render(request, "contact_content.html")
+        return render(request, "contact_content.html", {"page_settings": page_settings})
     else:
         print("contact page did NOT come from HTMX")
-        return render(request, "contact.html")
+        return render(request, "contact.html", {"page_settings": page_settings})
+
 
 
 def art1(request):
@@ -337,7 +359,7 @@ def register(request):
 
 
 
-def contact_edit(request):
+def contact_edit_home(request):
     # Get the existing contact page settings
     contact_page = ContactPageSettings.objects.first()
     
@@ -400,6 +422,65 @@ def contact_edit(request):
 
 
 
+def contact_edit(request):
+    # Get the existing contact page settings
+    contact_page = ContactPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not contact_page:
+        contact_page = ContactPageSettings.objects.create(
+            edu_address="address here",
+            edu_phone="phone here",
+            edu_email="email here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
+    # Update fields only if new values are provided, otherwise just use the prev value
+    contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
+    contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
+    contact_page.edu_email = request.POST.get('contact_email') or contact_page.edu_email
+    contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
+    contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
+    contact_page.font = request.POST.get('contact_font') or contact_page.font
+    contact_page.font_color = request.POST.get('contact_font_color') or contact_page.font_color
+    contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
+
+    contact_image = request.FILES.get('contact_image')
+    
+    print(f"Updating Contact Page settings: {
+        contact_page.edu_address, 
+        contact_page.edu_phone, 
+        contact_page.edu_email,
+        contact_page.edu_facebook,
+        contact_page.edu_instagram,
+        contact_page.font,
+        contact_page.font_color,
+        contact_page.font_style,
+    }, image: {'Provided' if contact_image else 'Not provided'}")
+    
+    try:
+        if contact_image:
+            # Save the image to the specific location
+            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
+            with open(image_path, 'wb+') as destination:
+                for chunk in contact_image.chunks():
+                    destination.write(chunk)
+            print(f"New background image saved to {image_path}")
+
+        contact_page.save()
+        print("Contact Page settings updated with new user input and saved to the DB")
+        
+        return HttpResponseRedirect(reverse('contact'))  # Assuming you have a 'home' URL name
+    
+    except Exception as e:
+        print(f"Error saving Contact Page settings: {e}")  # Log the error
+        print("Contact Page Settings update failed")
+        response = HttpResponse(status=400, content="Contact Page Settings update failed")  # Bad request
+        return response
 
 
 
