@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -25,6 +25,7 @@ def home(request):
     home_page_3_settings = HomePage3Settings.objects.first()
     home_page_4_settings = HomePage4Settings.objects.first()
     contact_page_settings = ContactPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
 
     if not home_page_1_settings:
         home_page_1_settings = HomePage1Settings.objects.create(
@@ -50,6 +51,12 @@ def home(request):
     if not home_page_4_settings:
         home_page_4_settings = HomePage4Settings.objects.create(
             homepage4_text='Text for home page 4 here',
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
@@ -93,6 +100,10 @@ def home(request):
             "homepage4_font": home_page_4_settings.font,
             "homepage4_font_color": home_page_4_settings.font_color,
             "homepage4_font_style": home_page_4_settings.font_style,
+ 
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
 
             "contact_address": contact_page_settings.edu_address,
             "contact_phone": contact_page_settings.edu_phone,
@@ -570,5 +581,38 @@ def home_page_4_edit(request):
     except Exception as e:
         print(f"Error saving Home Page 4 settings: {e}")
         response = HttpResponse(status=400, content="Home Page 4 Settings update failed")
+        return response
+
+
+
+def home_page_menu_edit(request):
+    menu = MenuSettings.objects.first()
+    if not menu:
+        menu = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal'
+        )
+
+    menu.font = request.POST.get('menu_font', menu.font).lower()
+    menu.font_color = request.POST.get('menu_font_color', menu.font_color).lower()
+    menu.font_style = request.POST.get('menu_font_style', menu.font_style).lower()
+
+    menu_image = request.FILES.get('menu_image')
+
+    try:
+        if menu_image:
+            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art5.jpg')
+            with open(image_path, 'wb+') as destination:
+                for chunk in menu_image.chunks():
+                    destination.write(chunk)
+            print(f"New menu image saved to {image_path}")
+
+        menu.save()
+        print("Menu Settings successfully changed in the DB")
+        return HttpResponseRedirect(reverse('home'))
+    except Exception as e:
+        print(f"Error saving Menu settings: {e}")
+        response = HttpResponse(status=400, content="Menu Settings update failed")
         return response
 

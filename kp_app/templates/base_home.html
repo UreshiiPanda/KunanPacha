@@ -1,3 +1,5 @@
+
+<!--
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -19,7 +21,6 @@
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
 
-        <!-- setup a global Alpine var for edit_page popups -->
         <script>
             document.addEventListener('alpine:init', () => {
                 Alpine.store('editPageModal', {
@@ -29,12 +30,23 @@
                         this.showModal = ! this.showModal
                         console.log("an edit page modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
                     }
+                }),
+
+
+                Alpine.store('editMenuModal', {
+                    showModal: false,
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("an edit menu modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
+                    }
                 })
+
             })
         </script>
+-->
 
-
-        <div x-data="{ smallMenu: false }">
+        <div id="menu" x-data="{ smallMenu: false }">
 
             <nav class="fixed top-0 left-0 w-full flex items-center justify-between bg-white p-6 border-b border-black shadow-lg z-50">
                   <div class="flex items-center flex-shrink-0 text-black mr-6">
@@ -58,6 +70,7 @@
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'home' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -67,6 +80,7 @@
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'art1' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -76,11 +90,13 @@
                         <a href="#responsive-header" 
                             class="block mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
                             >Blog
                         </a>
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block text-black-200 hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false" 
+                            @click="$store.editMenuModal.showModal = false" 
                             hx-get="{% url 'contact' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -95,7 +111,10 @@
                             {% csrf_token %}
                             <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
                         </form>
-                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a
+            <!--
+                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
+            -->
+                        <a x-data @click="$store.editMenuModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Menu</a>
                     </div>
                         {% endif %}
                     {% endif %}
@@ -134,7 +153,10 @@
                             {% csrf_token %}
                             <button type="submit" class="w-full text-sm px-4 py-2 border border-white text-white hover:bg-white hover:text-black transition-colors duration-300">Logout</button>
                         </form>
-                        <a href="#" class="mr-2 w-full text-center text-sm px-4 py-2 border border-white text-white hover:bg-white hover:text-black transition-colors duration-300">Edit Page</a>
+        <!--
+                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
+        -->
+                        <a x-data @click="$store.editMenuModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Menu</a>
                     </div>
                         {% endif %}
                     {% endif %}
@@ -143,7 +165,7 @@
             </div>
         </div>
 
-
+<!--
         <div id="content"> {% block content %} {% endblock %} </div>
 
 
@@ -151,7 +173,6 @@
 </html>
 
 
-<!-- Email Alerts Event Listeners for Contact Form -->
 <script>
      document.body.addEventListener("emailSuccess", function(evt){
         console.log("email alert success");
@@ -167,7 +188,7 @@
      }) 
 </script>
 
-
+-->
 
 
 

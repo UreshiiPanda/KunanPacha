@@ -11,5 +11,7 @@ admin.site.register(HomePage2Settings)
 admin.site.register(HomePage3Settings)
 admin.site.register(HomePage4Settings)
 admin.site.register(ContactPageSettings)
+admin.site.register(MenuSettings)
+
 
 

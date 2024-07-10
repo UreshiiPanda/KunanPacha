@@ -60,6 +60,13 @@ class HomePage4Settings(models.Model):
 
     # homepage_4_image_1 from bucket
 
+class MenuSettings(models.Model):
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
+
 
 class ContactPageSettings(models.Model):
     font = models.CharField(max_length=100)
