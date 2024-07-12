@@ -11,6 +11,20 @@ class Art1PageSettings(models.Model):
     font_style = models.CharField(max_length=100)
 
 
+class Artwork(models.Model):
+    title = models.CharField(max_length=200)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2)
+    print_price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    # Store the filename, not the actual file
+    image_filename = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
 
 class Art2PageSettings(models.Model):
     font = models.CharField(max_length=100)

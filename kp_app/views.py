@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail, BadHeaderError
+from django.core.files.storage import default_storage
+from google.cloud import storage
+from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -12,7 +15,6 @@ from .forms import LoginForm
 from .forms import RegistrationForm
 import os
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
@@ -162,50 +164,169 @@ def contact(request):
 
 
 
+#def art1(request):
+#    # Fetch the page settings from the DB
+#    # First check if any Art1PageSettings object exists
+#    settings = Art1PageSettings.objects.first()
+#
+#    if not settings:
+#        # If no settings exist yet in the DB, create a default one
+#        settings = Art1PageSettings.objects.create(
+#            font='sans-serif',
+#            font_color='black',
+#            font_style='normal',
+#            edu_email='jojohoughton22@gmail.com'
+#        )
+#
+#    # Now that there is for sure a settings object, set the vars to pass into template
+#    page_settings = {
+#        'font': settings.font,
+#        'font_color': settings.font_color,
+#        'font_style': settings.font_style,
+#        'edu_email': settings.edu_email,
+#    }
+#    print(f"current page settings coming into the art1 view: {page_settings}")
+#
+#
+#    # retrieve artwork data and associated/related images
+#    artworks = Artwork.objects.all().order_by('-created_at')
+#    
+#    for artwork in artworks:
+#        if not os.getenv("KP_PROD"):
+#            # in DEV env, get from Local storage
+#            artwork.image_url = os.path.join(settings.MEDIA_URL, 'artworks', artwork.image_filename)
+#        else:
+#            # in PROD env, get from GCP Cloud Storage
+#            client = storage.Client()
+#            bucket = client.bucket(settings.GS_BUCKET_NAME)
+#            blob = bucket.blob(f'artworks/{artwork.image_filename}')
+#            artwork.image_url = blob.public_url
+#
+#
+#
+#
+#    if request.headers.get('HX-Request') == 'true':
+#        print("art1 page came from HTMX")
+#
+#        if os.getenv("KP_PROD") == "true":
+#            print("in Art1 view in views.py, in PROD env, getting images from GCP")
+#        else:
+#            print("in Art1 view in views.py, in DEV env, getting images from local files")
+#            images_dir = os.path.join('static/kp_app/images') 
+#            images = os.listdir(images_dir)
+#
+#        return render(request, "art1_content.html", {"images": images, "page_settings": page_settings})
+#    else:
+#        print("art1 page did NOT come from HTMX")
+#        if os.getenv("KP_PROD") == "true":
+#            print("in Art1 view in views.py, in PROD env, getting images from GCP")
+#        else:
+#            print("in Art1 view in views.py, in DEV env, getting images from local files")
+#            images_dir = os.path.join('static/kp_app/images') 
+#            images = os.listdir(images_dir)
+#
+#        return render(request, "art1.html", {"images": images, "page_settings": page_settings})
+
+
+
+
 def art1(request):
     # Fetch the page settings from the DB
-    # First check if any Art1PageSettings object exists
-    settings = Art1PageSettings.objects.first()
-
-    if not settings:
-        # If no settings exist yet in the DB, create a default one
-        settings = Art1PageSettings.objects.create(
+    page_settings = Art1PageSettings.objects.first()
+    if not page_settings:
+        page_settings = Art1PageSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
             edu_email='jojohoughton22@gmail.com'
         )
 
-    # Now that there is for sure a settings object, set the vars to pass into template
-    page_settings = {
-        'font': settings.font,
-        'font_color': settings.font_color,
-        'font_style': settings.font_style,
-        'edu_email': settings.edu_email,
-    }
-    print(f"current page settings coming into the art1 view: {page_settings}")
+    # Fetch artworks from the database
+    artworks = Artwork.objects.all().order_by('-created_at')
+     
+    # Prepare artwork data
+    artworks = []
+    for artwork in artworks:
+        if not os.getenv("KP_PROD"):
+            image_url = os.path.join(settings.STATIC_URL, 'kp_app/images', artwork.image_filename)
+        else:
+            image_url = f'{settings.STATIC_URL}{artwork.image_filename}'
+        artworks.append({
+            'title': artwork.title,
+            'original_price': artwork.original_price,
+            'print_price': artwork.print_price,
+            'description': artwork.description,
+            'image_url': image_url,
+            'created_at': artwork.created_at,
+            'updated_at': artwork.updated_at,
+        })
+
+    #context = {
+    #    "artworks": artworks,
+    #    "page_settings": {
+    #        'font': page_settings.font,
+    #        'font_color': page_settings.font_color,
+    #        'font_style': page_settings.font_style,
+    #        'edu_email': page_settings.edu_email,
+    #    }
+    #}
 
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
-
-        if os.getenv("KP_PROD") == "true":
-            print("in Art1 view in views.py, in PROD env, getting images from GCP")
-        else:
-            print("in Art1 view in views.py, in DEV env, getting images from local files")
-            images_dir = os.path.join('static/kp_app/images') 
-            images = os.listdir(images_dir)
-
-        return render(request, "art1_content.html", {"images": images, "page_settings": page_settings})
+        return render(request, "art1_content.html", {"artworks": artworks, "page_settings": page_settings})
     else:
         print("art1 page did NOT come from HTMX")
-        if os.getenv("KP_PROD") == "true":
-            print("in Art1 view in views.py, in PROD env, getting images from GCP")
-        else:
-            print("in Art1 view in views.py, in DEV env, getting images from local files")
-            images_dir = os.path.join('static/kp_app/images') 
-            images = os.listdir(images_dir)
+        return render(request, "art1.html", {"artworks": artworks, "page_settings": page_settings})
 
-        return render(request, "art1.html", {"images": images, "page_settings": page_settings})
+
+
+
+def add_art(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        original_price = request.POST.get('original_price')
+        print_price = request.POST.get('print_price')
+        description = request.POST.get('description')
+        image1 = request.FILES.get('image1')
+        image2 = request.FILES.get('image1')
+        image3 = request.FILES.get('image1')
+        image4 = request.FILES.get('image1')
+        images = [image1, image2, image3, image4]
+        filenames = []
+
+        if title and original_price and print_price and description and image1:
+            # Generate a unique filename for each image
+            for i in range(len(images)):
+                filename + str(i) = f"{title.replace(' ', '_')}_{timezone.now().timestamp()}{os.path.splitext(images[i].name)[1]}"
+
+                # Save image
+                if not os.getenv("KP_PROD"):
+                    # Local storage
+                    path = os.path.join('kp_app', 'static', 'kp_app', 'images', filename)
+                    default_storage.save(path, images[i])
+                else:
+                    # GCP Cloud Storage
+                    path = f'images/{filename}'
+                    default_storage.save(path, images[i])
+                filenames.append(filename)
+            # Create Artwork object
+            # this also runs .save() to save this new obj into the DB
+            artwork = Artwork.objects.create(
+                title=title,
+                original_price=original_price,
+                print_price=print_price,
+                description=description,
+                image_filename=filename
+            )
+
+            return HttpResponseRedirect(reverse('art1'))
+        else:
+            return HttpResponse('All fields are required', status=400)
+
+    return render(request, 'add_art.html')
+
+
+
 
 
 # def art2(request, image_id):
@@ -279,6 +400,51 @@ def art2(request):
             }
 
         return render(request, 'art2.html', {"image_obj": image_obj, "page_settings": page_settings})
+
+
+
+
+
+#def add_art(request):
+#    if request.method == 'POST':
+#        title = request.POST.get('title')
+#        original_price = request.POST.get('original_price')
+#        print_price = request.POST.get('print_price')
+#        description = request.POST.get('description')
+#        image = request.FILES.get('image')
+#
+#        if title and original_price and print_price and description and image:
+#            # Generate a unique filename
+#            filename = f"{title.replace(' ', '_')}_{timezone.now().timestamp()}{os.path.splitext(image.name)[1]}"
+#
+#            # Save image to appropriate storage
+#            if settings.DEBUG:
+#                # Local storage
+#                path = default_storage.save(os.path.join('artworks', filename), image)
+#            else:
+#                # GCP Cloud Storage
+#                client = storage.Client()
+#                bucket = client.bucket(settings.GS_BUCKET_NAME)
+#                blob = bucket.blob(f'artworks/{filename}')
+#                blob.upload_from_file(image)
+#
+#            # Create Artwork object
+#            artwork = Artwork.objects.create(
+#                title=title,
+#                original_price=original_price,
+#                print_price=print_price,
+#                description=description,
+#                image_filename=filename
+#            )
+#
+#            return HttpResponseRedirect(reverse('art1'))  # Redirect to art gallery page
+#        else:
+#            return HttpResponse('All fields are required', status=400)
+#
+#    return render(request, 'add_art.html')  # Render form template for GET requests
+
+
+
 
 
 def send_email(request):

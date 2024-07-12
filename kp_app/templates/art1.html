@@ -1,17 +1,110 @@
 
+
+
 {% extends "base.html" %} 
 
 {% block content %}
 
     {% load static %}
+    {% load auth_tags %}
 
 
-    <div x-data id="art-content">
+
+    <div x-data="{add_art_modal:false}" id="art-content">
+
+        {% if user.is_authenticated %}
+            {% if request.user|has_group:"Editor" %}
+            <button 
+                x-data 
+                @click="add_art_modal = true" 
+                class="fixed mt-20 top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Add Art
+            </button>
+            {% endif %}
+        {% endif %}
+
+        <!-- ADD ART Modal backdrop -->
+        <div x-cloak x-show="add_art_modal" class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- ADD ART Modal content -->
+          <div x-show="add_art_modal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 overflow-y-auto max-h-[90vh]">
+            
+            <h2 class="text-2xl font-bold mb-4">Edit Artwork Details</h2>
+            
+            <form 
+                id="artForm" 
+                enctype="multipart/form-data"
+                hx-encoding="multipart/form-data"
+                hx-post="{% url 'add_art' %}"
+                hx-swap="none"
+            >
+            {% csrf_token %}
+              <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
+                <input type="text" id="title" name="title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
+                <input type="text" id="original_price" name="original_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
+                <input type="text" id="print_price" name="print_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
+                <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                <div class="flex flex-wrap space-x-4" id="imageContainer">
+                  {% for i in '1234'|make_list %}
+                  <div class="relative mb-4" id="imageWrapper{{ i }}">
+                    <input type="file" id="imageInput{{ i }}" name="image{{ i }}" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview{{ i }}')">
+                    <img id="imagePreview{{ i }}" src="placeholder.jpg" alt="Select Picture" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInput{{ i }}').click()">
+                    <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper{{ i }}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="add_art_modal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    @click="add_art_modal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
 
 
-        <!-- Modal backdrop -->
+
+        <!-- EDIT PAGE Modal backdrop -->
         <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <!-- Modal content -->
+          <!-- EDIT PAGE Modal content -->
           <div x-show="$store.editPageModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
@@ -36,7 +129,6 @@
                     placeholder="Enter font (eg: sans-serif)"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
               </div>
-        
 
                 <div class="mb-4">
                   <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color</label>
@@ -44,8 +136,6 @@
                          placeholder="Enter font color (eg: red-500)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-
-
                 
                 <div class="mb-4">
                   <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style</label>
@@ -53,9 +143,6 @@
                          placeholder="Enter font type (eg: bold, italic, normal)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-
-
-
 
               <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -78,19 +165,16 @@
                     Submit
                 </button>
               </div>
-
-
             </form>
           </div>
         </div>
 
 
 
-        <!-- import dynamic fonts here -->
-        <!-- this is a weird Tailwind bug where it has to read the actual static name of the class somewhere
-             before it can handle dynamic classes like this. So you have to list off every class that
-             the dynamic class may possibly be for that value to work in the app
-        -->
+
+
+
+        <!-- Rest of the existing content -->
         <div x-data="{
                 currentFontStyle: '{{page_settings.font_style}}',
                 currentFont: '{{page_settings.font}}',
@@ -99,7 +183,6 @@
                     'sans-serif': 'font-sans',
                     'serif': 'font-serif',
                     'mono': 'font-mono',
-                    // Add more font variants as needed
                 },
                 colorVariants: {
                     'red-500': 'text-red-500',
@@ -116,27 +199,22 @@
                     'gray-100': 'text-gray-100',
                     'black': 'text-black',
                     'white': 'text-white',
-                    // Add all possible color variants here
-                    },
+                },
                 styleVariants: {
-                        'italic': 'italic',
-                        'bold': 'font-bold',
-                        'normal': '',
-                    }
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                }
         }" 
-                :class="[
-                    styleVariants[currentFontStyle] || '',
-                    fontVariants[currentFont] || 'font-sans', 
-                    colorVariants[currentColor] || 'text-black', 
-                    'container', 'mx-auto', 'mt-24', 'px-4'
-                ]"
-                >
-
-
-
-
+        :class="[
+            styleVariants[currentFontStyle] || '',
+            fontVariants[currentFont] || 'font-sans', 
+            colorVariants[currentColor] || 'text-black', 
+            'container', 'mx-auto', 'mt-24', 'px-4'
+        ]">
+            <!-- Existing content here -->
             <div class="flex flex-wrap justify-between">
-                {% for image in images %}
+                {% for artwork in artworks %}
                 <div class="flex flex-col items-center mx-auto md:w-1/2 lg:w-1/3 p-4">
                     <div
                         @click="$store.editPageModal.showModal = false" 
@@ -145,12 +223,10 @@
                         hx-target="#art-content"
                         hx-push-url="/art2"
                         class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px]">
-                        <!--  href= url 'art2' image.id   -->
-                        <!-- href= url 'art2' -->
-                            <img src="{% static 'kp_app/images/' %}{{ image }}" alt="{{ image }}" class="p-4 h-full w-full object-cover">
+                        <img src="{% static 'kp_app/images/' %}{{ artwork.image_url }}" alt="Image Here" class="p-4 h-full w-full object-cover">
                     </div>
                     <div class="p-4 flex w-[275px] md:w-[325px] lg:w-[300px] justify-between">
-                        <h3 class="text-lg text-center m-2">Image Title</h3>
+                        <h3 class="text-lg text-center m-2">{{ artwork.title }}</h3>
                         <a href="mailto:{{page_settings.edu_email}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                             <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
@@ -163,8 +239,28 @@
                 {% endfor %}
             </div>
         </div>
-
     </div>
+
+    <script>
+        function previewImage(input, previewId) {
+          const file = input.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              document.getElementById(previewId).src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+          }
+        }
+
+        function removeImage(wrapperId) {
+          const wrapper = document.getElementById(wrapperId);
+          const input = wrapper.querySelector('input[type="file"]');
+          const img = wrapper.querySelector('img');
+          input.value = '';
+          img.src = 'placeholder.jpg';
+        }
+    </script>
 
 
 

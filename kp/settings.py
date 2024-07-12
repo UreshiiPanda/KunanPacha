@@ -134,6 +134,8 @@ else:
 
 
     # Define static BLOB storage via django-storages[google]
+    # so django-storages is being used here to interface with Google Cloud instead of 
+    # using the google.cloud import directly
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
