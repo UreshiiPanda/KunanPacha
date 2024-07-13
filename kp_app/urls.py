@@ -13,8 +13,8 @@ urlpatterns = [
         path("contact", views.contact, name="contact"),
         path("art1", views.art1, name="art1"),
         path("add_art", views.add_art, name="add_art"),
-        #path('art2/<int:image_id>/', views.art2, name='art2'),
-        path('art2', views.art2, name='art2'),
+        #path('art2', views.art2, name='art2'),
+        path('art2/<int:artwork_id>/', views.art2, name='art2'),
         path("send_email", views.send_email, name="send_email"),
         path('login_admin', views.login_admin, name='login_admin'),
         path('register/', register, name='register'),
@@ -30,7 +30,8 @@ urlpatterns = [
         path("home_page_menu_edit", views.home_page_menu_edit, name="home_page_menu_edit"),
         path("contact_edit_home", views.contact_edit_home, name="contact_edit_home"),
         path("contact_edit", views.contact_edit, name="contact_edit"),
+        path('edit_artwork/<int:artwork_id>/', views.edit_artwork, name='edit_artwork'),
+        path('delete_artwork/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
         ]
-
 
 

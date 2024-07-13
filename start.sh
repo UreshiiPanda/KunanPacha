@@ -57,7 +57,7 @@ sleep 1
 
 # choose color in first tab
 kitten @ send-text --match=title:nya1 kc metal'\n'
-kitten @ send-text --match=title:nya2 kc metal'\n'
+kitten @ send-text --match=title:nya2 kc neon'\n'
 sleep 1
 
 # move to kp project in all windows

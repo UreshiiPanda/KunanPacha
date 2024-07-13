@@ -16,14 +16,16 @@ class Artwork(models.Model):
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     print_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
-    # Store the filename, not the actual file
-    image_filename = models.CharField(max_length=255)
+    dimensions = models.CharField(max_length=255)
+    image1_filename = models.CharField(max_length=255)
+    image2_filename = models.CharField(max_length=255, blank=True, null=True)
+    image3_filename = models.CharField(max_length=255, blank=True, null=True)
+    image4_filename = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
-
 
 
 class Art2PageSettings(models.Model):
@@ -32,7 +34,6 @@ class Art2PageSettings(models.Model):
     font_color = models.CharField(max_length=100)
     edu_email = models.EmailField()
     font_style = models.CharField(max_length=100)
-
 
 
 class HomePage1Settings(models.Model):

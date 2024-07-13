@@ -43,7 +43,7 @@ if os.environ.get("KP_PROD", "true") == "false":
     env.read_env(env_file)
 
     print("App starting in Development Mode")
-    print(f"postgres details: name: {env("POSTGRES_NAME")}, user: {env("POSTGRES_USER")}, pass: {env("POSTGRES_PASSWORD")}")
+    print(f"postgres details: name: {env('POSTGRES_NAME')}, user: {env('POSTGRES_USER')}, pass: {env('POSTGRES_PASSWORD')}")
 
 
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
@@ -81,8 +81,11 @@ if os.environ.get("KP_PROD", "true") == "false":
 
 
     # Static files (CSS, JavaScript, Images)
-    STATIC_URL = "static/"
+    STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'kp_app', 'static'),
+    ]
 
 
 
