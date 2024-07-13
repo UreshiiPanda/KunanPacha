@@ -34,6 +34,7 @@
                                  console.log(this.currentArtwork[`image${index}`]);
                              };
                              reader.readAsDataURL(file);
+                          
                          }
                      },
                 }" 
@@ -163,7 +164,7 @@
                 id="editArtForm" 
                 enctype="multipart/form-data"
                 hx-encoding="multipart/form-data"
-                hx-put="{% url 'edit_artwork' artwork.id %}"
+                hx-post="{% url 'edit_artwork' artwork.id %}"
                 hx-trigger="submit"
                 hx-swap="none"
             >
@@ -177,7 +178,7 @@
                 <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
                 <input type="text" id="original_price" name="original_price"  x-model="currentArtwork.original_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
-
+ 
               <div class="mb-4">
                 <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
                 <input type="text" id="print_price" name="print_price" x-model="currentArtwork.print_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -198,35 +199,46 @@
                 <div class="flex flex-wrap space-x-4" id="imageEditContainer">
 
 
-
                     {% for i in '1234'|make_list %}
-                        <div class="relative mb-4">
+                    <div x-data="{removed{{i}}:'false'}" class="relative mb-4 id="imageEditWrapper{{ i }}">
+
+
                             <img :src="currentArtwork['image'+{{i}}]" 
                                 alt="{% if forloop.first %}Picture Required!{% else %}Select Picture{% endif %}" 
                                 class="w-24 h-24 object-cover rounded cursor-pointer" 
-                                @click="$refs['imageInput{{i}}'].click()"
+                                @click="$refs['imageEditInput{{i}}'].click()"
                             >
                             <input 
                                 type="file" 
-                                x-ref="imageInput{{i}}" 
-                                id="imageInput{{i}}" 
+                                x-ref="imageEditInput{{i}}" 
+                                id="imageEditInput{{i}}" 
                                 name="image{{i}}" 
-                                class="hidden" 
+                                {% if forloop.first %}
+                                    class="hidden required"
+                                {% else %} 
+                                    class="hidden" 
+                                {% endif %}
                                 @change="previewImageEdit($event, {{i}})"
-                            >
+                            > 
                             <button 
                                 type="button" 
-                                @click="currentArtwork.image{{i}} = 'Image Not Found'" 
-                                class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                            > 
-                            <svg 
-                                class="h-5 w-5 text-black" 
-                                viewBox="0 0 20 20" 
-                                fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
+                                @click="removed{{i}} = 'true'; currentArtwork['image'+{{i}}] = null"
+                                class="absolute top-0 right-0 bg-white p-1 shadow-sm"
+                                >  
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                  </svg>
                             </button>
-                        </div>
+
+                            <input 
+                                type="text" 
+                                x-ref="imageRemoveInput{{i}}" 
+                                id="imageRemoveInput{{i}}" 
+                                name="removed{{i}}" 
+                                class="hidden" 
+                                x-bind:value="removed{{i}}"
+                            > 
+                    </div>
                     {% endfor %}
 
 

@@ -313,10 +313,20 @@ def add_art(request):
 
 
 
-@require_http_methods(["PUT"])
+#@require_http_methods(["PUT"])
+# the PUT was not detecting the FILES for some reason, but the POST works
 def edit_artwork(request, artwork_id):
-    print("in edit_artwork 1")
     print(artwork_id)
+    print(request.POST.get('description'))
+    print(request.POST.get('removed3'))
+    if 'image1' in request.FILES:
+        print(f"image1: {request.FILES['image1']}")
+    if 'image2' in request.FILES:
+        print(f"image2: {request.FILES['image2']}")
+    if 'image3' in request.FILES:
+        print(f"image3: {request.FILES['image3']}")
+    if 'image4' in request.FILES:
+        print(f"image4: {request.FILES['image4']}")
     for filename, file in request.FILES.items():
         print(f"Filename: {filename}")
         print(f"File: {file}")
@@ -324,63 +334,75 @@ def edit_artwork(request, artwork_id):
         print(f"Content type: {file.content_type}")
     artwork = get_object_or_404(Artwork, id=artwork_id)
     print("in edit_artwork 2")
-    if request.method == 'PUT':
-        # Update the basic fields
-        # or leave them the same if the user didn't supply a new value
-        artwork.title = request.POST.get('title', artwork.title)
-        artwork.original_price = request.POST.get('original_price', artwork.original_price)
-        artwork.print_price = request.POST.get('print_price', artwork.print_price)
-        artwork.description = request.POST.get('description', artwork.description)
-        artwork.dimensions = request.POST.get('dimensions', artwork.dimensions)
 
-        # Handle image updates
-        for i in range(1, 5):
-            image_field = f'image{i}'
-            if image_field in request.FILES:
-                print("in edit_artwork 3")
-                image = request.FILES[image_field]
-                ext = os.path.splitext(image.name)[1]
-                filename = f"{artwork.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
-                print(f"filename of an image being updated: {filename}")
-                
-                # Save the new image
+
+    # Update the basic fields
+    # or leave them the same if the user didn't supply a new value
+    artwork.title = request.POST.get('title', artwork.title)
+    artwork.original_price = request.POST.get('original_price', artwork.original_price)
+    artwork.print_price = request.POST.get('print_price', artwork.print_price)
+    artwork.description = request.POST.get('description', artwork.description)
+    artwork.dimensions = request.POST.get('dimensions', artwork.dimensions)
+
+    # Handle image updates
+    for i in range(1, 5):
+        image_field = f'image{i}'
+        if image_field in request.FILES:
+            print("in edit_artwork 3")
+            image = request.FILES[image_field]
+            ext = os.path.splitext(image.name)[1]
+            filename = f"{artwork.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+            print(f"filename of image {i} being updated: {filename} for artwork {artwork.title}")
+            
+            # Save the new image
+            if os.getenv("KP_PROD") == "false":
+                # Local storage
+                path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                with open(path, 'wb+') as destination:
+                    for chunk in image.chunks():
+                        destination.write(chunk)
+            else:
+                # GCP Cloud Storage
+                client = storage.Client()
+                bucket = client.bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob(f'images/{filename}')
+                blob.upload_from_file(image)
+
+            # Delete the old image if it exists
+            old_filename = getattr(artwork, f'image{i}_filename')
+            if old_filename:
                 if os.getenv("KP_PROD") == "false":
-                    # Local storage
-                    path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
-                    with open(path, 'wb+') as destination:
-                        for chunk in image.chunks():
-                            destination.write(chunk)
+                    # Local Storage
+                    old_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', old_filename)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
                 else:
                     # GCP Cloud Storage
-                    client = storage.Client()
                     bucket = client.bucket(settings.GS_BUCKET_NAME)
-                    blob = bucket.blob(f'images/{filename}')
-                    blob.upload_from_file(image)
+                    blob = bucket.blob(f'images/{old_filename}')
+                    if blob.exists():
+                        blob.delete()
 
-                # Delete the old image if it exists
-                old_filename = getattr(artwork, f'image{i}_filename')
-                if old_filename:
-                    if os.getenv("KP_PROD") == "false":
-                        # Local Storage
-                        old_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', old_filename)
-                        if os.path.exists(old_path):
-                            os.remove(old_path)
-                    else:
-                        # GCP Cloud Storage
-                        bucket = client.bucket(settings.GS_BUCKET_NAME)
-                        blob = bucket.blob(f'images/{old_filename}')
-                        if blob.exists():
-                            blob.delete()
+            # Update the filename in the model
+            setattr(artwork, f'image{i}_filename', filename)
 
-                # Update the filename in the model
-                setattr(artwork, f'image{i}_filename', filename)
+    # check if the user deleted any of the files via the removed input field that was
+    # made to cirumvent Alpine issues
+    # NOTE that image1 is not allowed to be removed by the user in the UI because an Artwork must
+    # have at least 1 image
+    for i in range(1, 5):
+        if request.POST.get(f'removed{i}') == "true":
+            print(f'removing image {i} from artwork {artwork.title}')
+            setattr(artwork, f'image{i}_filename', None)
+            
 
-        artwork.save()
-        print("in edit_artwork 4")
-        return HttpResponseRedirect(reverse('art1'))
-    else:
-        # If it's not a PUT request, just render the art1 page
-        return HttpResponseRedirect(reverse('art1'))
+
+    artwork.save()
+    print("in edit_artwork 4")
+    return HttpResponseRedirect(reverse('art1'))
+    #else:
+    #    # If it's not a PUT request, just render the art1 page
+    #    return HttpResponseRedirect(reverse('art1'))
 
 
 @require_http_methods(["DELETE"])
