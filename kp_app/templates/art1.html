@@ -54,7 +54,7 @@
         <!-- ADD ART Modal backdrop -->
         <div x-cloak x-show="add_art_modal" class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- ADD ART Modal content -->
-          <div x-show="add_art_modal" 
+          <div x-cloak x-show="add_art_modal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -140,12 +140,15 @@
 
 
 
-
-
+        {% if artworks %}
+        <!-- for some reason the hx-put would not accept the Alpine variable nor a JS variable, 
+             so in lieu of that, a form is just being generated for every single artwork object 
+        -->
+        {% for artwork in artworks %}
         <!-- EDIT ART Modal backdrop -->
         <div x-cloak x-show="edit_art_modal" class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- EDIT ART Modal content -->
-          <div x-show="edit_art_modal" 
+          <div x-cloak x-show="edit_art_modal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -160,7 +163,8 @@
                 id="editArtForm" 
                 enctype="multipart/form-data"
                 hx-encoding="multipart/form-data"
-                hx-put="{% url 'edit_artwork' currentArtwork.id %}"
+                hx-put="{% url 'edit_artwork' artwork.id %}"
+                hx-trigger="submit"
                 hx-swap="none"
             >
             {% csrf_token %}
@@ -247,7 +251,9 @@
             </form>
           </div>
         </div>
-
+        {%  endfor %}
+        {% endif %}
+        
 
 
 
@@ -256,7 +262,7 @@
         <!-- EDIT PAGE Modal backdrop -->
         <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- EDIT PAGE Modal content -->
-          <div x-show="$store.editPageModal.showModal" 
+          <div x-cloak x-show="$store.editPageModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -406,20 +412,25 @@
                                         image2: '{{ artwork.image2|default:'' }}',
                                         image3: '{{ artwork.image3|default:'' }}',
                                         image4: '{{ artwork.image4|default:'' }}'
-                                    }"
+                                    };
+                                    console.log('this is curr ID:', currentArtwork.id);
+                                    "
                             class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
                         <svg class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                     </button>
-                    <button hx-delete="{% url 'delete_artwork' artwork.id %}"
-                            hx-confirm="Are you sure you want to delete this artwork?"
-                            hx-target="#art-content"
-                            class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
-                        <svg class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                    </button>
+
+                        {% if artworks %}
+                            <button hx-delete="{% url 'delete_artwork' artwork.id %}"
+                                    hx-confirm="Are you sure you want to delete this artwork?"
+                                    hx-target="#art-content"
+                                    class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
+                                <svg class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 

@@ -317,6 +317,11 @@ def add_art(request):
 def edit_artwork(request, artwork_id):
     print("in edit_artwork 1")
     print(artwork_id)
+    for filename, file in request.FILES.items():
+        print(f"Filename: {filename}")
+        print(f"File: {file}")
+        print(f"File size: {file.size}")
+        print(f"Content type: {file.content_type}")
     artwork = get_object_or_404(Artwork, id=artwork_id)
     print("in edit_artwork 2")
     if request.method == 'PUT':
@@ -332,6 +337,7 @@ def edit_artwork(request, artwork_id):
         for i in range(1, 5):
             image_field = f'image{i}'
             if image_field in request.FILES:
+                print("in edit_artwork 3")
                 image = request.FILES[image_field]
                 ext = os.path.splitext(image.name)[1]
                 filename = f"{artwork.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
@@ -370,6 +376,7 @@ def edit_artwork(request, artwork_id):
                 setattr(artwork, f'image{i}_filename', filename)
 
         artwork.save()
+        print("in edit_artwork 4")
         return HttpResponseRedirect(reverse('art1'))
     else:
         # If it's not a PUT request, just render the art1 page
