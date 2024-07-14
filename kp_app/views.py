@@ -261,17 +261,18 @@ def add_art(request):
         dimensions = request.POST.get('dimensions')
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
+        if not request.FILES.get('image1'):
+            # if the user didn't input the first image (required)
+            response = HttpResponse(status=400, content="Add Art form is missing first image")
+            response['HX-Trigger'] = 'addArtFailure'
+            return response
+
         # make sure there is at least 1 image, the rest are optional
         if title and original_price and print_price and description and dimensions and images[0]:
             # Generate unique filenames for each image
             filenames = []
             # this still iterates from 0, but it makes the image naming convention start at 1
             for i, image in enumerate(images, start=1):
-                if i == 1 and not image:
-                    # if the user didn't input the first image (required)
-                    response = HttpResponse(status=400, content="Add Art form is missing first image")
-                    response['HX-Trigger'] = 'addArtFailure'
-                    return response
                 if image:
                     ext = os.path.splitext(image.name)[1]
                     filename = f"{title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
@@ -323,10 +324,20 @@ def add_art(request):
 def edit_artwork(request, artwork_id):
     artwork = get_object_or_404(Artwork, id=artwork_id)
 
-    # return an error HTMX trigger if the user didn't input the required first image
-    if 'image1' not in request.FILES:
+
+    if request.FILES.get('image1'):
+        print(f'this is image1: {request.FILES.get("image1")}')
+    if request.FILES.get('image2'):
+        print(f'this is image2: {request.FILES.get("image2")}')
+    if request.FILES.get('image3'):
+        print(f'this is image3: {request.FILES.get("image3")}')
+    if request.FILES.get('image4'):
+        print(f'this is image4: {request.FILES.get("image4")}')
+
+    if not request.FILES.get('image1'):
+        # if the user didn't input the first image (required)
         response = HttpResponse(status=400, content="Edit Art form is missing first image")
-        response['HX-Trigger'] = 'editArtFailure'
+        response['HX-Trigger'] = 'addArtFailure'
         return response
 
 
@@ -379,6 +390,13 @@ def edit_artwork(request, artwork_id):
 
             # Update the filename in the model
             setattr(artwork, f'image{i}_filename', filename)
+        else:
+            # if the image is not in the request.FILES, then it needs to be deleted from the DB since
+            # we are now refreshing the Edit Art form every time it is opened
+            # Delete the old image if it exists
+            setattr(artwork, f'image{i}_filename', None)
+            
+
 
     # check if the user deleted any of the files via the removed input field that was
     # made to cirumvent Alpine issues

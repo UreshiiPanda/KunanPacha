@@ -168,8 +168,6 @@
                 {% endif %}
 
 
-
-
                 {% if user.is_authenticated %}
                     {% if request.user|has_group:"Editor" %}
                     <button 
@@ -192,8 +190,6 @@
                        x-transition:leave-start="opacity-100 scale-100"
                        x-transition:leave-end="opacity-0 scale-90"
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-
-
 
                     <form 
                         id="imageForm1" 
@@ -220,11 +216,6 @@
                           <input type="text" id="font_style" name="font_style" value="{{ page_settings.homepage1_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <!-- Existing image input -->
-
-
-
-
-
 
                         <div class="mb-4">
                           <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
@@ -262,49 +253,13 @@
             </div>
 
 
+                <!-- Horizontal lines with arrows -->
+                <h1 class="text-4xl font-extrabold relative z-10 mb-6"> {{page_settings.title}} </h1>
+                <div class="absolute top-1/2 w-24 h-px bg-black left-1/4 transform -translate-y-1/2"></div>
+                <div class="absolute top-1/2 w-24 h-px bg-black right-1/4 transform -translate-y-1/2"></div>
 
 
-
-                    <!-- Horizontal lines with arrows -->
-                    <h1 class="text-4xl font-extrabold relative z-10 mb-6"> {{page_settings.title}} </h1>
-                    <div class="absolute top-1/2 w-24 h-px bg-black left-1/4 transform -translate-y-1/2"></div>
-                    <div class="absolute top-1/2 w-24 h-px bg-black right-1/4 transform -translate-y-1/2"></div>
-
-                    <!-- Django example -->
-                    <ul class="text-white">
-                        {% for test in tests %}
-                        <li>
-                            {{tests.info}}: 
-                                {% if test.ready %}
-                                    Completed
-                                {% else %}
-                                    Not Completed
-                                {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-
-                    <!-- HTMX example -->
-                    <div id="catfact" class="text-white"></div>
-                    <button 
-                        class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white hover:text-black hover:bg-white hover:border-black"
-                        hx-get="https://catfact.ninja/fact" 
-                        hx-swap="innerHTML" 
-                        hx-target="#catfact">
-                        Get a random fact about cats
-                    </button>
-
-                    <!-- Alpine example -->
-                    <div x-data="{ count: 0 }" class="text-white">
-                        <button
-                            class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white-200 hover:text-black hover:bg-white hover:order-black"
-                            x-on:click="count++">
-                            Increment
-                        </button>
-                        <span x-text="count"></span>
-                    </div>
-
-            </div>
+        </div>
 
 
             <!-- HOME PAGE SCREEN 2 -->
