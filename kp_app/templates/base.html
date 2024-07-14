@@ -25,6 +25,7 @@
         <!-- setup a global Alpine var for edit_page popups -->
         <script>
             document.addEventListener('alpine:init', () => {
+                <!-- the editArtModal.currentArtwork is being re-used for the addArtModal in the templates to avoid an excess var -->
                 Alpine.store('addArtModal', {
                     showModal: false,
          
@@ -37,11 +38,16 @@
                      showModal: false,
 
                      currentArtwork:{
-                        id: 0,
-                        image1: 'Image Not Found',
-                        image2: 'Image Not Found',
-                        image3: 'Image Not Found',
-                        image4: 'Image Not Found',
+                         id: 0,
+                         title: '',
+                         original_price: '',
+                         print_price: '',
+                         description: '',
+                         dimensions: '',
+                         image1: null,
+                         image2: null,
+                         image3: null,
+                         image4: null,
                     },
                      previewImageEdit(event, index) {
                          const file = event.target.files[0];
@@ -300,7 +306,7 @@
 </html>
 
 
-<!-- Email Alerts Event Listeners for Contact Form -->
+<!-- Form Alerts / Event Listeners for all Forms -->
 <script>
      document.body.addEventListener("emailSuccess", function(evt){
         console.log("email alert success");
@@ -314,6 +320,17 @@
         console.log("email alert failure header fields");
         alert("Email sending failed due to server issues");
      }) 
+
+
+     document.body.addEventListener("addArtFailure", function(evt){
+        console.log("add art alert failure: no first image provided");
+        alert("You must provide an image in the first image box");
+     }) 
+     document.body.addEventListener("editArtFailure", function(evt){
+        console.log("edit art alert failure: no first image provided");
+        alert("You must provide an image in the first image box");
+     }) 
+     
 </script>
 
 

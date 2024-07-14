@@ -267,6 +267,11 @@ def add_art(request):
             filenames = []
             # this still iterates from 0, but it makes the image naming convention start at 1
             for i, image in enumerate(images, start=1):
+                if i == 1 and not image:
+                    # if the user didn't input the first image (required)
+                    response = HttpResponse(status=400, content="Add Art form is missing first image")
+                    response['HX-Trigger'] = 'addArtFailure'
+                    return response
                 if image:
                     ext = os.path.splitext(image.name)[1]
                     filename = f"{title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
@@ -316,24 +321,14 @@ def add_art(request):
 #@require_http_methods(["PUT"])
 # the PUT was not detecting the FILES for some reason, but the POST works
 def edit_artwork(request, artwork_id):
-    print(artwork_id)
-    print(request.POST.get('description'))
-    print(request.POST.get('removed3'))
-    if 'image1' in request.FILES:
-        print(f"image1: {request.FILES['image1']}")
-    if 'image2' in request.FILES:
-        print(f"image2: {request.FILES['image2']}")
-    if 'image3' in request.FILES:
-        print(f"image3: {request.FILES['image3']}")
-    if 'image4' in request.FILES:
-        print(f"image4: {request.FILES['image4']}")
-    for filename, file in request.FILES.items():
-        print(f"Filename: {filename}")
-        print(f"File: {file}")
-        print(f"File size: {file.size}")
-        print(f"Content type: {file.content_type}")
     artwork = get_object_or_404(Artwork, id=artwork_id)
-    print("in edit_artwork 2")
+
+    # return an error HTMX trigger if the user didn't input the required first image
+    if 'image1' not in request.FILES:
+        response = HttpResponse(status=400, content="Edit Art form is missing first image")
+        response['HX-Trigger'] = 'editArtFailure'
+        return response
+
 
 
     # Update the basic fields
@@ -348,7 +343,6 @@ def edit_artwork(request, artwork_id):
     for i in range(1, 5):
         image_field = f'image{i}'
         if image_field in request.FILES:
-            print("in edit_artwork 3")
             image = request.FILES[image_field]
             ext = os.path.splitext(image.name)[1]
             filename = f"{artwork.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
@@ -399,7 +393,6 @@ def edit_artwork(request, artwork_id):
 
 
     artwork.save()
-    print("in edit_artwork 4")
     return HttpResponseRedirect(reverse('art1'))
     #else:
     #    # If it's not a PUT request, just render the art1 page
@@ -880,4 +873,5 @@ def home_page_menu_edit(request):
         print(f"Error saving Menu settings: {e}")
         response = HttpResponse(status=400, content="Menu Settings update failed")
         return response
+
 

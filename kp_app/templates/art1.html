@@ -10,13 +10,38 @@
 
 
 
-    <div x-data id="art-content">
+    <div x-data
+         id="art-content">
 
         {% if user.is_authenticated %}
             {% if request.user|has_group:"Editor" %}
             <button 
-                x-data 
-                @click="$store.addArtModal.showModal = true" 
+                x-data
+                @click="
+                        $store.editArtModal.currentArtwork = {
+                            id: 0,
+                            title: '',
+                            original_price: '',
+                            print_price: '',
+                            description: '',
+                            dimensions: '',
+                            image1: null,
+                            image2: null,
+                            image3: null,
+                            image4: null
+                        };
+                        console.log('~~~~~currentArtwork~~~~~~');
+                        console.log($store.editArtModal.currentArtwork.id);
+                        console.log($store.editArtModal.currentArtwork.title);
+                        console.log($store.editArtModal.currentArtwork.original_price);
+                        console.log($store.editArtModal.currentArtwork.print_price);
+                        console.log($store.editArtModal.currentArtwork.dimensions);
+                        console.log($store.editArtModal.currentArtwork.description);
+                        console.log($store.editArtModal.currentArtwork.image1);
+                        console.log($store.editArtModal.currentArtwork.image2);
+                        console.log($store.editArtModal.currentArtwork.image3);
+                        console.log($store.editArtModal.currentArtwork.image4);
+                        $store.addArtModal.showModal = true" 
                 class="fixed mt-20 top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                 Add Art
             </button>
@@ -51,27 +76,27 @@
             {% csrf_token %}
               <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
-                <input type="text" id="title" name="title" required placeholder="eg: unique title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="title" x-bind:value="$store.editArtModal.currentArtwork.title" name="title" required placeholder="eg: unique title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
-                <input type="text" id="original_price" name="original_price" required placeholder="eg: 80.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="original_price" x-bind:value="$store.editArtModal.currentArtwork.original_price" name="original_price" required placeholder="eg: 80.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
-                <input type="text" id="print_price" name="print_price" required placeholder="eg: 20.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="print_price"  x-bind:value="$store.editArtModal.currentArtwork.print_price" name="print_price" required placeholder="eg: 20.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="dimensions" class="block text-sm font-medium text-gray-700">Dimensions:</label>
-                <input type="text" id="dimensions" name="dimensions" required placeholder="eg: 40cm x 40cm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="dimensions" x-bind:value="$store.editArtModal.currentArtwork.dimensions" name="dimensions" required placeholder="eg: 40cm x 40cm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
-                <textarea id="description" name="description" rows="3" required placeholder="eg: un bocadito de arte..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                <textarea id="description"  x-bind:value="$store.editArtModal.currentArtwork.description" name="description" rows="3" required placeholder="eg: un bocadito de arte..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
               </div>
   
               <div class="mb-4">
@@ -79,7 +104,13 @@
                 <div class="flex flex-wrap space-x-4" id="imageContainer">
                   {% for i in '1234'|make_list %}
                   <div class="relative mb-4" id="imageWrapper{{ i }}">
-                    <input type="file" id="imageInput{{ i }}" name="image{{ i }}" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreview{{ i }}')">
+                    <input type="file" 
+                            id="imageInput{{ i }}" 
+                            name="image{{ i }}" 
+                            accept="image/*" 
+                            class="hidden" 
+                            onchange="previewImage(this, 'imagePreview{{ i }}')"
+                            >
 
                       <img id="imagePreview{{ i }}" src="placeholder.jpg" 
                            {% if forloop.first %}
@@ -125,16 +156,15 @@
         <!-- for some reason the hx-put would not accept the Alpine variable nor a JS variable, 
              so in lieu of that, a form is just being generated for every single artwork object 
         -->
-        {% for artwork in artworks %}
         <!-- EDIT ART Modal backdrop -->
         <div 
             x-cloak 
-            x-show="$store.editArtModal.showModal && $store.editArtModal.currentArtwork.id == {{artwork.id}}" 
+            x-show="$store.editArtModal.showModal" 
             class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- EDIT ART Modal content -->
           <div
             x-cloak 
-            x-show="$store.editArtModal.showModal && $store.editArtModal.currentArtwork.id == {{artwork.id}}" 
+            x-show="$store.editArtModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -149,7 +179,7 @@
                 id="editArtForm" 
                 enctype="multipart/form-data"
                 hx-encoding="multipart/form-data"
-                hx-post="{% url 'edit_artwork' artwork.id %}"
+                hx-post="editArtworkPost()"
                 hx-trigger="submit"
                 hx-swap="none"
                 hx-on::after-request="Alpine.store('editArtModal').showModal = false"
@@ -157,27 +187,27 @@
             {% csrf_token %}
               <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
-                <input type="text" id="titleEdit" name="title" required placeholder="{{artwork.title}}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="titleEdit" name="title" x-bind:placeholder="$store.editArtModal.currentArtwork.title" required  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
-                <input type="text" id="original_priceEdit" name="original_price"  required placeholder="{{artwork.original_price}}"  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="original_priceEdit" name="original_price"  required x-bind:placeholder="$store.editArtModal.currentArtwork.original_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
  
               <div class="mb-4">
                 <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
-                <input type="text" id="print_priceEdit" name="print_price" required placeholder="{{artwork.print_price}}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="print_priceEdit" name="print_price" required x-bind:placeholder="$store.editArtModal.currentArtwork.print_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="dimensions" class="block text-sm font-medium text-gray-700">Dimensions:</label>
-                <input type="text" id="dimensionsEdit" name="dimensions" required placeholder="{{artwork.dimensions}}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="dimensionsEdit" name="dimensions" required x-bind:placeholder="$store.editArtModal.currentArtwork.dimensions" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
-                <textarea id="descriptionEdit" name="description" rows="3" required placeholder="{{artwork.description}}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                <textarea id="descriptionEdit" name="description" rows="3" required x-bind:placeholder="$store.editArtModal.currentArtwork.description" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
               </div>
   
               <div class="mb-4">
@@ -253,7 +283,6 @@
             </form>
           </div>
         </div>
-        {%  endfor %}
         {% endif %}
         
 
@@ -285,8 +314,8 @@
               <div class="mb-4">
                 <label for="font" class="block text-sm font-medium text-gray-700">Font</label>
                 <input type="text" id="font" name="font" 
-                    placeholder="Enter font (eg: sans-serif)"
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        placeholder="Enter font (eg: sans-serif)"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
               </div>
 
                 <div class="mb-4">
@@ -405,11 +434,23 @@
                             @click=" 
                                     $store.editArtModal.currentArtwork = {
                                         id: '{{artwork.id}}',
+                                        title: '{{artwork.title}}',
+                                        original_price: '{{artwork.original_price}}',
+                                        print_price: '{{artwork.print_price}}',
+                                        description: '{{artwork.description}}',
+                                        dimensions: '{{artwork.dimensions}}',
                                         image1: '{{ artwork.image1 }}',
                                         image2: '{{ artwork.image2|default:'' }}',
                                         image3: '{{ artwork.image3|default:'' }}',
                                         image4: '{{ artwork.image4|default:'' }}'
                                     };
+                                    console.log('~~~~~currentArtwork~~~~~~');
+                                    console.log($store.editArtModal.currentArtwork.id);
+                                    console.log($store.editArtModal.currentArtwork.title);
+                                    console.log($store.editArtModal.currentArtwork.original_price);
+                                    console.log($store.editArtModal.currentArtwork.print_price);
+                                    console.log($store.editArtModal.currentArtwork.dimensions);
+                                    console.log($store.editArtModal.currentArtwork.description);
                                     console.log($store.editArtModal.currentArtwork.image1);
                                     console.log($store.editArtModal.currentArtwork.image2);
                                     console.log($store.editArtModal.currentArtwork.image3);
@@ -465,6 +506,11 @@
           const img = wrapper.querySelector('img');
           input.value = '';
           img.src = 'placeholder.jpg';
+        }
+
+        function editArtworkPost() {
+            id = Alpine.store('editArtModal').currentArtwork.id
+            htmx.ajax('POST', '{% url 'edit_artwork' 0 %}'.replace(0, id));
         }
     </script>
 

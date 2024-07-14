@@ -1474,14 +1474,6 @@ video {
   --tw-ring-offset-width: 2px;
 }
 
-.disabled\:cursor-not-allowed:disabled {
-  cursor: not-allowed;
-}
-
-.disabled\:opacity-50:disabled {
-  opacity: 0.5;
-}
-
 @media (min-width: 480px) {
   .sm\:mb-0 {
     margin-bottom: 0px;
