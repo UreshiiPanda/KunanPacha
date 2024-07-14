@@ -390,8 +390,9 @@ def edit_artwork(request, artwork_id):
     # made to cirumvent Alpine issues
     # NOTE that image1 is not allowed to be removed by the user in the UI because an Artwork must
     # have at least 1 image
+    # also check that the user didn't re-add a new image after clicking the trash bin icon for deletion
     for i in range(1, 5):
-        if request.POST.get(f'removed{i}') == "true":
+        if request.POST.get(f'removed{i}') == "true" and f'image{i}' not in request.FILES:
             print(f'removing image {i} from artwork {artwork.title}')
             setattr(artwork, f'image{i}_filename', None)
             

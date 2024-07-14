@@ -21,9 +21,47 @@
   <body class="h-screen w-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
 
+
         <!-- setup a global Alpine var for edit_page popups -->
         <script>
             document.addEventListener('alpine:init', () => {
+                Alpine.store('addArtModal', {
+                    showModal: false,
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("the ADD ART modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
+                    }
+                }),
+                Alpine.store('editArtModal', {
+                     showModal: false,
+
+                     currentArtwork:{
+                        id: 0,
+                        image1: 'Image Not Found',
+                        image2: 'Image Not Found',
+                        image3: 'Image Not Found',
+                        image4: 'Image Not Found',
+                    },
+                     previewImageEdit(event, index) {
+                         const file = event.target.files[0];
+                         if (file) {
+                             const reader = new FileReader();
+                             reader.onload = (e) => {
+                                 console.log(this.currentArtwork[`image${index}`]);
+                                 this.currentArtwork[`image${index}`] = e.target.result;
+                                 console.log(this.currentArtwork[`image${index}`]);
+                             };
+                             reader.readAsDataURL(file);
+                          
+                         }
+                     },
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("the EDIT ART modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
+                    }
+                }),
                 Alpine.store('editPageModal', {
                     showModal: false,
          
