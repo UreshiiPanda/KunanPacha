@@ -158,9 +158,9 @@
             id="menu" >
 
 
-            <nav class="fixed top-0 left-0 w-full flex items-center justify-between bg-white p-6 border-b border-black shadow-lg z-50">
+            <nav class="fixed top-0 left-0 w-full flex items-center justify-between bg-white p-6 border-b border-black z-50 shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
                     <div class="flex items-center flex-shrink-0 mr-6">
-                        <img src={{ art5_url }} alt="Logo" class="h-8 w-8 mr-2 object-cover">
+                        <img src="{{ art5_url }}" alt="Logo" class="h-8 w-8 mr-2 object-cover shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
                     </div>
                 <div class="flex items-center">
                     <button @click="smallMenu = !smallMenu" class="block sm:hidden text-black">
@@ -176,7 +176,7 @@
                 <div class="hidden sm:flex sm:flex-grow items-center justify-between">
                     <div class="flex items-center text-sm">
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4"  style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
@@ -187,7 +187,7 @@
                             >Home
                         </a>
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
@@ -198,14 +198,14 @@
                             >Art
                         </a>
                         <a href="#responsive-header" 
-                            class="block mt-2 inline-block mr-4"
+                            class="block mt-2 hover:cursor-pointer inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
                             >Blog
                         </a>
                         <a 
-                            class="block hover:cursor-pointer mt-2 inline-block mr-4"
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false" 
                             @click="$store.editMenuModal.showModal = false" 
@@ -234,12 +234,12 @@
 
             <!-- show small sliding menu via Alpine when hamburger button is clicked -->
             <div x-show="smallMenu" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-1/2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-1/2" class="bg-black text-white sm:hidden fixed inset-x-0 top-0 p-6 z-40">
-                    <div class="flex items-center flex-shrink-0 text-black mr-6">
+                    <div class="flex items-center flex-shrink-0 text-black mr-6 shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
                         <img src={{ art5_url }} alt="Logo" class="h-8 w-8 mr-2 object-cover">
                     </div>
-                <div class="flex items-center">
+                <div class="flex items-center shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
                     <button @click="smallMenu = !smallMenu" class="block sm:hidden text-black">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"  xmlns="http://www.w3.org/2000/svg">
                           <path d="M3 6H21" stroke="black" stroke-width="1.0" />
                           <path d="M3 12H17" stroke="black" stroke-width="1.0" />
                           <path d="M3 18H21" stroke="black" stroke-width="1.0" />
@@ -270,7 +270,10 @@
                             >Art
                         </a>
 
-                    <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4">Blog</a>
+                    <a href="#responsive-header" 
+                        class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                        >Blog
+                    </a>
 
                     <a href="{% url 'contact' %}" 
                             class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
@@ -280,7 +283,8 @@
                             hx-swap="innerHTML" 
                             hx-target="#content"
                             hx-push-url="/contact"
-                    >Contact</a>
+                            >Contact
+                    </a>
                             
                     {% if user.is_authenticated %}
                         {% if request.user|has_group:"Editor" %}

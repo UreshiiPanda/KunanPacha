@@ -439,7 +439,7 @@ def art2(request, artwork_id):
             font='sans-serif',
             font_color='black',
             font_style='normal',
-            edu_email='default@email.com'
+            edu_email='meow@email.com'
         )
 
 

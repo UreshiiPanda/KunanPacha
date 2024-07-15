@@ -408,7 +408,7 @@
 
         {% for artwork in artworks %}
         <div class="flex flex-col items-center mx-auto md:w-1/2 lg:w-1/3 p-4">
-            <div class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px]"
+            <div class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px] shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300"
                  @click="$store.editPageModal.showModal = false"
                  hx-get="{% url 'art2' artwork.id %}"
                  hx-swap="innerHTML"
@@ -417,15 +417,25 @@
                 <img src="{{ artwork.image1 }}" alt="Image Not Found" class="p-4 h-full w-full object-cover">
             </div>
 
-            <div class="p-4 flex flex-wrap w-full justify-between items-center">
-                <h3 class="text-lg text-center m-2 flex-grow">{{ artwork.title }}</h3>
-                <div class="flex flex-wrap justify-end">
-                    <a href="mailto:{{page_settings.edu_email}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
-                        <svg class="h-6 w-6 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z"></path>
-                            <rect x="3" y="5" width="18" height="14" rx="1"></rect>
-                            <polyline points="3 7 12 13 21 7"></polyline>
-                        </svg>
+            <div class="p-4 w-full relative">
+                <h3 class="text-lg text-left pr-10 break-words">{{ artwork.title }}</h3>
+                <div class="absolute top-4 right-4 flex space-x-2">
+                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{artwork.title}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                        {% if user.is_authenticated %}
+                            {% if request.user|has_group:"Editor" %}
+                            <svg class="h-6 w-6 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z"></path>
+                                <rect x="3" y="5" width="18" height="14" rx="1"></rect>
+                                <polyline points="3 7 12 13 21 7"></polyline>
+                            </svg>
+                            {% endif %}
+                        {% else %}
+                            <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z"/>
+                                <rect x="3" y="5" width="18" height="14" rx="1" />
+                                <polyline points="3 7 12 13 21 7" />
+                            </svg>
+                        {% endif %}
                     </a>
 
 
