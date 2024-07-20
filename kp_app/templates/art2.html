@@ -9,10 +9,10 @@
 
     <!-- js script used for tansfering vars from Django to Alpine -->
     <script>
-        var img1_url = "{{image_obj.image}}";
-        var img2_url = "{{image_obj.image2}}";
-        var img3_url = "{{image_obj.image3}}";
-        var img4_url = "{{image_obj.image4}}";
+        var img1_url = "{{image_obj.image|escapejs}}";
+        var img2_url = "{{image_obj.image2|escapejs}}";
+        var img3_url = "{{image_obj.image3|escapejs}}";
+        var img4_url = "{{image_obj.image4|escapejs}}";
     </script>
 
 
@@ -32,7 +32,6 @@
             
             <form 
                 hx-post="{% url 'art2_page_edit' %}" 
-                hx-target="#art-content"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
@@ -48,7 +47,7 @@
                 <div class="mb-4">
                   <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color</label>
                   <input type="text" id="font_color" name="font_color"
-                         placeholder="Enter font color (eg: red-500)"
+                         placeholder="Enter font color (eg: gray-500)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
@@ -187,7 +186,7 @@
 
             <div class="mt-20">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold">{{ image_obj.title }}</h2>
+                    <h2 class="p-6 text-2xl font-bold">{{ image_obj.title }}</h2>
                     <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{image_obj.title|urlencode}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                         <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z"></path>
@@ -197,8 +196,8 @@
                     </a>
                 </div>
 
-                <p class="text-lg mb-6">{{ image_obj.desc }}</p>
-                <div class="flex justify-end">
+                <p class="text-lg mb-6 p-6">{{ image_obj.desc }}</p>
+                <div class="flex justify-end p-6">
                     <div>
                         <p class="text-xl mb-4 font-semibold">Dimensions:  {{ image_obj.dimensions }}</p>
                         <p class="text-xl mb-4 font-semibold">Print Price:  ${{ image_obj.print_price }}</p>

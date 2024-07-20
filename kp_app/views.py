@@ -13,6 +13,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
 import json
+from decimal import Decimal, InvalidOperation
 from .forms import LoginForm
 from .forms import RegistrationForm
 import os
@@ -261,6 +262,16 @@ def add_art(request):
         dimensions = request.POST.get('dimensions')
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
+
+        try:
+            Decimal(original_price)
+            Decimal(print_price)
+        except InvalidOperation:
+            response = HttpResponse(status=400, content="The Prices were not valid numbers")
+            response['HX-Trigger'] = 'priceFailure'
+            return response
+
+
         if not request.FILES.get('image1'):
             # if the user didn't input the first image (required)
             response = HttpResponse(status=400, content="Add Art form is missing first image")
@@ -349,6 +360,16 @@ def edit_artwork(request, artwork_id):
     artwork.print_price = request.POST.get('print_price', artwork.print_price)
     artwork.description = request.POST.get('description', artwork.description)
     artwork.dimensions = request.POST.get('dimensions', artwork.dimensions)
+
+
+    try:
+        Decimal(artwork.original_price)
+        Decimal(artwork.print_price)
+    except InvalidOperation:
+        response = HttpResponse(status=400, content="The Prices were not valid numbers")
+        response['HX-Trigger'] = 'priceFailure'
+        return response
+
 
     # Handle image updates
     for i in range(1, 5):
@@ -727,7 +748,7 @@ def art2_page_edit(request):
         try:
             settings.save()
             print("Art2 Page Settings successfully changed in the DB")
-            return HttpResponseRedirect(reverse('art2'))
+            return HttpResponse(status=200, content="Art 2 Page Settings successfully updated")
         except Exception as e:
             print(f"Error saving settings: {e}")
             response = HttpResponse(status=400, content="Art2 Page Settings update failed")

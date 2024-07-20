@@ -143,6 +143,22 @@
                             'black': 'text-black',
                             'white': 'text-white',
                         },
+                        lineVariants: {
+                            'red-500': 'bg-red-500',
+                            'blue-500': 'bg-blue-500',
+                            'green-500': 'bg-green-500',
+                            'gray-900': 'bg-gray-900',
+                            'gray-800': 'bg-gray-800',
+                            'gray-700': 'bg-gray-700',
+                            'gray-600': 'bg-gray-600',
+                            'gray-500': 'bg-gray-500',
+                            'gray-400': 'bg-gray-400',
+                            'gray-300': 'bg-gray-300',
+                            'gray-200': 'bg-gray-200',
+                            'gray-100': 'bg-gray-100',
+                            'black': 'bg-black',
+                            'white': 'bg-white',
+                        },
                         styleVariants: {
                             'italic': 'italic',
                             'bold': 'font-bold',
@@ -257,17 +273,21 @@
 
                 <div class="relative flex flex-col items-center justify-center w-full py-10">
                     <!-- Left horizontal line with arrow -->
-                    <div class="absolute top-1/2 w-[calc(24%-2rem)] h-px bg-blue-500 left-20 transform -translate-y-1/2 hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-                        <span class="absolute -left-14 -top-[21px] text-red-500 text-4xl" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&lt;</span>
+                    <div 
+                        :class="lineVariants[currentColor] || 'bg-black'"
+                        class="absolute top-1/2 w-1/6 h-[2px] left-20 transform  -translate-y-1/2  hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                        <span class="absolute -left-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&lt;</span>
                     </div>
                     
                     <!-- Right horizontal line with arrow -->
-                    <div class="absolute top-1/2 w-[calc(24%-2rem)] h-px bg-blue-500 right-20 transform -translate-y-1/2 hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-                        <span class="absolute -right-14 -top-[21px] text-red-500 text-4xl" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&gt;</span>
+                    <div 
+                        :class="lineVariants[currentColor] || 'bg-black'"
+                        class="absolute top-1/2 w-1/6 h-[2px] right-20 transform -translate-y-1/2 hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                        <span class="absolute -right-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&gt;</span>
                     </div>
                     
                     <!-- Title -->
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center z-20 px-4 max-w-[350px] break-words" style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center z-20 px-4 max-w-[380px] break-words" style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);">
                         {{page_settings.title}}
                     </h1>
                 </div>

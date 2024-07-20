@@ -178,8 +178,8 @@
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block mr-4"  style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
                             hx-get="{% url 'home' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -189,8 +189,8 @@
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
                             hx-get="{% url 'art1' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -200,15 +200,15 @@
                         <a href="#responsive-header" 
                             class="block mt-2 hover:cursor-pointer inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
                             >Blog
                         </a>
                         <a 
                             class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
                             hx-get="{% url 'contact' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -250,8 +250,9 @@
                 <div class="flex flex-col items-center space-y-4">
                     <a href="{% url 'home' %}" 
                             class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false;
+                                    smallMenu = !smallMenu" 
                             hx-get="{% url 'home' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -261,8 +262,9 @@
 
                     <a href="{% url 'art1' %}" 
                             class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false;
+                                    smallMenu = !smallMenu" 
                             hx-get="{% url 'art1' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -277,8 +279,9 @@
 
                     <a href="{% url 'contact' %}" 
                             class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
-                            @click="$store.editPageModal.showModal = false" 
-                            @click="$store.editMenuModal.showModal = false" 
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false;
+                                    smallMenu = !smallMenu" 
                             hx-get="{% url 'contact' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -293,7 +296,7 @@
                             {% csrf_token %}
                             <button type="submit" class="w-full text-sm px-4 py-2 border border-white text-white hover:bg-white hover:text-black transition-colors duration-300">Logout</button>
                         </form>
-                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
+                        <a x-data @click="$store.editPageModal.toggle(); smallMenu = !smallMenu" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
                     </div>
                         {% endif %}
                     {% endif %}
@@ -333,6 +336,10 @@
      document.body.addEventListener("editArtFailure", function(evt){
         console.log("edit art alert failure: no first image provided");
         alert("You must provide an image in the first image box");
+     }) 
+     document.body.addEventListener("priceFailure", function(evt){
+        console.log("art prices alert failure: invalid price numbers");
+        alert("The prices were not valid numbers");
      }) 
      
 </script>
