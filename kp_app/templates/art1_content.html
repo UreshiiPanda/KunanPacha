@@ -1,14 +1,293 @@
-
     {% load static %}
+    {% load auth_tags %}
 
 
-    <div x-data id="art-content">
+
+    <div x-data
+         id="art-content">
+
+        {% if user.is_authenticated %}
+            {% if request.user|has_group:"Editor" %}
+            <button 
+                x-data
+                @click="
+                        $store.editArtModal.currentArtwork = {
+                            id: 0,
+                            title: '',
+                            original_price: '',
+                            print_price: '',
+                            description: '',
+                            dimensions: '',
+                            image1: null,
+                            image2: null,
+                            image3: null,
+                            image4: null
+                        };
+                        console.log('~~~~~currentArtwork~~~~~~');
+                        console.log($store.editArtModal.currentArtwork.id);
+                        console.log($store.editArtModal.currentArtwork.title);
+                        console.log($store.editArtModal.currentArtwork.original_price);
+                        console.log($store.editArtModal.currentArtwork.print_price);
+                        console.log($store.editArtModal.currentArtwork.dimensions);
+                        console.log($store.editArtModal.currentArtwork.description);
+                        console.log($store.editArtModal.currentArtwork.image1);
+                        console.log($store.editArtModal.currentArtwork.image2);
+                        console.log($store.editArtModal.currentArtwork.image3);
+                        console.log($store.editArtModal.currentArtwork.image4);
+                        $store.addArtModal.showModal = true" 
+                class="fixed mt-20 top-4 right-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Add Art
+            </button>
+            {% endif %}
+        {% endif %}
 
 
-        <!-- Modal backdrop -->
+
+        <!-- ADD ART Modal backdrop -->
+        <div x-cloak x-show="$store.addArtModal.showModal" class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- ADD ART Modal content -->
+          <div x-cloak x-show="$store.addArtModal.showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 overflow-y-auto max-h-[90vh]">
+            
+            <h2 class="text-2xl font-bold mb-4">Add New Artwork</h2>
+             
+            <form 
+                id="artForm" 
+                enctype="multipart/form-data"
+                hx-encoding="multipart/form-data"
+                hx-post="{% url 'add_art' %}"
+                hx-swap="none"
+                hx-trigger="submit"
+                hx-on::after-request="Alpine.store('addArtModal').showModal = false"
+            >
+            {% csrf_token %}
+              <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
+                <input type="text" id="title" x-bind:value="$store.editArtModal.currentArtwork.title" name="title" required placeholder="eg: unique title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
+                <input type="text" id="original_price" x-bind:value="$store.editArtModal.currentArtwork.original_price" name="original_price" required placeholder="eg: 80.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
+                <input type="text" id="print_price"  x-bind:value="$store.editArtModal.currentArtwork.print_price" name="print_price" required placeholder="eg: 20.00" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="dimensions" class="block text-sm font-medium text-gray-700">Dimensions:</label>
+                <input type="text" id="dimensions" x-bind:value="$store.editArtModal.currentArtwork.dimensions" name="dimensions" required placeholder="eg: 40cm x 40cm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
+                <textarea id="description"  x-bind:value="$store.editArtModal.currentArtwork.description" name="description" rows="3" required placeholder="eg: un bocadito de arte..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+              </div>
+  
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                <div class="flex flex-wrap space-x-4" id="imageContainer">
+                  {% for i in '1234'|make_list %}
+                  <div class="relative mb-4" id="imageWrapper{{ i }}">
+                    <input type="file" 
+                            id="imageInput{{ i }}" 
+                            name="image{{ i }}" 
+                            accept="image/*" 
+                            class="hidden" 
+                            onchange="previewImage(this, 'imagePreview{{ i }}')"
+                            >
+
+                      <img id="imagePreview{{ i }}" src="placeholder.jpg" 
+                           {% if forloop.first %}
+                               alt="Picture Required!" 
+                            {% else %}
+                                alt="Select Picture"
+                            {% endif %}
+                           class="w-24 h-24 object-cover rounded cursor-pointer" 
+                           onclick="document.getElementById('imageInput{{ i }}').click()">
+
+                    <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper{{ i }}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="$store.addArtModal.showModal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    hx-disabled-elt="this"
+                    hx-disable-if="form:not(:valid)"
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+
+        {% if artworks %}
+        <!-- for some reason the hx-put would not accept the Alpine variable nor a JS variable, 
+             so in lieu of that, a form is just being generated for every single artwork object 
+        -->
+        <!-- EDIT ART Modal backdrop -->
+        <div 
+            x-cloak 
+            x-show="$store.editArtModal.showModal" 
+            class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- EDIT ART Modal content -->
+          <div
+            x-cloak 
+            x-show="$store.editArtModal.showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 overflow-y-auto max-h-[90vh]">
+            
+            <h2 class="text-2xl font-bold mb-4">Edit Artwork</h2>
+            
+            <form 
+                id="editArtForm" 
+                enctype="multipart/form-data"
+                hx-encoding="multipart/form-data"
+                hx-trigger="submit"
+                hx-swap="none"
+                hx-on::after-request="Alpine.store('editArtModal').showModal = false"
+                >
+            {% csrf_token %}
+              <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
+                <input type="text" id="titleEdit"  x-bind:value="$store.editArtModal.currentArtwork.title" name="title" x-bind:placeholder="$store.editArtModal.currentArtwork.title" required  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="original_price" class="block text-sm font-medium text-gray-700">Original Price:</label>
+                <input type="text" id="original_priceEdit"  x-bind:value="$store.editArtModal.currentArtwork.original_price"  name="original_price"  required x-bind:placeholder="$store.editArtModal.currentArtwork.original_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+ 
+              <div class="mb-4">
+                <label for="print_price" class="block text-sm font-medium text-gray-700">Print Price:</label>
+                <input type="text" id="print_priceEdit"  x-bind:value="$store.editArtModal.currentArtwork.print_price" name="print_price" required x-bind:placeholder="$store.editArtModal.currentArtwork.print_price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="dimensions" class="block text-sm font-medium text-gray-700">Dimensions:</label>
+                <input type="text" id="dimensionsEdit"  x-bind:value="$store.editArtModal.currentArtwork.dimensions" name="dimensions" required x-bind:placeholder="$store.editArtModal.currentArtwork.dimensions" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
+                <textarea id="descriptionEdit"  x-bind:value="$store.editArtModal.currentArtwork.description" name="description" rows="3" required x-bind:placeholder="$store.editArtModal.currentArtwork.description" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+              </div>
+  
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                <div class="flex flex-wrap space-x-4" id="imageEditContainer">
+
+
+                    {% for i in '1234'|make_list %}
+                    <div x-data="{removed{{i}}:'false'}" class="relative mb-4" id="imageEditWrapper{{ i }}">
+
+
+                            <img 
+                                src="placeholder.jpg"
+                                alt="{% if forloop.first %}Picture Required!{% else %}Select Picture{% endif %}" 
+                                class="w-24 h-24 object-cover rounded cursor-pointer" 
+                                onclick="document.getElementById('imageEditInput{{ i }}').click()"
+                                id="imageEditPreview{{ i }}"  
+                            >
+                            <input 
+                                type="file" 
+                                id="imageEditInput{{i}}" 
+                                name="image{{i}}" 
+                                {% if forloop.first %}
+                                    class="hidden"
+                                {% else %} 
+                                    class="hidden" 
+                                {% endif %}
+                                onchange="previewImage(this, 'imageEditPreview{{ i }}')"
+                            > 
+                            <button 
+                                type="button" 
+                                @click="removed{{i}} = 'true'; 
+                                $store.editArtModal.currentArtwork.image{{i}} = '';
+                                removeImage('imageEditWrapper{{ i }}')"
+                                class="absolute top-0 right-0 bg-white p-1 shadow-sm"
+                                >  
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                  </svg>
+                            </button>
+
+                            <input 
+                                type="text" 
+                                x-ref="imageRemoveInput{{i}}" 
+                                id="imageRemoveInput{{i}}" 
+                                name="removed{{i}}" 
+                                class="hidden" 
+                                x-bind:value="removed{{i}}"
+                            > 
+                    </div>
+                    {% endfor %}
+
+
+
+                </div>
+              </div>
+
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="$store.editArtModal.showModal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    onclick="editArtworkPost(Alpine.store('editArtModal').currentArtwork.id)" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                    hx-disabled-elt="this"
+                    hx-disable-if="form:not(:valid)"
+                    >
+                    Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+        
+
+
+
+
+
+        <!-- EDIT PAGE Modal backdrop -->
         <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <!-- Modal content -->
-          <div x-show="$store.editPageModal.showModal" 
+          <!-- EDIT PAGE Modal content -->
+          <div x-cloak x-show="$store.editPageModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-90"
                x-transition:enter-end="opacity-100 scale-100"
@@ -29,19 +308,16 @@
               <div class="mb-4">
                 <label for="font" class="block text-sm font-medium text-gray-700">Font</label>
                 <input type="text" id="font" name="font" 
-                    placeholder="Enter font (eg: sans-serif)"
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        placeholder="Enter font (eg: sans-serif)"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
               </div>
-        
 
                 <div class="mb-4">
                   <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color</label>
                   <input type="text" id="font_color" name="font_color" 
-                         placeholder="Enter font color (eg: red-500)"
+                         placeholder="Enter font color (eg: gray-500)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-
-
                 
                 <div class="mb-4">
                   <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style</label>
@@ -49,9 +325,6 @@
                          placeholder="Enter font type (eg: bold, italic, normal)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
-
-
-
 
               <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -74,20 +347,19 @@
                     Submit
                 </button>
               </div>
-
-
             </form>
           </div>
         </div>
 
 
 
-        <!-- import dynamic fonts here -->
-        <!-- this is a weird Tailwind bug where it has to read the actual static name of the class somewhere
-             before it can handle dynamic classes like this. So you have to list off every class that
-             the dynamic class may possibly be for that value to work in the app
-        -->
-        <div x-data="{
+
+
+
+        <!-- Rest of the existing content -->
+        <div 
+            class="flex flex-wrap justify-between"
+            x-data="{
                 currentFontStyle: '{{page_settings.font_style}}',
                 currentFont: '{{page_settings.font}}',
                 currentColor: '{{page_settings.font_color}}',
@@ -95,7 +367,6 @@
                     'sans-serif': 'font-sans',
                     'serif': 'font-serif',
                     'mono': 'font-mono',
-                    // Add more font variants as needed
                 },
                 colorVariants: {
                     'red-500': 'text-red-500',
@@ -112,55 +383,153 @@
                     'gray-100': 'text-gray-100',
                     'black': 'text-black',
                     'white': 'text-white',
-                    // Add all possible color variants here
-                    },
+                },
                 styleVariants: {
-                        'italic': 'italic',
-                        'bold': 'font-bold',
-                        'normal': '',
-                    }
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                }
         }" 
-                :class="[
-                    styleVariants[currentFontStyle] || '',
-                    fontVariants[currentFont] || 'font-sans', 
-                    colorVariants[currentColor] || 'text-black', 
-                    'container', 'mx-auto', 'mt-24', 'px-4'
-                ]"
-                >
+        :class="[
+            styleVariants[currentFontStyle] || '',
+            fontVariants[currentFont] || 'font-sans', 
+            colorVariants[currentColor] || 'text-black', 
+            'container', 'mx-auto', 'mt-24', 'px-4'
+        ]">
 
 
 
+        {% for artwork in artworks %}
+        <div class="flex flex-col items-center mx-auto md:w-1/2 lg:w-1/3 p-4">
+            <div class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px] shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300"
+                 @click="$store.editPageModal.showModal = false"
+                 hx-get="{% url 'art2' artwork.id %}"
+                 hx-swap="innerHTML"
+                 hx-target="#art-content"
+                 hx-push-url="/art2/{{ artwork.id }}">
+                <img src="{{ artwork.image1 }}" alt="Image Not Found" class="p-4 h-full w-full object-cover">
+            </div>
 
-            <div class="flex flex-wrap justify-between">
-                {% for image in images %}
-                <div class="flex flex-col items-center mx-auto md:w-1/2 lg:w-1/3 p-4">
-                    <div
-                        @click="$store.editPageModal.showModal = false" 
-                        hx-get="{% url 'art2' %}"
-                        hx-swap="innerHTML" 
-                        hx-target="#art-content"
-                        hx-push-url="/art2"
-                        class="relative border-2 border-black hover:cursor-pointer overflow-hidden h-[275px] w-[275px] md:h-[325px] md:w-[325px] lg:h-[300px] lg:w-[300px]">
-                        <!--  href= url 'art2' image.id   -->
-                        <!-- href= url 'art2' -->
-                            <img src="{% static 'kp_app/images/' %}{{ image }}" alt="{{ image }}" class="p-4 h-full w-full object-cover">
-                    </div>
-                    <div class="p-4 flex w-[275px] md:w-[325px] lg:w-[300px] justify-between">
-                        <h3 class="text-lg text-center m-2">Image Title</h3>
-                        <a href="mailto:{{page_settings.edu_email}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+            {% if user.is_authenticated %}
+                {% if request.user|has_group:"Editor" %}
+            <div class="p-4 w-[275px] md:w-[325px] lg:w-[300px] relative">
+                <h3 class="text-lg text-left break-words">{{ artwork.title }}</h3>
+                    <div class="flex justify-center space-x-4">
+                    {% endif %}
+                    {% else %}
+            <div class="p-4 w-[275px] md:w-[325px] lg:w-[300px] relative">
+                <h3 class="text-lg text-left pr-10 break-words">{{ artwork.title }}</h3>
+                    <div class="absolute top-4 right-4 flex space-x-2">
+                {% endif %}
+                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{artwork.title}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                        {% if user.is_authenticated %}
+                            {% if request.user|has_group:"Editor" %}
+                            <svg class="h-8 w-8 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z"></path>
+                                <rect x="3" y="5" width="18" height="14" rx="1"></rect>
+                                <polyline points="3 7 12 13 21 7"></polyline>
+                            </svg>
+                            {% endif %}
+                        {% else %}
                             <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
                                 <rect x="3" y="5" width="18" height="14" rx="1" />
                                 <polyline points="3 7 12 13 21 7" />
                             </svg>
-                        </a>
-                    </div>
+                        {% endif %}
+                    </a>
+
+
+                {% if user.is_authenticated %}
+                    {% if request.user|has_group:"Editor" %}
+                    <button 
+                            @click=" 
+                                    $store.editArtModal.currentArtwork = {
+                                        id: '{{artwork.id|escapejs}}',
+                                        title: '{{artwork.title|escapejs}}',
+                                        original_price: '{{artwork.original_price|escapejs}}',
+                                        print_price: '{{artwork.print_price|escapejs}}',
+                                        description: '{{artwork.description|escapejs}}',
+                                        dimensions: '{{artwork.dimensions|escapejs}}',
+                                        image1: '{{artwork.image1|escapejs}}',
+                                        image2: '{{artwork.image2|escapejs}}',
+                                        image3: '{{artwork.image3|escapejs}}',
+                                        image4: '{{artwork.image4|escapejs}}'
+                                    };
+                                    console.log('~~~~~currentArtwork~~~~~~');
+                                    console.log($store.editArtModal.currentArtwork.id);
+                                    console.log($store.editArtModal.currentArtwork.title);
+                                    console.log($store.editArtModal.currentArtwork.original_price);
+                                    console.log($store.editArtModal.currentArtwork.print_price);
+                                    console.log($store.editArtModal.currentArtwork.dimensions);
+                                    console.log($store.editArtModal.currentArtwork.description);
+                                    console.log($store.editArtModal.currentArtwork.image1);
+                                    console.log($store.editArtModal.currentArtwork.image2);
+                                    console.log($store.editArtModal.currentArtwork.image3);
+                                    console.log($store.editArtModal.currentArtwork.image4);
+                                    $store.editArtModal.showModal = true"
+
+                            class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
+                        <svg class="ml-1 h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+
+                        {% if artworks %}
+                            <button hx-delete="{% url 'delete_artwork' artwork.id %}"
+                                    hx-confirm="Are you sure you want to delete this artwork?"
+                                    hx-target="#art-content"
+                                    class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
+                                <svg class="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
                 </div>
-                {% endfor %}
             </div>
         </div>
+        {% endfor %}
 
+
+
+
+
+        </div>
     </div>
+
+    <script>
+        function previewImage(input, previewId) {
+          const file = input.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              document.getElementById(previewId).src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+          }
+           
+        }
+
+        function removeImage(wrapperId) {
+          const wrapper = document.getElementById(wrapperId);
+          const input = wrapper.querySelector('input[type="file"]');
+          const img = wrapper.querySelector('img');
+          input.value = '';
+          img.src = 'placeholder.jpg';
+        }
+
+        function editArtworkPost() {
+            id = Alpine.store('editArtModal').currentArtwork.id
+            htmx.ajax('POST', '{% url 'edit_artwork' 0 %}'.replace(0, id), {
+               source: '#editArtForm',
+
+            });
+        }
+
+    </script>
 
 
 

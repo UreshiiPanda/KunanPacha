@@ -80,6 +80,44 @@ def home(request):
 
     if os.getenv("KP_PROD") == "true":
         print("in home view in views.py, in PROD env, getting images from GCP")
+        page_settings = {
+            "title": home_page_1_settings.title,
+            "background_image": f"{settings.STATIC_URL}kp_app/images/bg1.jpg",
+            "homepage1_font": home_page_1_settings.font,
+            "homepage1_font_color": home_page_1_settings.font_color,
+            "homepage1_font_style": home_page_1_settings.font_style,
+
+            "homepage2_text": home_page_2_settings.homepage2_text,
+            "homepage_2_image_1": f"{settings.STATIC_URL}kp_app/images/art1.jpg",
+            "homepage2_font": home_page_2_settings.font,
+            "homepage2_font_color": home_page_2_settings.font_color,
+            "homepage2_font_style": home_page_2_settings.font_style,
+
+            "homepage3_text": home_page_3_settings.homepage3_text,
+            "homepage3_font": home_page_3_settings.font,
+            "homepage3_font_color": home_page_3_settings.font_color,
+            "homepage3_font_style": home_page_3_settings.font_style,
+
+            "homepage4_text": home_page_4_settings.homepage4_text,
+            "homepage_4_image_1": f"{settings.STATIC_URL}kp_app/images/art3.jpg",
+            "homepage4_font": home_page_4_settings.font,
+            "homepage4_font_color": home_page_4_settings.font_color,
+            "homepage4_font_style": home_page_4_settings.font_style,
+ 
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+            "contact_address": contact_page_settings.edu_address,
+            "contact_phone": contact_page_settings.edu_phone,
+            "contact_email": contact_page_settings.edu_email,
+            "contact_facebook": contact_page_settings.edu_facebook,
+            "contact_instagram": contact_page_settings.edu_instagram,
+            "contact_font": contact_page_settings.font,
+            "contact_font_color": contact_page_settings.font_color,
+            "contact_font_style": contact_page_settings.font_style,
+            "contact_image": f"{settings.STATIC_URL}kp_app/images/art4.jpg",
+        }
     else:
         print("in home view in views.py, in DEV env, getting images from local files")
         page_settings = {
@@ -894,16 +932,46 @@ def home_page_menu_edit(request):
     menu.font = request.POST.get('menu_font', menu.font).lower()
     menu.font_color = request.POST.get('menu_font_color', menu.font_color).lower()
     menu.font_style = request.POST.get('menu_font_style', menu.font_style).lower()
-
     menu_image = request.FILES.get('menu_image')
+
+#    try:
+#        if menu_image:
+#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art5.jpg')
+#            with open(image_path, 'wb+') as destination:
+#                for chunk in menu_image.chunks():
+#                    destination.write(chunk)
+#            print(f"New menu image saved to {image_path}")
+#
+#        menu.save()
+#        print("Menu Settings successfully changed in the DB")
+#        return HttpResponseRedirect(reverse('home'))
+#    except Exception as e:
+#        print(f"Error saving Menu settings: {e}")
+#        response = HttpResponse(status=400, content="Menu Settings update failed")
+#        return response
+#
+
 
     try:
         if menu_image:
-            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art5.jpg')
-            with open(image_path, 'wb+') as destination:
-                for chunk in menu_image.chunks():
-                    destination.write(chunk)
-            print(f"New menu image saved to {image_path}")
+            if os.getenv("KP_PROD") == "true":
+                # GCP Production Environment
+                client = storage.Client()
+                bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob('kp_app/images/art5.jpg')
+                blob.upload_from_string(
+                    menu_image.read(),
+                    content_type=menu_image.content_type
+                )
+                print(f"New menu image saved to GCS: {blob.public_url}")
+            else:
+                # Local Development Environment
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art5.jpg')
+                os.makedirs(os.path.dirname(image_path), exist_ok=True)  # Create directory if it doesn't exist
+                with open(image_path, 'wb+') as destination:
+                    for chunk in menu_image.chunks():
+                        destination.write(chunk)
+                print(f"New menu image saved to {image_path}")
 
         menu.save()
         print("Menu Settings successfully changed in the DB")
@@ -912,5 +980,7 @@ def home_page_menu_edit(request):
         print(f"Error saving Menu settings: {e}")
         response = HttpResponse(status=400, content="Menu Settings update failed")
         return response
+
+
 
 

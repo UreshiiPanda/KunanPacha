@@ -103,17 +103,19 @@ else:
         EMAIL_HOST_PASSWORD=(str, os.getenv("EMAIL_HOST_PASSWORD")),
 
     )
+    print("SECRET_KEY, DATABASE_URL, GS_BUCKET_NAME, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD have been pulled from GCP into the Django app")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
         _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+        print("google auth successful")
     except google.auth.exceptions.DefaultCredentialsError:
         print("google auth error")
 
 
     # Use GCP secret manager in prod mode
     if os.getenv("GOOGLE_CLOUD_PROJECT", None):
-        print("Pulling secrets from GCP Secret Manager")
+        print("Django app is Pulling secrets from GCP Secret Manager")
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")

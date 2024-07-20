@@ -3,8 +3,6 @@
 
 
 
-
-
         <!-- Modal backdrop -->
         <div x-data x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- Modal content -->
@@ -21,7 +19,6 @@
             
             <form 
                 hx-post="{% url 'art2_page_edit' %}" 
-                hx-target="#art-content"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
@@ -37,7 +34,7 @@
                 <div class="mb-4">
                   <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color</label>
                   <input type="text" id="font_color" name="font_color"
-                         placeholder="Enter font color (eg: red-500)"
+                         placeholder="Enter font color (eg: gray-500)"
                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                 </div>
 
@@ -127,45 +124,77 @@
 
 
 
+        <!-- js script use above for tansfering vars from Django to Alpine -->
+        <!-- Alpine swaps images when small images are clicked -->
+        <div 
+            x-data="{largeImg:'{{image_obj.image|escapejs}}',
+                    img2:'{{image_obj.image2|escapejs}}',
+                    img3:'{{image_obj.image3|escapejs}}',
+                    img4:'{{image_obj.image4|escapejs}}',
+                    }"
+            class="flex flex-col md:flex-row">
 
 
-        <div class="flex flex-col md:flex-row">
             <div class="mt-20">
-                <div class="mr-6 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] border-1 border-black overflow-hidden">
-                    <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 object-cover h-full w-full border-2 border-black">
+                <div class="mr-6 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] border-1 border-black overflow-hidden  shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
+                    <img :src="largeImg" alt="{{ image_obj.title }}" class="p-4 object-cover h-full w-full border-2 border-black">
                 </div>
+
                 <div class="flex space-x-6 mt-10">
-                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden">
-                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    {% if image_obj.image2 %}
+                    <div
+                        @click="temp = largeImg;
+                                largeImg = img2;
+                                img2 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img2" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
                     </div>
-                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden">
-                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    {% endif %}
+                    {% if image_obj.image3 %}
+                    <div 
+                        @click="temp = largeImg;
+                        largeImg = img3;
+                        img3 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img3" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
                     </div>
-                    <div class="w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden">
-                        <img src="{% static 'kp_app/images/' %}{{ image_obj.image }}" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    {% endif %}
+                    {% if image_obj.image4 %}
+                    <div 
+                        @click="temp = largeImg;
+                        largeImg = img4;
+                        img4 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img4" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
                     </div>
+                    {% endif %}
                 </div>
             </div>
+
             <div class="mt-20">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-bold">{{ image_obj.title }}</h2>
-                    <a href="mailto:{{page_settings.edu_email}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                    <h2 class="p-6 text-2xl font-bold">{{ image_obj.title }}</h2>
+                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{image_obj.title|urlencode}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                         <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z"/>
-                            <rect x="3" y="5" width="18" height="14" rx="1" />
-                            <polyline points="3 7 12 13 21 7" />
+                            <path stroke="none" d="M0 0h24v24H0z"></path>
+                            <rect x="3" y="5" width="18" height="14" rx="1"></rect>
+                            <polyline points="3 7 12 13 21 7"></polyline>
                         </svg>
                     </a>
                 </div>
-                <p class="text-lg mb-6">{{ image_obj.desc }}</p>
-                <div class="flex justify-end">
+
+                <p class="text-lg mb-6 p-6">{{ image_obj.desc }}</p>
+                <div class="flex justify-end p-6">
                     <div>
-                        <p class="text-xl mb-4 font-semibold">Print Price: ${{ image_obj.print_price }}</p>
-                        <p class="text-xl mb-8 font-semibold">Original Price: ${{ image_obj.original_price }}</p>
+                        <p class="text-xl mb-4 font-semibold">Dimensions:  {{ image_obj.dimensions }}</p>
+                        <p class="text-xl mb-4 font-semibold">Print Price:  ${{ image_obj.print_price }}</p>
+                        <p class="text-xl mb-8 font-semibold">Original Price:  ${{ image_obj.original_price }}</p>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+</div>
+
 
 

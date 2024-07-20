@@ -1,3 +1,4 @@
+
     {% load static %}
     {% static 'kp_app/images/bg1.jpg' as bg_url %}
     {% static 'kp_app/images/art1.jpg' as art1_url %}
@@ -113,7 +114,7 @@
                 <div 
                     id="homepage1" 
                     style="--home1-image-url: url('{{ bg_url }}')" 
-                    class="bg-[image:var(--home1-image-url)] mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative"
+                    class="bg-[image:var(--home1-image-url)] mt-20 bg-no-repeat bg-fixed bg-cover h-screen w-screen flex flex-col justify-center items-center relative object-cover z-10 shadow-[0_30px_30px_rgba(0,0,0,0.4)]"
                     x-data="{
                         currentFontStyle: '{{page_settings.homepage1_font_style}}',
                         currentFont: '{{page_settings.homepage1_font}}',
@@ -139,6 +140,22 @@
                             'black': 'text-black',
                             'white': 'text-white',
                         },
+                        lineVariants: {
+                            'red-500': 'bg-red-500',
+                            'blue-500': 'bg-blue-500',
+                            'green-500': 'bg-green-500',
+                            'gray-900': 'bg-gray-900',
+                            'gray-800': 'bg-gray-800',
+                            'gray-700': 'bg-gray-700',
+                            'gray-600': 'bg-gray-600',
+                            'gray-500': 'bg-gray-500',
+                            'gray-400': 'bg-gray-400',
+                            'gray-300': 'bg-gray-300',
+                            'gray-200': 'bg-gray-200',
+                            'gray-100': 'bg-gray-100',
+                            'black': 'bg-black',
+                            'white': 'bg-white',
+                        },
                         styleVariants: {
                             'italic': 'italic',
                             'bold': 'font-bold',
@@ -157,13 +174,11 @@
                     <button 
                         x-data 
                         @click="$store.editMenuModal.toggle()" 
-                        class="absolute top-4 left-4 z-10 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                        class="absolute top-4 left-4 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                         Edit Menu
                     </button>
                     {% endif %}
                 {% endif %}
-
-
 
 
                 {% if user.is_authenticated %}
@@ -188,8 +203,6 @@
                        x-transition:leave-start="opacity-100 scale-100"
                        x-transition:leave-end="opacity-0 scale-90"
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-
-
 
                     <form 
                         id="imageForm1" 
@@ -216,11 +229,6 @@
                           <input type="text" id="font_style" name="font_style" value="{{ page_settings.homepage1_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <!-- Existing image input -->
-
-
-
-
-
 
                         <div class="mb-4">
                           <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
@@ -260,47 +268,29 @@
 
 
 
-
-                    <!-- Horizontal lines with arrows -->
-                    <h1 class="text-4xl font-extrabold relative z-10 mb-6"> {{page_settings.title}} </h1>
-                    <div class="absolute top-1/2 w-24 h-px bg-black left-1/4 transform -translate-y-1/2"></div>
-                    <div class="absolute top-1/2 w-24 h-px bg-black right-1/4 transform -translate-y-1/2"></div>
-
-                    <!-- Django example -->
-                    <ul class="text-white">
-                        {% for test in tests %}
-                        <li>
-                            {{tests.info}}: 
-                                {% if test.ready %}
-                                    Completed
-                                {% else %}
-                                    Not Completed
-                                {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-
-                    <!-- HTMX example -->
-                    <div id="catfact" class="text-white"></div>
-                    <button 
-                        class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white hover:text-black hover:bg-white hover:border-black"
-                        hx-get="https://catfact.ninja/fact" 
-                        hx-swap="innerHTML" 
-                        hx-target="#catfact">
-                        Get a random fact about cats
-                    </button>
-
-                    <!-- Alpine example -->
-                    <div x-data="{ count: 0 }" class="text-white">
-                        <button
-                            class="flex items-center px-3 py-2 m-3 border-2 border-white-200 bg-black text-white-200 hover:text-black hover:bg-white hover:order-black"
-                            x-on:click="count++">
-                            Increment
-                        </button>
-                        <span x-text="count"></span>
+                <div class="relative flex flex-col items-center justify-center w-full py-10">
+                    <!-- Left horizontal line with arrow -->
+                    <div 
+                        :class="lineVariants[currentColor] || 'bg-black'"
+                        class="absolute top-1/2 w-1/6 h-[2px] left-20 transform  -translate-y-1/2  hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                        <span class="absolute -left-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&lt;</span>
                     </div>
+                    
+                    <!-- Right horizontal line with arrow -->
+                    <div 
+                        :class="lineVariants[currentColor] || 'bg-black'"
+                        class="absolute top-1/2 w-1/6 h-[2px] right-20 transform -translate-y-1/2 hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                        <span class="absolute -right-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&gt;</span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center z-20 px-4 max-w-[380px] break-words" style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);">
+                        {{page_settings.title}}
+                    </h1>
+                </div>
 
-            </div>
+
+        </div>
 
 
             <!-- HOME PAGE SCREEN 2 -->
@@ -447,13 +437,13 @@
 
 
               <div class="flex items-center justify-center">
-                  <p class="text-center"> {{page_settings.homepage2_text}} </p>
+                  <p class="text-center p-4"> {{page_settings.homepage2_text}} </p>
               </div>
               <div 
 
 
                     style="background-image: url('{{ art1_url }}');" 
-                    class="bg-no-repeat bg-fixed bg-cover bg-center h-screen w-full">
+                    class="bg-no-repeat bg-fixed bg-cover bg-center h-screen w-full shadow-[0_40px_30px_rgba(0,0,0,0.6)]">
 
 
               </div>
@@ -583,7 +573,7 @@
 
 
 
-                <p class="text-center"> {{page_settings.homepage3_text}} </p>
+                <p class="text-center p-4"> {{page_settings.homepage3_text}} </p>
             </div>
 
 
@@ -659,24 +649,6 @@
                        x-transition:leave-end="opacity-0 scale-90"
                        class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
 
-<!--
-
-                    <form 
-                        id="imageForm4" 
-                        enctype="multipart/form-data"
-                        hx-encoding="multipart/form-data"
-                        hx-post="{% url 'home_page_4_edit' %}"
-                        hx-swap="none"
-                    >
-                    {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="homepage4_text" class="block text-sm font-medium text-gray-700">Page 4 Text:</label>
-                            <textarea id="homepage4_text" name="homepage4_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage4_text }}</textarea>
-                        </div>
-
--->
-
-
 
                         <form 
                             id="imageForm4" 
@@ -746,11 +718,11 @@
 
                 <div 
                     style="background-image: url('{{ art3_url }}');" 
-                    class="bg-no-repeat bg-fixed bg-cover bg-center h-screen w-full">
+                    class="bg-no-repeat bg-fixed bg-cover bg-center h-full w-full shadow-[0_40px_30px_rgba(0,0,0,0.6)]">
                 </div>
 
                 <div class="flex items-center justify-center">
-                    <p class="text-center">{{page_settings.homepage4_text}}</p>
+                    <p class="text-center p-4">{{page_settings.homepage4_text}}</p>
                 </div>
             </div>
 
@@ -759,7 +731,10 @@
 
 
             <!-- HOME PAGE SCREEN 5  - Contact Page -->
-            <div id="contact" style="--home5-image-url: url('{{ art4_url }}')" class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative">
+            <div id="contact" 
+                  style="--home5-image-url: url('{{ art4_url }}')" 
+                  class="bg-[image:var(--home5-image-url)] bg-no-repeat bg-cover bg-center h-screen w-screen relative shadow-[0_-30px_30px_rgba(0,0,0,0.4)]"
+                  >
 
 
             {% if user.is_authenticated %}
@@ -915,8 +890,8 @@
                     'flex', 'flex-col', 'items-center', 'justify-center', 'min-h-screen', 'w-full', 'px-4', 'py-8'
                 ]">
 
-                    <h1 class="text-4xl font-bold mb-8 text-center">Contact</h1>
-                    <div class="bg-white p-8 w-full max-w-4xl shadow-lg">
+                    <h1 class="text-4xl font-bold mb-8 text-center"  style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);" >Contact</h1>
+                    <div class="bg-white p-8 w-full max-w-4xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.6)] transition-shadow duration-300">
                         <div class="flex flex-col lg:flex-row">
                             <div class="w-full lg:w-1/2 mb-8 lg:mb-0 lg:pr-8 flex flex-col justify-center">
                                 <div class="flex flex-col space-y-4">
@@ -934,19 +909,19 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-center space-x-8 mt-8">
-                                    <a href="{{page_settings.contact_instagram}}" target="_blank" class="text-slate-900 hover:text-slate-700">
+                                    <a href="{{page_settings.contact_instagram}}" target="_blank" class="text-black hover:text-slate-500">
                                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                                             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                                             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                                         </svg>
                                     </a>
-                                    <a href="{{page_settings.contact_facebook}}" target="_blank" class="text-slate-900 hover:text-slate-700">
+                                    <a href="{{page_settings.contact_facebook}}" target="_blank" class="text-black hover:text-slate-500">
                                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                                         </svg>
                                     </a>
-                                    <a href="https://www.tiktok.com/@meow" target="_blank" class="text-slate-900 hover:text-slate-700">
+                                    <a href="https://www.tiktok.com/@meow" target="_blank" class="text-black hover:text-slate-500">
                                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                                         </svg>
@@ -1005,6 +980,7 @@
                       img.src = 'placeholder.jpg';
                     }
                 </script>
+
 
 
 

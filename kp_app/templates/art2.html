@@ -7,14 +7,6 @@
     {% load static %}
 
 
-    <!-- js script used for tansfering vars from Django to Alpine -->
-    <script>
-        var img1_url = "{{image_obj.image|escapejs}}";
-        var img2_url = "{{image_obj.image2|escapejs}}";
-        var img3_url = "{{image_obj.image3|escapejs}}";
-        var img4_url = "{{image_obj.image4|escapejs}}";
-    </script>
-
 
         <!-- Modal backdrop -->
         <div x-data x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -140,10 +132,10 @@
         <!-- js script use above for tansfering vars from Django to Alpine -->
         <!-- Alpine swaps images when small images are clicked -->
         <div 
-            x-data="{largeImg:img1_url,
-                    img2:img2_url,
-                    img3:img3_url,
-                    img4:img4_url,
+            x-data="{largeImg:'{{image_obj.image|escapejs}}',
+                    img2:'{{image_obj.image2|escapejs}}',
+                    img3:'{{image_obj.image3|escapejs}}',
+                    img4:'{{image_obj.image4|escapejs}}',
                     }"
             class="flex flex-col md:flex-row">
 
