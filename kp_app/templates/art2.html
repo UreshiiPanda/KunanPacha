@@ -1,0 +1,208 @@
+
+
+{% extends "base.html" %} 
+
+{% block content %}
+
+    {% load static %}
+
+
+
+        <!-- Modal backdrop -->
+        <div x-data x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- Modal content -->
+          <div x-show="$store.editPageModal.showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            
+            <h2 class="text-2xl font-bold mb-4">Edit Page Settings</h2>
+            
+            <form 
+                hx-post="{% url 'art2_page_edit' %}" 
+                >
+                {% csrf_token %}
+              <input type="hidden" name="page_url" value="{{ request.path }}">
+              
+              <div class="mb-4">
+                <label for="font" class="block text-sm font-medium text-gray-700">Font</label>
+                <input type="text" id="font" name="font"
+                       placeholder="Enter font (eg: sans-serif)"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+              </div>
+        
+
+                <div class="mb-4">
+                  <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color</label>
+                  <input type="text" id="font_color" name="font_color"
+                         placeholder="Enter font color (eg: gray-500)"
+                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+
+                                
+                <div class="mb-4">
+                  <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style</label>
+                  <input type="text" id="font_style" name="font_style"
+                         placeholder="Enter font type (eg: bold, italic, normal)"
+                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+
+
+              <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" name="email"
+                       placeholder="Enter your email"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+              </div>
+             
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="$store.editPageModal.toggle()" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    @click="$store.editPageModal.toggle()" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Submit
+                </button>
+              </div>
+
+
+            </form>
+          </div>
+        </div>
+
+
+
+
+
+
+        <div x-data="{
+                currentFontStyle: '{{page_settings.font_style}}',
+                currentFont: '{{page_settings.font}}',
+                currentColor: '{{page_settings.font_color}}',
+                fontVariants: {
+                    'sans-serif': 'font-sans',
+                    'serif': 'font-serif',
+                    'mono': 'font-mono',
+                    // Add more font variants as needed
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                    // Add all possible color variants here
+                    },
+                styleVariants: {
+                        'italic': 'italic',
+                        'bold': 'font-bold',
+                        'normal': '',
+                    }
+        }" 
+                :class="[
+                    styleVariants[currentFontStyle] || '',
+                    fontVariants[currentFont] || 'font-sans', 
+                    colorVariants[currentColor] || 'text-black', 
+                    'container', 'mx-auto', 'mt-24', 'px-4'
+                ]"
+                >
+
+
+
+
+        <!-- js script use above for tansfering vars from Django to Alpine -->
+        <!-- Alpine swaps images when small images are clicked -->
+        <div 
+            x-data="{largeImg:'{{image_obj.image|escapejs}}',
+                    img2:'{{image_obj.image2|escapejs}}',
+                    img3:'{{image_obj.image3|escapejs}}',
+                    img4:'{{image_obj.image4|escapejs}}',
+                    }"
+            class="flex flex-col md:flex-row">
+
+
+            <div class="mt-20">
+                <div class="mr-6 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] border-1 border-black overflow-hidden  shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
+                    <img :src="largeImg" alt="{{ image_obj.title }}" class="p-4 object-cover h-full w-full border-2 border-black">
+                </div>
+
+                <div class="flex space-x-6 mt-10">
+                    {% if image_obj.image2 %}
+                    <div
+                        @click="temp = largeImg;
+                                largeImg = img2;
+                                img2 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img2" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
+                    {% endif %}
+                    {% if image_obj.image3 %}
+                    <div 
+                        @click="temp = largeImg;
+                        largeImg = img3;
+                        img3 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img3" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
+                    {% endif %}
+                    {% if image_obj.image4 %}
+                    <div 
+                        @click="temp = largeImg;
+                        largeImg = img4;
+                        img4 = temp;"
+                        class="hover:cursor-pointer w-24 h-24 sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[150px] lg:h-[150px] border-1 border-black overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                        <img :src="img4" alt="{{ image_obj.title }}" class="p-4 h-full w-full object-cover border-2 border-black">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-20">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="p-6 text-2xl font-bold">{{ image_obj.title }}</h2>
+                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{image_obj.title|urlencode}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                        <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z"></path>
+                            <rect x="3" y="5" width="18" height="14" rx="1"></rect>
+                            <polyline points="3 7 12 13 21 7"></polyline>
+                        </svg>
+                    </a>
+                </div>
+
+                <p class="text-lg mb-6 p-6">{{ image_obj.desc }}</p>
+                <div class="flex justify-end p-6">
+                    <div>
+                        <p class="text-xl mb-4 font-semibold">Dimensions:  {{ image_obj.dimensions }}</p>
+                        <p class="text-xl mb-4 font-semibold">Print Price:  ${{ image_obj.print_price }}</p>
+                        <p class="text-xl mb-8 font-semibold">Original Price:  ${{ image_obj.original_price }}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+</div>
+
+
+{% endblock %}
+
+
+

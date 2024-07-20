@@ -5,6 +5,10 @@ services:
     image: postgres:16.2
     env_file:
       - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kp_net
   web:
     build: .
     ports:
@@ -14,10 +18,10 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - kp_net
     command: >
-      sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
+      sh -c "python manage.py collectstatic --noinput &&
              python manage.py makesuperuser ${DJANGO_SUPERUSER_USERNAME} ${DJANGO_SUPERUSER_EMAIL} ${DJANGO_SUPERUSER_PASSWORD} &&
              exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application"
     develop:
@@ -32,4 +36,15 @@ services:
         # completely re-build the django container if there are any changes to requirements.txt
         - action: rebuild
           path: requirements.txt
+        # completely re-build the django container if there are any changes to models.py
+        # in order to re-run makemigrations and migrate
+        - action: rebuild
+          path: kp_app/models.py
+
+volumes:
+  postgres_data:
+
+networks: 
+  kp_net:
+    driver: bridge
 

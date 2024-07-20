@@ -17,11 +17,23 @@ import os
 import environ
 import google.auth
 from google.cloud import secretmanager
+import socket
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+# email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 
 
 # if in Development env
@@ -31,7 +43,11 @@ if os.environ.get("KP_PROD", "true") == "false":
     env.read_env(env_file)
 
     print("App starting in Development Mode")
+    print(f"postgres details: name: {env('POSTGRES_NAME')}, user: {env('POSTGRES_USER')}, pass: {env('POSTGRES_PASSWORD')}")
 
+
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
     DEBUG = True
     SECRET_KEY = env("SECRET_KEY")
     DATABASES = {
@@ -45,6 +61,16 @@ if os.environ.get("KP_PROD", "true") == "false":
         }
     }
 
+    
+    # Add this after your DATABASES configuration
+    db_host = DATABASES['default']['HOST']
+    try:
+        db_ip = socket.gethostbyname(db_host)
+        print(f"Database host '{db_host}' resolves to IP: {db_ip}")
+    except socket.gaierror:
+        print(f"Could not resolve host: {db_host}")
+
+
     # Define static BLOB storage via django-storages[google]
     #DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     #STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
@@ -55,8 +81,11 @@ if os.environ.get("KP_PROD", "true") == "false":
 
 
     # Static files (CSS, JavaScript, Images)
-    STATIC_URL = "static/"
+    STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'kp_app', 'static'),
+    ]
 
 
 
@@ -70,19 +99,23 @@ else:
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
         DATABASE_URL=(str, os.getenv("DATABASE_URL")),
         GS_BUCKET_NAME=(str, os.getenv("GS_BUCKET_NAME")),
+        EMAIL_HOST_USER=(str, os.getenv("EMAIL_HOST_USER")),
+        EMAIL_HOST_PASSWORD=(str, os.getenv("EMAIL_HOST_PASSWORD")),
 
     )
+    print("SECRET_KEY, DATABASE_URL, GS_BUCKET_NAME, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD have been pulled from GCP into the Django app")
 
     # Attempt to load the Project ID into the environment, safely failing on error.
     try:
         _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+        print("google auth successful")
     except google.auth.exceptions.DefaultCredentialsError:
         print("google auth error")
 
 
     # Use GCP secret manager in prod mode
     if os.getenv("GOOGLE_CLOUD_PROJECT", None):
-        print("Pulling secrets from GCP Secret Manager")
+        print("Django app is Pulling secrets from GCP Secret Manager")
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         client = secretmanager.SecretManagerServiceClient()
         settings_name = os.getenv("SETTINGS_NAME", "kp-django-settings")
@@ -101,9 +134,13 @@ else:
     SECRET_KEY = env("SECRET_KEY")
     DATABASE_URL = env("DATABASE_URL")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 
     # Define static BLOB storage via django-storages[google]
+    # so django-storages is being used here to interface with Google Cloud instead of 
+    # using the google.cloud import directly
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
@@ -129,7 +166,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "storages", 
     "kp_app",
+    'widget_tweaks',
 ]
+
+AUTH_USER_MODEL = 'auth.User'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -180,6 +224,34 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 LANGUAGE_CODE = "en-us"
@@ -193,6 +265,9 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # End session when browser closes
 
+# end a session automatically after 12 hours
+SESSION_COOKIE_AGE = 43200  # in seconds (e.g., 12 hour)
 
 
