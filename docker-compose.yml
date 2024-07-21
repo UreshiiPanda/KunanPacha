@@ -23,6 +23,9 @@ services:
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py makesuperuser ${DJANGO_SUPERUSER_USERNAME} ${DJANGO_SUPERUSER_EMAIL} ${DJANGO_SUPERUSER_PASSWORD} &&
+             python manage.py migrate &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
              exec gunicorn --bind 0.0.0.0:$PORT kp.wsgi:application"
     develop:
       watch:

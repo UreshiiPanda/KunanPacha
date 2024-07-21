@@ -43,7 +43,7 @@ steps:
         python manage.py makemigrations --check 2>&1 || echo "Changes detected via --check, migrations needed."
     id: Check migrations
 
-  # 4. If there are conflicts, create a new migration
+  # 4. create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -55,11 +55,10 @@ steps:
       - '--'
       - 'python'
       - 'manage.py'
-      - 'makemigrations'
-      - '--merge'
+      - 'migrate'
     id: Merge migrations
 
-  # 5. Make migrations (if needed)
+  # 5. Make migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -72,9 +71,10 @@ steps:
       - 'python'
       - 'manage.py'
       - 'makemigrations'
+      - '--noinput'
     id: Make migrations
 
-  # 6. Migrate
+  # 6. Migrate again
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
