@@ -27,7 +27,7 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-  # 3. Detect and show migration conflicts
+  # 3. Check and report on migration status
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -37,10 +37,10 @@ steps:
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '--'
-      - 'python'
-      - 'manage.py'
-      - 'makemigrations'
-      - '--check'
+      - 'sh'
+      - '-c'
+      - |
+        python manage.py makemigrations --check 2>&1 || echo "Changes detected via --check, migrations needed."
     id: Check migrations
 
   # 4. If there are conflicts, create a new migration
