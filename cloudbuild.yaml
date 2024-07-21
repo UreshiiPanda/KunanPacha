@@ -43,7 +43,25 @@ steps:
         python manage.py makemigrations --check 2>&1 || echo "Changes detected via --check, migrations needed."
     id: Check migrations
 
-  # 4. Remove any existing migration files
+  # 4. Drop all kp_app tables
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - '-c'
+      - |
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("DROP TABLE IF EXISTS kp_app_art1pagesettings, kp_app_art2pagesettings, kp_app_usercredential, kp_app_homepage1settings, kp_app_homepage2settings, kp_app_homepage3settings, kp_app_homepage4settings, kp_app_contactpagesettings, kp_app_menusettings, kp_app_artwork CASCADE;")
+    id: Drop all tables
+
+  # 5. Remove any existing migration files
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -60,7 +78,7 @@ steps:
         find . -path "*/migrations/[0-9]*.pyc" -delete
     id: Remove specific migrations
 
-  # 4. create a new migration
+  # 6. create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -75,7 +93,7 @@ steps:
       - 'migrate'
     id: Create migrations
 
-  # 5. Make migrations
+  # 7. Make migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -91,7 +109,7 @@ steps:
       - '--noinput'
     id: Make migrations
 
-  # 6. Migrate again
+  # 8. Migrate again
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -107,7 +125,7 @@ steps:
     id: Migrate
 
 
-  # 7. Collect static
+  # 9. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -123,7 +141,7 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 8. Deploy to Cloud Run
+  # 10. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
