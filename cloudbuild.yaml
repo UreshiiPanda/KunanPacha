@@ -43,6 +43,23 @@ steps:
         python manage.py makemigrations --check 2>&1 || echo "Changes detected via --check, migrations needed."
     id: Check migrations
 
+  # 4. Remove any existing migration files
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        find . -path "*/migrations/[0-9]*.py" -delete
+        find . -path "*/migrations/[0-9]*.pyc" -delete
+    id: Remove specific migrations
+
   # 4. create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
@@ -56,7 +73,7 @@ steps:
       - 'python'
       - 'manage.py'
       - 'migrate'
-    id: Merge migrations
+    id: Create migrations
 
   # 5. Make migrations
   - name: gcr.io/google-appengine/exec-wrapper
