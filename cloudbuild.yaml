@@ -27,7 +27,30 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-  # 3. Make migrations
+
+
+  # 3. Fake migrations
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'migrate'
+      - 'kp_app'
+      - 'zero'
+      - '--fake'
+    id: Fake migrations
+
+
+
+
+  # 4. Make migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -42,7 +65,7 @@ steps:
       - 'makemigrations'
     id: Make migrations
 
-  # 4. Migrate
+  # 5. Migrate
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -57,7 +80,7 @@ steps:
       - 'migrate'
     id: Migrate
 
-  # 5. Collect static
+  # 6. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -73,7 +96,7 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 6. Deploy to Cloud Run
+  # 7. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
