@@ -53,14 +53,17 @@ steps:
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '-e'
-      - 'DJANGO_SETTINGS_MODULE=kp/settings.py'  
+      - 'DJANGO_SETTINGS_MODULE=kp.settings'  
       - '--'
       - 'python'
+      - 'manage.py'
+      - 'shell'
       - '-c'
       - |
         from django.db import connection
         cursor = connection.cursor()
         cursor.execute("DROP TABLE IF EXISTS kp_app_art1pagesettings, kp_app_art2pagesettings, kp_app_usercredential, kp_app_homepage1settings, kp_app_homepage2settings, kp_app_homepage3settings, kp_app_homepage4settings, kp_app_contactpagesettings, kp_app_menusettings, kp_app_artwork CASCADE;")
+        print("Tables dropped successfully")
     id: Drop all tables
 
   # 5. Remove any existing migration files
