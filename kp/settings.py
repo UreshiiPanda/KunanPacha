@@ -150,7 +150,6 @@ else:
 
     # Use django-environ to parse the connection string
     DATABASES = {"default": env.db()}
-    print(env.db())
 
 
 

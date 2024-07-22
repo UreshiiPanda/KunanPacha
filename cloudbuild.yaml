@@ -27,84 +27,7 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-  # 3. Check and report on migration status
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'sh'
-      - '-c'
-      - |
-        python manage.py makemigrations --check 2>&1 || echo "Changes detected via --check, migrations needed."
-    id: Check migrations
-
-  # 4. Drop all kp_app tables
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-e'
-      - 'DJANGO_SETTINGS_MODULE=kp.settings'  
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'shell'
-      - '-c'
-      - |
-        from django.db import connection
-        cursor = connection.cursor()
-        cursor.execute("DROP TABLE IF EXISTS kp_app_art1pagesettings, kp_app_art2pagesettings, kp_app_usercredential, kp_app_homepage1settings, kp_app_homepage2settings, kp_app_homepage3settings, kp_app_homepage4settings, kp_app_contactpagesettings, kp_app_menusettings, kp_app_artwork CASCADE;")
-        print("Tables dropped successfully")
-    id: Drop all tables
-
-
-  # 5. Fake migrate kp_app to zero
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-e'
-      - 'DJANGO_SETTINGS_MODULE=kp.settings'  # Adjust this if your settings module is different
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'migrate'
-      - 'kp_app'
-      - 'zero'
-      - '--fake'
-    id: Fake migrate kp_app to zero
-
-  # 6. Remove any existing migration files
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'sh'
-      - '-c'
-      - |
-        find . -path "*/migrations/[0-9]*.py" -delete
-        find . -path "*/migrations/[0-9]*.pyc" -delete
-    id: Remove specific migrations
-
-  # 7. create a new migration
+  # 3. Create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -119,38 +42,7 @@ steps:
       - 'migrate'
     id: Create migrations
 
-  # 8. Make migrations
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'makemigrations'
-      - '--noinput'
-    id: Make migrations
-
-  # 9. Migrate again
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'migrate'
-    id: Migrate
-
-  # 10. Collect static
+  # 4. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -166,7 +58,7 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 11. Deploy to Cloud Run
+  # 5. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
@@ -181,7 +73,6 @@ steps:
       - '--quiet'
     id: Deploy
     entrypoint: gcloud
-
 
 
 # Store images in Google Artifact Registry
