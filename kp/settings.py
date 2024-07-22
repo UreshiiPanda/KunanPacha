@@ -148,8 +148,32 @@ else:
     # bucket must be set to allow ACLs and it must not prevent public access
     GS_DEFAULT_ACL = "publicRead" 
 
-    # Use django-environ to parse the connection string
-    DATABASES = {"default": env.db()}
+
+    if os.environ.get("USE_CLOUD_SQL_AUTH_PROXY") == "true":
+        # Prod DB when needing to run make-migrations
+        # Use django-environ to parse the connection string
+
+
+        env = environ.Env(DEBUG=False)
+        env_file = os.path.join(BASE_DIR, ".env")
+        env.read_env(env_file)
+
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'HOST': '127.0.0.1',
+                'PORT': '5432',
+                'NAME': env('PROXY_DB_NAME'),
+                'USER': env('PROXY_DB_USER'),
+                'PASSWORD': env('PROXY_DB_PASSWORD'),
+            }
+        }
+
+    else:
+        # Prod DB (without make-migrations)
+        # Use django-environ to parse the connection string
+        DATABASES = {"default": env.db()}
 
 
 
