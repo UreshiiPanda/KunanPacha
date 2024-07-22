@@ -58,7 +58,33 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 5. Deploy to Cloud Run
+
+  # 5. Step to print contents of migrations directory
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        echo "Contents of migrations directory:"
+        ls -la /workspace/kp_app/migrations/
+        echo "\nContent of each migration file:"
+        for file in /workspace/kp_app/migrations/*.py; do
+          if [ -f "$file" ]; then
+            echo "\n--- $file ---"
+            cat "$file"
+          fi
+        done
+    id: Print migrations
+
+
+  # 6. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
@@ -73,6 +99,30 @@ steps:
       - '--quiet'
     id: Deploy
     entrypoint: gcloud
+
+  # 7. Step to print contents of migrations directory
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        echo "Contents of migrations directory:"
+        ls -la /workspace/kp_app/migrations/
+        echo "\nContent of each migration file:"
+        for file in /workspace/kp_app/migrations/*.py; do
+          if [ -f "$file" ]; then
+            echo "\n--- $file ---"
+            cat "$file"
+          fi
+        done
+    id: Print migrations 2
 
 
 # Store images in Google Artifact Registry
