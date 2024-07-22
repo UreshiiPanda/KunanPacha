@@ -66,7 +66,28 @@ steps:
         print("Tables dropped successfully")
     id: Drop all tables
 
-  # 5. Remove any existing migration files
+
+  # 5. Fake migrate kp_app to zero
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '-e'
+      - 'DJANGO_SETTINGS_MODULE=kp.settings'  # Adjust this if your settings module is different
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'migrate'
+      - 'kp_app'
+      - 'zero'
+      - '--fake'
+    id: Fake migrate kp_app to zero
+
+  # 6. Remove any existing migration files
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -83,7 +104,7 @@ steps:
         find . -path "*/migrations/[0-9]*.pyc" -delete
     id: Remove specific migrations
 
-  # 6. create a new migration
+  # 7. create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -98,7 +119,7 @@ steps:
       - 'migrate'
     id: Create migrations
 
-  # 7. Make migrations
+  # 8. Make migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -114,7 +135,7 @@ steps:
       - '--noinput'
     id: Make migrations
 
-  # 8. Migrate again
+  # 9. Migrate again
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -129,8 +150,7 @@ steps:
       - 'migrate'
     id: Migrate
 
-
-  # 9. Collect static
+  # 10. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -146,7 +166,7 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 10. Deploy to Cloud Run
+  # 11. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
