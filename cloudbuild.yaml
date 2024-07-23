@@ -44,7 +44,7 @@ steps:
       - 'sh'
       - '-c'
       - |
-        python manage.py makesuperuser &&
+        python manage.py makesuperuser ${_DJANGO_SUPERUSER_USERNAME} ${_DJANGO_SUPERUSER_EMAIL} ${_DJANGO_SUPERUSER_PASSWORD} &&
         echo "Superuser created successfully"
     id: Create superuser
 
