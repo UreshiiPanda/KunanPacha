@@ -45,6 +45,7 @@ if os.environ.get("KP_PROD", "true") == "false":
     print("App starting in Development Mode")
     print(f"postgres details: name: {env('POSTGRES_NAME')}, user: {env('POSTGRES_USER')}, pass: {env('POSTGRES_PASSWORD')}")
 
+    ALLOWED_HOSTS = ["*"]
 
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
@@ -94,6 +95,14 @@ else:
     print("App starting in Production Mode")
 
     DEBUG = False
+
+    # Allow CSRF to work in Prod
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "kp-run-pdjzxrqjaq-uc.a.run.app"]
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "https://kp-run-pdjzxrqjaq-uc.a.run.app"]
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
     env = environ.Env(
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
@@ -177,9 +186,6 @@ else:
 
 
 
-ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["https://kp-run-pdjzxrqjaq-uc.a.run.app/"]
-CSRF_COOKIE_DOMAIN = ["https://kp-run-pdjzxrqjaq-uc.a.run.app/"]
 
 # Application definitions
 INSTALLED_APPS = [
