@@ -155,7 +155,7 @@ else:
     STATICFILES_DIRS = []
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     # bucket must be set to allow ACLs and it must not prevent public access
-    GS_DEFAULT_ACL = "publicRead" 
+    # GS_DEFAULT_ACL = "publicRead" 
 
 
     if os.environ.get("USE_CLOUD_SQL_AUTH_PROXY") == "true":
