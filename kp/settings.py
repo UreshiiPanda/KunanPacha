@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import io
 import os
-
+import json
 import environ
 import google.auth
+from google.oauth2 import service_account
 from google.cloud import secretmanager
 import socket
 import logging
@@ -145,6 +146,9 @@ else:
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     EMAIL_HOST_USER = env("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    json.loads(env('GCP_SERVICE_ACCOUNT_KEY'))
+)
 
 
     # Define static BLOB storage via django-storages[google]
