@@ -82,13 +82,13 @@ def home(request):
         print("in home view in views.py, in PROD env, getting images from GCP")
         page_settings = {
             "title": home_page_1_settings.title,
-            "background_image": f"{settings.STATIC_URL}bg1.jpg",
+            "background_image": f"{settings.STATIC_URL}kp_app/images/bg1.jpg",
             "homepage1_font": home_page_1_settings.font,
             "homepage1_font_color": home_page_1_settings.font_color,
             "homepage1_font_style": home_page_1_settings.font_style,
 
             "homepage2_text": home_page_2_settings.homepage2_text,
-            "homepage_2_image_1": f"{settings.STATIC_URL}art1.jpg",
+            "homepage_2_image_1": f"{settings.STATIC_URL}kp_app/images/art1.jpg",
             "homepage2_font": home_page_2_settings.font,
             "homepage2_font_color": home_page_2_settings.font_color,
             "homepage2_font_style": home_page_2_settings.font_style,
@@ -99,7 +99,7 @@ def home(request):
             "homepage3_font_style": home_page_3_settings.font_style,
 
             "homepage4_text": home_page_4_settings.homepage4_text,
-            "homepage_4_image_1": f"{settings.STATIC_URL}art3.jpg",
+            "homepage_4_image_1": f"{settings.STATIC_URL}kp_app/images/art3.jpg",
             "homepage4_font": home_page_4_settings.font,
             "homepage4_font_color": home_page_4_settings.font_color,
             "homepage4_font_style": home_page_4_settings.font_style,
@@ -116,7 +116,7 @@ def home(request):
             "contact_font": contact_page_settings.font,
             "contact_font_color": contact_page_settings.font_color,
             "contact_font_style": contact_page_settings.font_style,
-            "contact_image": f"{settings.STATIC_URL}art4.jpg",
+            "contact_image": f"{settings.STATIC_URL}kp_app/images/art4.jpg",
         }
     else:
         print("in home view in views.py, in DEV env, getting images from local files")
@@ -958,7 +958,7 @@ def home_page_menu_edit(request):
                 # GCP Production Environment
                 client = storage.Client()
                 bucket = client.get_bucket(settings.GS_BUCKET_NAME)
-                blob = bucket.blob('art5.jpg')
+                blob = bucket.blob('kp_app/images/art5.jpg')
                 blob.upload_from_string(
                     menu_image.read(),
                     content_type=menu_image.content_type

@@ -153,7 +153,7 @@ else:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/kp_app/images/'
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     # bucket must be set to allow ACLs and it must not prevent public access
     GS_DEFAULT_ACL = "publicRead" 
 
