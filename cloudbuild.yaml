@@ -27,7 +27,6 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-
   # 3. Create a Dajngo superuser
   - name: 'gcr.io/google-appengine/exec-wrapper'
     args:
