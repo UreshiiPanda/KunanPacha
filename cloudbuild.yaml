@@ -27,7 +27,29 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-  # 3. Create a new migration
+
+  # 3. Create a Dajngo superuser
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'DJANGO_SUPERUSER_USERNAME=${_DJANGO_SUPERUSER_USERNAME}'
+      - '-e'
+      - 'DJANGO_SUPERUSER_EMAIL=${_DJANGO_SUPERUSER_EMAIL}'
+      - '-e'
+      - 'DJANGO_SUPERUSER_PASSWORD=${_DJANGO_SUPERUSER_PASSWORD}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        python manage.py makesuperuser ${DJANGO_SUPERUSER_USERNAME} ${DJANGO_SUPERUSER_EMAIL} ${DJANGO_SUPERUSER_PASSWORD} &&
+        echo "Superuser created successfully"
+    id: Create superuser
+
+  # 4. Create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -42,7 +64,7 @@ steps:
       - 'migrate'
     id: Create migrations
 
-  # 4. Collect static
+  # 5. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -57,31 +79,6 @@ steps:
       - 'collectstatic'
       - '--no-input'
     id: Collect static
-
-
-  # 5. Step to print contents of migrations directory
-  - name: 'gcr.io/google-appengine/exec-wrapper'
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'sh'
-      - '-c'
-      - |
-        echo "Contents of migrations directory:"
-        ls -la /workspace/kp_app/migrations/
-        echo "\nContent of each migration file:"
-        for file in /workspace/kp_app/migrations/*.py; do
-          if [ -f "$file" ]; then
-            echo "\n--- $file ---"
-            cat "$file"
-          fi
-        done
-    id: Print migrations
 
 
   # 6. Deploy to Cloud Run
@@ -100,7 +97,7 @@ steps:
     id: Deploy
     entrypoint: gcloud
 
-  # 7. Step to print contents of migrations directory
+  # 7. Step to print contents of migrations directory to check migrations
   - name: 'gcr.io/google-appengine/exec-wrapper'
     args:
       - '-i'
@@ -122,7 +119,7 @@ steps:
             cat "$file"
           fi
         done
-    id: Print migrations 2
+    id: Print migrations dir
 
 
 # Store images in Google Artifact Registry
