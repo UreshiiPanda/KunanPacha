@@ -178,7 +178,7 @@ else:
 
 
 ALLOWED_HOSTS = ["*"]
-
+CSRF_TRUSTED_ORIGINS = ["https://kp-run-pdjzxrqjaq-uc.a.run.app/"]
 
 # Application definitions
 INSTALLED_APPS = [
