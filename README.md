@@ -1,12 +1,21 @@
 # KunanPacha
 
-#### This will be an art/blog website for a friend to display his artwork  <br><br>
+### Find the current iteration of the project here:  
+<br><br>
+
+#### 🚧 currently under construction 🚧
+<br><br>
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+This is an art website/blog built for a friend to display his artwork and blog posts. This project has been
+put together in a hacky way as this is my first time using Django, HTMX, and Alpine JS. The site gives my friend/any
+approved user the ability to change the images/fonts/font-colors/etc. and it behaves mostly like an SPA.
+
+<br><br>
 
 
 <h4>Tech Stack:</h4> Django ~ HTMX ~ Alpine JS ~ Tailwind CSS ~ Postgres ~ Docker ~ Google Cloud  <br><br>
-
-
-#### 🚧 currently under construction 🚧
 
 
 <a name="readme-top"></a>
