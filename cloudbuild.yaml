@@ -34,8 +34,6 @@ steps:
       - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
       - '--'
       - 'sh'
       - '-c'
@@ -53,8 +51,6 @@ steps:
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '-e'
-      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
       - '--'
       - 'python'
       - 'manage.py'
@@ -69,8 +65,6 @@ steps:
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
       - '-e'
-      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
-      - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '--'
       - 'python'
@@ -80,7 +74,7 @@ steps:
     id: Collect static
 
 
-  # 6. Deploy to Cloud Run
+# 6. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     entrypoint: bash
     args:
@@ -91,7 +85,7 @@ steps:
         --image=$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA \
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS \
         --region=$_DEPLOY_REGION \
-        --set-secrets=GCP_SERVICE_ACCOUNT_KEY=projects/$PROJECT_ID/secrets/${_SECRET_NAME}/versions/latest \
+        --set-secrets=GCP_SERVICE_ACCOUNT_KEY=${_SECRET_NAME}:latest \
         --quiet
     id: Deploy
 
