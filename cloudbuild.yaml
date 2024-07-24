@@ -82,21 +82,18 @@ steps:
 
   # 6. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
     args:
-      - run
-      - services
-      - update
-      - $_SERVICE_NAME
-      - '--platform=managed'
-      - '--image=$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - >-
-        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
-      - '--region=$_DEPLOY_REGION'
-      - '--set-env-vars=GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
-      - '--quiet'
+      - '-c'
+      - |
+        gcloud run services update $_SERVICE_NAME \
+        --platform=managed \
+        --image=$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA \
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS \
+        --region=$_DEPLOY_REGION \
+        --set-env-vars=GCP_SERVICE_ACCOUNT_KEY='${_GCP_SERVICE_ACCOUNT_KEY}' \
+        --quiet
     id: Deploy
-    entrypoint: gcloud
-
 
   # 7. Step to print contents of migrations directory to check migrations
   - name: 'gcr.io/google-appengine/exec-wrapper'
