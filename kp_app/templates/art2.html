@@ -24,6 +24,7 @@
             
             <form 
                 hx-post="{% url 'art2_page_edit' %}" 
+                hx-cache="false"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">

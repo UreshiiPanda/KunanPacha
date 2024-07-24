@@ -1,3 +1,4 @@
+
     {% load static %}
     {% load auth_tags %}
 
@@ -63,6 +64,7 @@
                 hx-encoding="multipart/form-data"
                 hx-post="{% url 'add_art' %}"
                 hx-swap="none"
+                hx-cache="false"
                 hx-trigger="submit"
                 hx-on::after-request="Alpine.store('addArtModal').showModal = false"
             >
@@ -173,6 +175,7 @@
                 enctype="multipart/form-data"
                 hx-encoding="multipart/form-data"
                 hx-trigger="submit"
+                hx-cache="false"
                 hx-swap="none"
                 hx-on::after-request="Alpine.store('editArtModal').showModal = false"
                 >
@@ -301,6 +304,7 @@
             <form 
                 hx-post="{% url 'art1_page_edit' %}" 
                 hx-target="#art-content"
+                hx-cache="false"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
@@ -530,6 +534,7 @@
         }
 
     </script>
+
 
 
 
