@@ -146,9 +146,17 @@ else:
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     EMAIL_HOST_USER = env("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    json.loads(env('GCP_SERVICE_ACCOUNT_KEY'))
-)
+
+    GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
+    if GCP_SERVICE_ACCOUNT_KEY:
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+            json.loads(GCP_SERVICE_ACCOUNT_KEY)
+        )
+        print("GCP_SERVICE_ACCOUNT_KEY found in environment variables")
+    else:
+        # Handle the case where the key is not available
+        print("WARNING: GCP_SERVICE_ACCOUNT_KEY not found in environment variables")
+        GS_CREDENTIALS = None
 
 
     # Define static BLOB storage via django-storages[google]
