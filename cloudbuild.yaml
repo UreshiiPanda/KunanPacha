@@ -27,7 +27,24 @@ steps:
         gcloud sql instances describe ${_DB_INSTANCE} --format='value(ipAddresses.ipAddress)'
     id: ping db
 
-  # 3. Make migrations
+  # 3. Create a Dajngo superuser
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        python manage.py makesuperuser ${_DJANGO_SUPERUSER_USERNAME} ${_DJANGO_SUPERUSER_EMAIL} ${_DJANGO_SUPERUSER_PASSWORD} &&
+        echo "Superuser created successfully"
+    id: Create superuser
+
+  # 4. Create a new migration
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -35,27 +52,14 @@ steps:
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
       - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'makemigrations'
-    id: Make migrations
-
-  # 4. Migrate
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '--'
       - 'python'
       - 'manage.py'
       - 'migrate'
-    id: Migrate
+    id: Create migrations
 
   # 5. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
@@ -65,6 +69,8 @@ steps:
       - '-s'
       - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
       - '-e'
+      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
+      - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
       - '--'
       - 'python'
@@ -73,21 +79,46 @@ steps:
       - '--no-input'
     id: Collect static
 
-  # 6. Deploy to Cloud Run
+
+# 6. Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
     args:
-      - run
-      - services
-      - update
-      - $_SERVICE_NAME
-      - '--platform=managed'
-      - '--image=$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - >-
-        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
-      - '--region=$_DEPLOY_REGION'
-      - '--quiet'
+      - '-c'
+      - |
+        gcloud run services update $_SERVICE_NAME \
+        --platform=managed \
+        --image=$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA \
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS \
+        --region=$_DEPLOY_REGION \
+        --set-secrets=GCP_SERVICE_ACCOUNT_KEY=${_SECRET_NAME}:latest \
+        --quiet
     id: Deploy
-    entrypoint: gcloud
+
+
+  # 7. Step to print contents of migrations directory to check migrations
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        echo "Contents of migrations directory:"
+        ls -la /workspace/kp_app/migrations/
+        echo "\nContent of each migration file:"
+        for file in /workspace/kp_app/migrations/*.py; do
+          if [ -f "$file" ]; then
+            echo "\n--- $file ---"
+            cat "$file"
+          fi
+        done
+    id: Print migrations dir
 
 
 # Store images in Google Artifact Registry
@@ -103,5 +134,3 @@ tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - kp-run
-
-

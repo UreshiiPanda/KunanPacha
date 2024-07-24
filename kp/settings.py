@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import io
 import os
-
+import json
 import environ
 import google.auth
+from google.oauth2 import service_account
 from google.cloud import secretmanager
 import socket
 import logging
@@ -45,6 +46,7 @@ if os.environ.get("KP_PROD", "true") == "false":
     print("App starting in Development Mode")
     print(f"postgres details: name: {env('POSTGRES_NAME')}, user: {env('POSTGRES_USER')}, pass: {env('POSTGRES_PASSWORD')}")
 
+    ALLOWED_HOSTS = ["*"]
 
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
@@ -95,6 +97,14 @@ else:
 
     DEBUG = False
 
+    # Allow CSRF to work in Prod
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "kp-run-pdjzxrqjaq-uc.a.run.app"]
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "https://kp-run-pdjzxrqjaq-uc.a.run.app"]
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+
     env = environ.Env(
         SECRET_KEY=(str, os.getenv("SECRET_KEY")),
         DATABASE_URL=(str, os.getenv("DATABASE_URL")),
@@ -130,12 +140,23 @@ else:
             "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
         )
 
-    
+ 
     SECRET_KEY = env("SECRET_KEY")
     DATABASE_URL = env("DATABASE_URL")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
     EMAIL_HOST_USER = env("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+    GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
+    if GCP_SERVICE_ACCOUNT_KEY:
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+            json.loads(GCP_SERVICE_ACCOUNT_KEY)
+        )
+        print("GCP_SERVICE_ACCOUNT_KEY found in environment variables")
+    else:
+        # Handle the case where the key is not available
+        print("WARNING: GCP_SERVICE_ACCOUNT_KEY not found in environment variables")
+        GS_CREDENTIALS = None
 
 
     # Define static BLOB storage via django-storages[google]
@@ -144,16 +165,38 @@ else:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     STATICFILES_DIRS = []
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
+    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     # bucket must be set to allow ACLs and it must not prevent public access
-    GS_DEFAULT_ACL = "publicRead" 
-
-    # Use django-environ to parse the connection string
-    DATABASES = {"default": env.db()}
+    # GS_DEFAULT_ACL = "publicRead" 
 
 
+    if os.environ.get("USE_CLOUD_SQL_AUTH_PROXY") == "true":
+        # Prod DB when needing to run make-migrations
+        # Use django-environ to parse the connection string
 
-ALLOWED_HOSTS = ["*"]
+
+        env = environ.Env(DEBUG=False)
+        env_file = os.path.join(BASE_DIR, ".env")
+        env.read_env(env_file)
+
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'HOST': '127.0.0.1',
+                'PORT': '5432',
+                'NAME': env('PROXY_DB_NAME'),
+                'USER': env('PROXY_DB_USER'),
+                'PASSWORD': env('PROXY_DB_PASSWORD'),
+            }
+        }
+
+    else:
+        # Prod DB (without make-migrations)
+        # Use django-environ to parse the connection string
+        DATABASES = {"default": env.db()}
+
+
 
 
 # Application definitions

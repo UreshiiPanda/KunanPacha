@@ -934,23 +934,6 @@ def home_page_menu_edit(request):
     menu.font_style = request.POST.get('menu_font_style', menu.font_style).lower()
     menu_image = request.FILES.get('menu_image')
 
-#    try:
-#        if menu_image:
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art5.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in menu_image.chunks():
-#                    destination.write(chunk)
-#            print(f"New menu image saved to {image_path}")
-#
-#        menu.save()
-#        print("Menu Settings successfully changed in the DB")
-#        return HttpResponseRedirect(reverse('home'))
-#    except Exception as e:
-#        print(f"Error saving Menu settings: {e}")
-#        response = HttpResponse(status=400, content="Menu Settings update failed")
-#        return response
-#
-
 
     try:
         if menu_image:

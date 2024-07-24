@@ -8,7 +8,6 @@
     {% static 'kp_app/images/art2.jpg' as art2_url %}
     {% static 'kp_app/images/art3.jpg' as art3_url %}
     {% static 'kp_app/images/art4.jpg' as art4_url %}
-    {% static 'kp_app/images/art5.jpg' as art5_url %}
     {% load auth_tags %}
 
 
@@ -37,6 +36,7 @@
                     enctype="multipart/form-data"
                     hx-encoding="multipart/form-data"
                     hx-post="{% url 'home_page_menu_edit' %}"
+                    hx-cache="false"
                     hx-swap="none"
                     hx-on::after-request="Alpine.store('editMenuModal').updateSettings({
                         font: document.getElementById('menu_font').value,
