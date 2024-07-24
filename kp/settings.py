@@ -140,7 +140,7 @@ else:
             "No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found."
         )
 
-    
+ 
     SECRET_KEY = env("SECRET_KEY")
     DATABASE_URL = env("DATABASE_URL")
     GS_BUCKET_NAME = env("GS_BUCKET_NAME")
