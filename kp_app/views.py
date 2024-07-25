@@ -34,7 +34,7 @@ def home(request):
 
     if not home_page_1_settings:
         home_page_1_settings = HomePage1Settings.objects.create(
-            title='Edu Suarez',
+            title='Title Here',
             font='sans-serif',
             font_color='black',
             font_style='normal',
@@ -331,7 +331,7 @@ def add_art(request):
                         # GCP Cloud Storage
                         client = storage.Client()
                         bucket = client.bucket(settings.GS_BUCKET_NAME)
-                        blob = bucket.blob(f'images/{filename}')
+                        blob = bucket.blob(f'kp_app/images/{filename}')
                         blob.upload_from_file(image)
 
             # Create Artwork object
@@ -420,7 +420,7 @@ def edit_artwork(request, artwork_id):
                 # GCP Cloud Storage
                 client = storage.Client()
                 bucket = client.bucket(settings.GS_BUCKET_NAME)
-                blob = bucket.blob(f'images/{filename}')
+                blob = bucket.blob(f'kp_app/images/{filename}')
                 blob.upload_from_file(image)
 
             # Delete the old image if it exists
@@ -434,7 +434,7 @@ def edit_artwork(request, artwork_id):
                 else:
                     # GCP Cloud Storage
                     bucket = client.bucket(settings.GS_BUCKET_NAME)
-                    blob = bucket.blob(f'images/{old_filename}')
+                    blob = bucket.blob(f'kp_app/images/{old_filename}')
                     if blob.exists():
                         blob.delete()
 
@@ -463,11 +463,49 @@ def edit_artwork(request, artwork_id):
 
 
 
+#@require_http_methods(["DELETE"])
+#def delete_artwork(request, artwork_id):
+#    artwork = get_object_or_404(Artwork, id=artwork_id)
+#    artwork.delete()
+#    return HttpResponseRedirect(reverse('art1'))
+
+
+
+
 @require_http_methods(["DELETE"])
 def delete_artwork(request, artwork_id):
     artwork = get_object_or_404(Artwork, id=artwork_id)
+    
+    # Delete images from GCP bucket if in production
+    if os.getenv("KP_PROD") == "true":
+        client = storage.Client()
+        bucket = client.bucket(settings.GS_BUCKET_NAME)
+        
+        image_fields = [artwork.image1_filename, artwork.image2_filename, 
+                        artwork.image3_filename, artwork.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                blob = bucket.blob(f'kp_app/images/{image_filename}')
+                if blob.exists():
+                    blob.delete()
+                    print(f"Deleted {image_filename} from GCP bucket")
+    else:
+        # Delete images from local storage if in development
+        image_fields = [artwork.image1_filename, artwork.image2_filename, 
+                        artwork.image3_filename, artwork.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', image_filename)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"Deleted {image_filename} from local storage")
+
+    # Delete the artwork from the Postgres database
     artwork.delete()
     return HttpResponseRedirect(reverse('art1'))
+
 
 
 

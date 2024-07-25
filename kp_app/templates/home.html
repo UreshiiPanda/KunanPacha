@@ -13,7 +13,8 @@
 
 
     <div  x-data="{home1_modal:false, home2_modal:false, home3_modal:false, home4_modal:false, contact_modal:false}"
-          id="home-content">
+          id="home-content"
+          class="text-black">
 
 
 
@@ -53,15 +54,15 @@
                 {% csrf_token %}
                     <div class="mb-4">
                       <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
-                      <input type="text" id="menu_font" name="menu_font" value="{{ page_settings.menu_font }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="menu_font" name="menu_font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="mb-4">
                       <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
-                      <input type="text" id="menu_font_color" name="menu_font_color" value="{{ page_settings.menu_font_color }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="menu_font_color" name="menu_font_color" placeholder="gray-300" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="mb-4">
                       <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
-                      <input type="text" id="menu_font_style" name="menu_font_style" value="{{ page_settings.menu_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="menu_font_style" name="menu_font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <!-- Existing image input -->
 
@@ -197,7 +198,7 @@
 
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="home1_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="home1_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="home1_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
@@ -218,19 +219,19 @@
                     {% csrf_token %}
                         <div class="mb-4">
                           <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
-                          <input type="text" id="title" name="title" value="Edu Suarez" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                          <input type="text" id="title" name="title" placeholder="title here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="mb-4">
                           <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
-                          <input type="text" id="font" name="font" value="{{ page_settings.homepage1_font }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                          <input type="text" id="font" name="font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="mb-4">
                           <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
-                          <input type="text" id="font_color" name="font_color" value="{{ page_settings.homepage1_font_color }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                          <input type="text" id="font_color" name="font_color" placeholder="black" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="mb-4">
                           <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
-                          <input type="text" id="font_style" name="font_style" value="{{ page_settings.homepage1_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                          <input type="text" id="font_style" name="font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <!-- Existing image input -->
 
@@ -359,7 +360,7 @@
 
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="home2_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="home2_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="home2_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
@@ -383,19 +384,19 @@
                 {% csrf_token %}
                     <div class="mb-4">
                         <label for="homepage2_text" class="block text-sm font-medium text-gray-700">Page 2 Text:</label>
-                        <textarea id="homepage2_text" name="homepage2_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage2_text }}</textarea>
+                        <textarea id="homepage2_text" name="homepage2_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                     </div>
                     <div class="mb-4">
                       <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
-                      <input type="text" id="font" name="font" value="{{ page_settings.homepage2_font }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="font" name="font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="mb-4">
                       <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
-                      <input type="text" id="font_color" name="font_color" value="{{ page_settings.homepage2_font_color }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="font_color" name="font_color" placeholder="black" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="mb-4">
                       <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
-                      <input type="text" id="font_style" name="font_style" value="{{ page_settings.homepage2_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                      <input type="text" id="font_style" name="font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <!-- Existing image input -->
 
@@ -442,7 +443,7 @@
 
 
               <div class="flex items-center justify-center">
-                  <p class="text-center p-4"> {{page_settings.homepage2_text}} </p>
+                  <p class="text-center p-6 md:p-12"> {{page_settings.homepage2_text}} </p>
               </div>
               <div 
 
@@ -516,7 +517,7 @@
 
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="home3_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="home3_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="home3_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
@@ -539,19 +540,19 @@
                         {% csrf_token %}
                             <div class="mb-4">
                                 <label for="homepage3_text" class="block text-sm font-medium text-gray-700">Page 3 Text:</label>
-                                <textarea id="homepage3_text" name="homepage3_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage3_text }}</textarea>
+                                <textarea id="homepage3_text" name="homepage3_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                             </div>
                             <div class="mb-4">
                               <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
-                              <input type="text" id="font" name="font" value="{{ page_settings.homepage3_font }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="font" name="font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div class="mb-4">
                               <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
-                              <input type="text" id="font_color" name="font_color" value="{{ page_settings.homepage3_font_color }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="font_color" name="font_color" placeholder="black" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div class="mb-4">
                               <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
-                              <input type="text" id="font_style" name="font_style" value="{{ page_settings.homepage3_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="font_style" name="font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
 
 
@@ -579,7 +580,7 @@
 
 
 
-                <p class="text-center p-4"> {{page_settings.homepage3_text}} </p>
+                <p class="text-center p-6 md:p-12"> {{page_settings.homepage3_text}} </p>
             </div>
 
 
@@ -645,7 +646,7 @@
             {% endif %}
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="home4_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="home4_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="home4_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
@@ -667,19 +668,19 @@
                         {% csrf_token %}
                             <div class="mb-4">
                                 <label for="homepage4_text" class="block text-sm font-medium text-gray-700">Page 4 Text:</label>
-                                <textarea id="homepage4_text" name="homepage4_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ page_settings.homepage4_text }}</textarea>
+                                <textarea id="homepage4_text" name="homepage4_text" placeholder="place text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                             </div>
                             <div class="mb-4">
                               <label for="homepage4_font" class="block text-sm font-medium text-gray-700">Font:</label>
-                              <input type="text" id="homepage4_font" name="homepage4_font" value="{{ page_settings.homepage4_font }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="homepage4_font" name="homepage4_font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div class="mb-4">
                               <label for="homepage4_font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
-                              <input type="text" id="homepage4_font_color" name="homepage4_font_color" value="{{ page_settings.homepage4_font_color }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="homepage4_font_color" name="homepage4_font_color" placeholder="black" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div class="mb-4">
                               <label for="homepage4_font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
-                              <input type="text" id="homepage4_font_style" name="homepage4_font_style" value="{{ page_settings.homepage4_font_style }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                              <input type="text" id="homepage4_font_style" name="homepage4_font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <!-- Existing image input -->
 
@@ -729,7 +730,7 @@
                 </div>
 
                 <div class="flex items-center justify-center">
-                    <p class="text-center p-4">{{page_settings.homepage4_text}}</p>
+                    <p class="text-center p-6 md:p-12">{{page_settings.homepage4_text}}</p>
                 </div>
             </div>
 
@@ -758,7 +759,7 @@
 
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="contact_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="contact_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="contact_modal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
