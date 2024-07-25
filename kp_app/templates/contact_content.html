@@ -29,6 +29,7 @@
                         hx-encoding="multipart/form-data"
                         hx-post="{% url 'contact_edit' %}"
                         hx-swap="none"
+                        hx-cache="false"
                     >
                     {% csrf_token %}
 
@@ -241,6 +242,7 @@
                       img.src = 'placeholder.jpg';
                     }
                 </script>
+
 
 
 

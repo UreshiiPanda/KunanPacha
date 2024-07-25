@@ -52,7 +52,7 @@ kitten @ send-text --match=title:nya3 kitten @ launch --title=nya5'\n'
 sleep 1
 
 # choose color in second tab (but first in all tabs)
-kitten @ send-text --match=all kc sakura'\n'
+kitten @ send-text --match=all kc spacedust'\n'
 sleep 1
 
 # choose color in first tab

@@ -9,7 +9,7 @@
 
 
         <!-- Modal backdrop -->
-        <div x-data x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div x-data x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- Modal content -->
           <div x-show="$store.editPageModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
@@ -24,6 +24,7 @@
             
             <form 
                 hx-post="{% url 'art2_page_edit' %}" 
+                hx-cache="false"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">

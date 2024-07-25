@@ -1674,6 +1674,10 @@ video {
     flex-direction: row;
   }
 
+  .md\:p-12 {
+    padding: 3rem;
+  }
+
   .md\:px-8 {
     padding-left: 2rem;
     padding-right: 2rem;

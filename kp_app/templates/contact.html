@@ -17,7 +17,7 @@
 
 
                 <!-- Edit Page Modal -->
-                <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
                   <div x-show="$store.editPageModal.showModal" 
                        x-transition:enter="transition ease-out duration-300"
                        x-transition:enter-start="opacity-0 scale-90"
@@ -33,6 +33,7 @@
                         hx-encoding="multipart/form-data"
                         hx-post="{% url 'contact_edit' %}"
                         hx-swap="none"
+                        hx-cache="false"
                     >
                     {% csrf_token %}
 

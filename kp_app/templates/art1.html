@@ -51,7 +51,7 @@
 
 
         <!-- ADD ART Modal backdrop -->
-        <div x-cloak x-show="$store.addArtModal.showModal" class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div x-cloak x-show="$store.addArtModal.showModal" class=" fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- ADD ART Modal content -->
           <div x-cloak x-show="$store.addArtModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
@@ -70,6 +70,7 @@
                 hx-encoding="multipart/form-data"
                 hx-post="{% url 'add_art' %}"
                 hx-swap="none"
+                hx-cache="false"
                 hx-trigger="submit"
                 hx-on::after-request="Alpine.store('addArtModal').showModal = false"
             >
@@ -160,7 +161,7 @@
         <div 
             x-cloak 
             x-show="$store.editArtModal.showModal" 
-            class=" fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            class=" fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- EDIT ART Modal content -->
           <div
             x-cloak 
@@ -180,6 +181,7 @@
                 enctype="multipart/form-data"
                 hx-encoding="multipart/form-data"
                 hx-trigger="submit"
+                hx-cache="false"
                 hx-swap="none"
                 hx-on::after-request="Alpine.store('editArtModal').showModal = false"
                 >
@@ -292,7 +294,7 @@
 
 
         <!-- EDIT PAGE Modal backdrop -->
-        <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div x-cloak x-show="$store.editPageModal.showModal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
           <!-- EDIT PAGE Modal content -->
           <div x-cloak x-show="$store.editPageModal.showModal" 
                x-transition:enter="transition ease-out duration-300"
@@ -308,6 +310,7 @@
             <form 
                 hx-post="{% url 'art1_page_edit' %}" 
                 hx-target="#art-content"
+                hx-cache="false"
                 >
                 {% csrf_token %}
               <input type="hidden" name="page_url" value="{{ request.path }}">
