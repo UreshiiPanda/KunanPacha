@@ -10,8 +10,19 @@
     </title>
     {% load static %}
     {% load auth_tags %}
+
+    <!-- Favicon icon -->
+    <link defer rel="icon" type="image/x-icon" href="{% static 'kp_app/images/art5.jpg' %}">
+
+    <!-- Tailwind Styling -->
     <link rel="stylesheet" href="{% static 'kp_app/css/output.css' %}" type="text/css">
+
+    <!-- HTMX Core -->
     <script type="text/javascript" src="{% static 'kp_app/htmx.min.js' %}" defer ></script>
+
+    <!-- Alpine Plugins -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine Core -->
     <script type="text/javascript" src="{% static 'kp_app/alpine.min.js' %}" defer ></script>
 
     {% static 'kp_app/images/art5.jpg' as art5_url %}

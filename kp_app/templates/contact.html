@@ -85,7 +85,7 @@
                           <div class="flex space-x-4" id="imageContainerContact">
                             <div class="relative" id="image1Wrapper5">
                               <input type="file" id="image1Input5" name="contact_image" accept="image/*" class="hidden" onchange="previewImage(this, 'image1Preview5')">
-                              <img id="image1Preview5" src="placeholder.jpg" alt="Select Picture" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image1Input5').click()">
+                              <img id="image1Preview5" src="" decoding="async" alt="Select Picture" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('image1Input5').click()">
                               <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('image1Wrapper5')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
                                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -243,7 +243,7 @@
                       const input = wrapper.querySelector('input[type="file"]');
                       const img = wrapper.querySelector('img');
                       input.value = '';
-                      img.src = 'placeholder.jpg';
+                      img.src = '';
                     }
                 </script>
 
