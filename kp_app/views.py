@@ -219,6 +219,12 @@ def contact(request):
 
 
 
+def blog(request):
+    print("Blog page did NOT come from HTMX")
+    return render(request, "blog.html")
+
+
+
 def art1(request):
     # Fetch the page settings from the DB
     page_settings = Art1PageSettings.objects.first()

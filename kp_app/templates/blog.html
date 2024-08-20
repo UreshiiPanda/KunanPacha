@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% static 'kp_app/images/bg1.jpg' as bg_url %}
+{% static 'kp_app/images/art1.jpg' as art1_url %}
+
+<div class="flex flex-col lg:flex-row h-screen relative">
+    <!-- Small menu for screens below lg -->
+    <div class="lg:hidden fixed top-4 right-4 z-50">
+        {% include "navbar_blog_sm.html" %}
+    </div>
+
+    <div class="h-2/5 lg:h-full lg:w-2/5 bg-cover bg-center relative" style="background-image: url('{{ bg_url }}');">
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <img src="{{ art1_url }}" alt="Profile" class="w-32 h-32 rounded-full mb-4 object-cover shadow-lg">
+            <h2 class="text-white text-2xl font-bold text-center shadow-text">Your Blog Title</h2>
+            <p class="text-white text-center mt-2 shadow-text">A short description of your blog</p>
+            
+            <div class="flex justify-center space-x-8 mt-4">
+                <a href="https://www.instagram.com/" class="text-white hover:text-slate-300" target="_blank">
+                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
+                <a href="https://www.facebook.com/" class="text-white hover:text-slate-300" target="_blank">
+                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                </a>
+                <a href="https://www.tiktok.com/@meow" class="text-white hover:text-slate-300" target="_blank">
+                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="h-3/5 lg:h-full lg:w-3/5 flex flex-col">
+        <div class="hidden lg:block w-full">
+            <!-- Large menu for screens above lg -->
+            {% include "navbar_blog.html" %}
+        </div>
+
+        <div class="flex-grow overflow-y-auto">
+            <div class="container mx-auto px-4 py-8">
+                <div class="space-y-8">
+                    {% for post in blog_posts %}
+                    <h2 class="text-2xl font-bold mb-2">{{ post.title }}</h2>
+                    <p>{{ post.date|date:"F j, Y" }}</p>
+                    <p>{{ post.excerpt }}</p>
+                    <a href="#" class="text-blue-500 hover:underline mt-2 inline-block">Read more</a>
+                    {% empty %}
+                    <p>No blog posts available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

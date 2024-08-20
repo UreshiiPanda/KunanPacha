@@ -11,6 +11,7 @@ urlpatterns = [
         # this says: when we're at the "/" (root) URL extension, call this home func
         path("", views.home, name="home"),
         path("contact", views.contact, name="contact"),
+        path("blog", views.blog, name="blog"),
         path("art1", views.art1, name="art1"),
         path("add_art", views.add_art, name="add_art"),
         #path('art2', views.art2, name='art2'),

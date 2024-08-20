@@ -1,0 +1,142 @@
+
+    {% load static %}
+    {% load auth_tags %}
+
+        <div
+            x-data="{
+                currentFontStyle: $store.editMenuModal.fontStyle,
+                currentFont: $store.editMenuModal.font,
+                currentColor: $store.editMenuModal.fontColor,
+                fontVariants: {
+                    'sans-serif': 'font-sans',
+                    'serif': 'font-serif',
+                    'mono': 'font-mono',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+                smallMenu: false
+            }" 
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+
+            id="menu" >
+
+
+            <nav class="fixed w-full flex items-center justify-between bg-white p-6 border-b border-black z-50 shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+                    <div class="flex items-center flex-shrink-0 mr-6">
+                        <img src="{{ art5_url }}" alt="Logo" class="h-8 w-8 mr-2 object-cover shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
+                    </div>
+                <div class="flex items-center">
+                    <button @click="smallMenu = !smallMenu" class="block sm:hidden text-black">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3 6H21" stroke="black" stroke-width="1.0" />
+                          <path d="M3 12H17" stroke="black" stroke-width="1.0" />
+                          <path d="M3 18H21" stroke="black" stroke-width="1.0" />
+                        </svg>
+                    </button>
+                </div>
+
+
+                <div class="hidden sm:flex sm:flex-grow items-center justify-between">
+                    <div class="flex items-center text-sm">
+                        <a 
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4"  style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'home' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/"
+                            >Home
+                        </a>
+                        <a 
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'art1' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/art1"
+                            >Art
+                        </a>
+                        <a href="#responsive-header" 
+                            class="block mt-2 hover:cursor-pointer inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'blog' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/blog"
+                            >Blog
+                        </a>
+                        <a 
+                            class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
+                            :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
+                            @click="$store.editPageModal.showModal = false; 
+                                    $store.editMenuModal.showModal = false" 
+                            hx-get="{% url 'contact' %}"
+                            hx-swap="innerHTML" 
+                            hx-target="#content"
+                            hx-push-url="/contact"
+                            >Contact
+                        </a>
+                    </div>
+                    {% if user.is_authenticated %}
+                        {% if request.user|has_group:"Editor" %}
+                            <div class="flex items-center">
+                                <form action="{% url 'logout' %}" method="post" class="mr-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
+                                </form>
+                                <a x-data @click="$store.editPageModal.toggle()" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            </nav>
+        </div>
+
+
+
