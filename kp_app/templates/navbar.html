@@ -1,6 +1,8 @@
 
     {% load static %}
     {% load auth_tags %}
+    {% static 'kp_app/images/art5.jpg' as art5_url %}
+
 
         <div
             x-data="{
@@ -99,7 +101,7 @@
                             hx-push-url="/art1"
                             >Art
                         </a>
-                        <a href="#responsive-header" 
+                        <a
                             class="block mt-2 hover:cursor-pointer inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 
@@ -158,7 +160,7 @@
 
                 <div class="flex flex-col items-center space-y-4">
                     <a href="{% url 'home' %}" 
-                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
@@ -170,7 +172,7 @@
                         </a>
 
                     <a href="{% url 'art1' %}" 
-                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
@@ -182,7 +184,7 @@
                         </a>
 
                     <a href="#responsive-header" 
-                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
@@ -194,7 +196,7 @@
                     </a>
 
                     <a href="{% url 'contact' %}" 
-                            class="block mt-4 inline-block mt-0 text-black-200 hover:text-gray-500 mr-4"
+                            class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 

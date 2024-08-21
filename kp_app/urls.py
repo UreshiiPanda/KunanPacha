@@ -31,6 +31,7 @@ urlpatterns = [
         path("home_page_menu_edit", views.home_page_menu_edit, name="home_page_menu_edit"),
         path("contact_edit_home", views.contact_edit_home, name="contact_edit_home"),
         path("contact_edit", views.contact_edit, name="contact_edit"),
+        path("blog_page_edit", views.blog_page_edit, name="blog_page_edit"),
         path('edit_artwork/<int:artwork_id>', views.edit_artwork, name='edit_artwork'),
         path('delete_artwork/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
         ]

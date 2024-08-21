@@ -1,6 +1,8 @@
 
     {% load static %}
     {% load auth_tags %}
+    {% static 'kp_app/images/art5.jpg' as art5_url %}
+
 
         <div
             x-data="{
@@ -60,7 +62,7 @@
             id="menu" >
 
 
-            <nav class="fixed w-full flex items-center justify-between bg-white p-6 border-b border-black z-50 shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+            <nav class="container mx-auto flex items-center justify-between bg-white p-6 border-b border-black z-50 shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
                     <div class="flex items-center flex-shrink-0 mr-6">
                         <img src="{{ art5_url }}" alt="Logo" class="h-8 w-8 mr-2 object-cover shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
                     </div>
@@ -99,7 +101,7 @@
                             hx-push-url="/art1"
                             >Art
                         </a>
-                        <a href="#responsive-header" 
+                        <a
                             class="block mt-2 hover:cursor-pointer inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 

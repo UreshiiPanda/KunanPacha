@@ -1,6 +1,8 @@
 
 {% load static %}
 {% load auth_tags %}
+{% static 'kp_app/images/art5.jpg' as art5_url %}
+
 
 <div id="menu"
      x-data="{
@@ -57,11 +59,11 @@
         colorVariants[currentColor] || 'text-black',
     ]">
     
-    <button @click="smallMenu = !smallMenu" class="text-black hover:text-gray-600">
+    <button @click="smallMenu = !smallMenu" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"  xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 6H21" stroke="black" stroke-width="1.0" />
-          <path d="M3 12H17" stroke="black" stroke-width="1.0" />
-          <path d="M3 18H21" stroke="black" stroke-width="1.0" />
+          <path d="M3 6H21" stroke="currentColor" stroke-width="2.0" />
+          <path d="M3 12H17" stroke="currentColor" stroke-width="2.0" />
+          <path d="M3 18H21" stroke="currentColor" stroke-width="2.0" />
         </svg>
     </button>
 
@@ -87,10 +89,10 @@
                 </button>
             </div>
             <div class="flex flex-col items-center space-y-4">
-                <a href="{% url 'home' %}" class="block mt-4 inline-block mt-0 text-white hover:text-gray-300 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'home' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/">Home</a>
-                <a href="{% url 'art1' %}" class="block mt-4 inline-block mt-0 text-white hover:text-gray-300 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'art1' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/art1">Art</a>
-                <a href="#responsive-header" class="block mt-4 inline-block mt-0 text-white hover:text-gray-300 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'blog' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/blog">Blog</a>
-                <a href="{% url 'contact' %}" class="block mt-4 inline-block mt-0 text-white hover:text-gray-300 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'contact' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/contact">Contact</a>
+                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'home' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/">Home</a>
+                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'art1' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/art1">Art</a>
+                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'blog' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/blog">Blog</a>
+                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'contact' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/contact">Contact</a>
                 {% if user.is_authenticated %}
                     {% if request.user|has_group:"Editor" %}
                     <div class="flex flex-col items-center space-y-2 mt-4">

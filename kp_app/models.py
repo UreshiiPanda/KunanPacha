@@ -82,7 +82,6 @@ class MenuSettings(models.Model):
     font_style = models.CharField(max_length=100)
 
 
-
 class ContactPageSettings(models.Model):
     font = models.CharField(max_length=100)
     # this will come in as a tailwind color class (eg: red-500)
@@ -91,6 +90,17 @@ class ContactPageSettings(models.Model):
     edu_address = models.CharField(max_length=100)
     edu_phone = models.CharField(max_length=100)
     edu_email = models.EmailField()
+    edu_facebook = models.URLField()
+    edu_instagram = models.URLField()
+
+
+class BlogPageSettings(models.Model):
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+    blog_title = models.CharField(max_length=100)
+    blog_text = models.TextField()
     edu_facebook = models.URLField()
     edu_instagram = models.URLField()
 
