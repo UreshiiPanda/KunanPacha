@@ -11,11 +11,12 @@ urlpatterns = [
         # this says: when we're at the "/" (root) URL extension, call this home func
         path("", views.home, name="home"),
         path("contact", views.contact, name="contact"),
-        path("blog", views.blog, name="blog"),
         path("art1", views.art1, name="art1"),
         path("add_art", views.add_art, name="add_art"),
         #path('art2', views.art2, name='art2'),
         path('art2/<int:artwork_id>/', views.art2, name='art2'),
+        path('edit_artwork/<int:artwork_id>', views.edit_artwork, name='edit_artwork'),
+        path('delete_artwork/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
         path("send_email", views.send_email, name="send_email"),
         path('login_admin', views.login_admin, name='login_admin'),
         path('register/', register, name='register'),
@@ -31,9 +32,11 @@ urlpatterns = [
         path("home_page_menu_edit", views.home_page_menu_edit, name="home_page_menu_edit"),
         path("contact_edit_home", views.contact_edit_home, name="contact_edit_home"),
         path("contact_edit", views.contact_edit, name="contact_edit"),
+        path("blog", views.blog, name="blog"),
         path("blog_page_edit", views.blog_page_edit, name="blog_page_edit"),
-        path('edit_artwork/<int:artwork_id>', views.edit_artwork, name='edit_artwork'),
-        path('delete_artwork/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
+        path("add_blog", views.add_blog, name="add_blog"),
+        path('edit_blog/<int:blog_id>', views.edit_blog, name='edit_blog'),
+        path('delete_blog/<int:blog_id>/', views.delete_blog, name='delete_blog'),
         ]
 
 

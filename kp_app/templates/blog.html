@@ -42,7 +42,7 @@
                         console.log($store.editBlogModal.currentBlogPost.image3);
                         console.log($store.editBlogModal.currentBlogPost.image4);
                         $store.addBlogModal.showModal = true" 
-                class="fixed mt-20 top-8 right-4 z-30 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                class="absolute mt-20 top-8 left-4 z-30 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
                 Add Blog
             </button>
             {% endif %}
@@ -379,32 +379,41 @@
         <div class="space-y-12">
             {% for post in blog_posts %}
             <div class="blog-post">
-                <h2 class="text-2xl font-bold mb-2 text-center">{{ post.title }}</h2>
+                <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
                 
-                <p class="text-center text-gray-600 mb-4">Published: {{ post.date|date:"F j, Y" }}</p>
-                
+                <p class="text-center italic text-gray-400 mb-4">Published: {{ post.date|date:"F j, Y" }}</p>
+               
+                <!-- horizontal line -->
                 <div class="flex justify-center">
                     <div class="w-1/4 border-t border-gray-300 my-4"></div>
                 </div>
                 
-                <div class="relative" x-data="{ currentImage: 0, images: [{% for image in post.images %}'{{ image }}'{% if not forloop.last %},{% endif %}{% endfor %}] }">
-                    <img :src="images[currentImage]" alt="{{ post.title }}" class="w-full h-64 object-cover">
+                <div class="relative" 
+                    x-data="{ currentBlogImage: 0,
+                              blogImages: {{ post.images }},
+                            }">
+                    <img :src="blogImages[currentBlogImage]" alt="Image Not Found" class="w-3/5 h-64 object-cover">
                     
-                    <button @click="currentImage = (currentImage - 1 + images.length) % images.length" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2">
+                    <button 
+                        @click="currentBlogImage = (currentBlogImage - 1 + blogImages.length) % blogImages.length" 
+                        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-80 text-white p-2">
                         &lt;
                     </button>
                     
-                    <button @click="currentImage = (currentImage + 1) % images.length" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2">
+                    <button 
+                        @click="currentBlogImage = (currentBlogImage + 1) % blogImages.length" 
+                        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-80 text-white p-2">
                         &gt;
                     </button>
                 </div>
                 
                 <div class="mt-4">
                     <p class="line-clamp-7">{{ post.description }}</p>
-                    <button class="mt-2 text-blue-500 hover:underline">Continue reading...</button>
+                    <button class="mt-2 text-gray-400 hover:underline">Continue reading...</button>
                 </div>
             </div>
             
+            <!-- horizontal line -->
             <hr class="border-t border-gray-300 my-8">
             {% endfor %}
         </div>

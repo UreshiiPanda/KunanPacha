@@ -12,6 +12,7 @@ admin.site.register(HomePage3Settings)
 admin.site.register(HomePage4Settings)
 admin.site.register(ContactPageSettings)
 admin.site.register(BlogPageSettings)
+admin.site.register(BlogPost)
 admin.site.register(MenuSettings)
 admin.site.register(Artwork)
 

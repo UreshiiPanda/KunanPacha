@@ -27,6 +27,19 @@ class Artwork(models.Model):
     def __str__(self):
         return self.title
 
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    image1_filename = models.CharField(max_length=255)
+    image2_filename = models.CharField(max_length=255, blank=True, null=True)
+    image3_filename = models.CharField(max_length=255, blank=True, null=True)
+    image4_filename = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
 
 class Art2PageSettings(models.Model):
     font = models.CharField(max_length=100)

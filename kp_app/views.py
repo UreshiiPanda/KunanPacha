@@ -6,7 +6,7 @@ from google.cloud import storage
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork, BlogPageSettings
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork, BlogPageSettings, BlogPost
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
@@ -222,8 +222,8 @@ def contact(request):
 def blog(request):
     blog_page_settings = BlogPageSettings.objects.first()
     if not blog_page_settings:
-        blog_page = BlogPageSettings.objects.create(
-            blog_title="blgo title here",
+        blog_page_settings = BlogPageSettings.objects.create(
+            blog_title="blog title here",
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
@@ -258,12 +258,53 @@ def blog(request):
             "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/bg1.jpg'),
             "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art1.jpg'),
         }
+
+
+    # Fetch blog posts from the database
+    blog_posts = BlogPost.objects.all().order_by('-created_at')
+     
+
+    # Prepare blog post data
+    all_blog_posts = []
+    for post in blog_posts:
+        if os.getenv("KP_PROD") == "false":
+            # Local environment
+            image_base_url = os.path.join(settings.STATIC_URL, 'kp_app/images/')
+            image_urls = [
+                os.path.join(image_base_url, post.image1_filename),
+                os.path.join(image_base_url, post.image2_filename) if post.image2_filename else None,
+                os.path.join(image_base_url, post.image3_filename) if post.image3_filename else None,
+                os.path.join(image_base_url, post.image4_filename) if post.image4_filename else None,
+            ]
+        else:
+            # Production environment (GCP)
+            image_base_url = f"{settings.STATIC_URL}kp_app/images/"
+            image_urls = [
+                f'{image_base_url}{post.image1_filename}',
+                f'{image_base_url}{post.image2_filename}' if post.image2_filename else None,
+                f'{image_base_url}{post.image3_filename}' if post.image3_filename else None,
+                f'{image_base_url}{post.image4_filename}' if post.image4_filename else None,
+            ]
+
+
+        # Filter out None values from image_urls
+        filtered_images = [img for img in image_urls if img is not None]
+        
+        all_blog_posts.append({
+            'id': post.id,
+            'title': post.title,
+            'description': post.description,
+            'images': filtered_images,  # Add the filtered images array
+            'date': post.created_at,
+        })
+
+
     if request.headers.get('HX-Request') == 'true':
-        print("contact page came from HTMX")
-        return render(request, "contact_content.html", {"page_settings": page_settings})
+        print("blog page came from HTMX")
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts})
     else:
-        print("contact page did NOT come from HTMX")
-        return render(request, "contact.html", {"page_settings": page_settings})
+        print("blog page did NOT come from HTMX")
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts})
 
 
 
@@ -274,7 +315,7 @@ def blog_page_edit(request):
     # If no settings exist, create a new one with default values
     if not blog_page:
         blog_page = BlogPageSettings.objects.create(
-            blog_title="blgo title here",
+            blog_title="blog title here",
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
@@ -385,6 +426,197 @@ def blog_page_edit(request):
         return response
 
 
+
+
+
+def add_blog(request):
+    if request.method == 'POST':
+        title = request.POST.get('blog_title')
+        description = request.POST.get('blog_description')
+        images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
+
+
+        if not request.FILES.get('image1'):
+            # if the user didn't input the first image (required)
+            response = HttpResponse(status=400, content="Add Blog form is missing first image")
+            response['HX-Trigger'] = 'addBlogFailure'
+            return response
+
+        # make sure there is at least 1 image, the rest are optional
+        if title and description and images[0]:
+            # Generate unique filenames for each image
+            filenames = []
+            # this still iterates from 0, but it makes the image naming convention start at 1
+            for i, image in enumerate(images, start=1):
+                if image:
+                    ext = os.path.splitext(image.name)[1]
+                    filename = f"{title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+                    filenames.append(filename)
+
+                    # Save image
+                    if os.getenv("KP_PROD") == "false":
+
+                        # Local storage
+                        path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                        print(f"local path add_blog is adding to: {path}")
+                        with open(path, 'wb+') as destination:
+                            for chunk in image.chunks():
+                                destination.write(chunk)
+                    else:
+                        # GCP Cloud Storage
+                        client = storage.Client()
+                        bucket = client.bucket(settings.GS_BUCKET_NAME)
+                        blob = bucket.blob(f'kp_app/images/{filename}')
+                        blob.upload_from_file(image)
+
+            # Create Artwork object
+            # the create() func also performs .save() so we don't need to do artwork.save() after this
+            blog_post = BlogPost.objects.create(
+                title=title,
+                description=description,
+                # the blog_date field is auto-generated on the Model-level
+                image1_filename=filenames[0],
+                image2_filename=filenames[1] if len(filenames) > 1 else None,
+                image3_filename=filenames[2] if len(filenames) > 2 else None,
+                image4_filename=filenames[3] if len(filenames) > 3 else None
+            )
+
+            return HttpResponseRedirect(reverse('blog'))
+        else:
+            print('from Add Blog modal, All required fields must be filled and at least one image uploaded')
+            return HttpResponse('from Add Blog modal, All required fields must be filled and at least one image uploaded', status=400)
+
+    return HttpResponse('from Add Blog modal, add_blog call was not a POST', status=400)
+
+
+
+
+
+#@require_http_methods(["PUT"])
+# the PUT was not detecting the FILES for some reason, but the POST works
+def edit_blog(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+
+
+    if request.FILES.get('image1'):
+        print(f'this is image1: {request.FILES.get("image1")}')
+    if request.FILES.get('image2'):
+        print(f'this is image2: {request.FILES.get("image2")}')
+    if request.FILES.get('image3'):
+        print(f'this is image3: {request.FILES.get("image3")}')
+    if request.FILES.get('image4'):
+        print(f'this is image4: {request.FILES.get("image4")}')
+
+    if not request.FILES.get('image1'):
+        # if the user didn't input the first image (required)
+        response = HttpResponse(status=400, content="Edit Blog form is missing first image")
+        response['HX-Trigger'] = 'editBlogFailure'
+        return response
+
+
+
+    # Update the basic fields
+    # or leave them the same if the user didn't supply a new value
+    blog_post.title = request.POST.get('title', blog_post.title)
+    blog_post.description = request.POST.get('description', blog_post.description)
+
+
+    # Handle image updates
+    for i in range(1, 5):
+        image_field = f'image{i}'
+        if image_field in request.FILES:
+            image = request.FILES[image_field]
+            ext = os.path.splitext(image.name)[1]
+            filename = f"{blog_post.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+            print(f"filename of image {i} being updated: {filename} for artwork {blog_post.title}")
+            
+            # Save the new image
+            if os.getenv("KP_PROD") == "false":
+                # Local storage
+                path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                with open(path, 'wb+') as destination:
+                    for chunk in image.chunks():
+                        destination.write(chunk)
+            else:
+                # GCP Cloud Storage
+                client = storage.Client()
+                bucket = client.bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob(f'kp_app/images/{filename}')
+                blob.upload_from_file(image)
+
+            # Delete the old image if it exists
+            old_filename = getattr(blog_post, f'image{i}_filename')
+            if old_filename:
+                if os.getenv("KP_PROD") == "false":
+                    # Local Storage
+                    old_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', old_filename)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                else:
+                    # GCP Cloud Storage
+                    bucket = client.bucket(settings.GS_BUCKET_NAME)
+                    blob = bucket.blob(f'kp_app/images/{old_filename}')
+                    if blob.exists():
+                        blob.delete()
+
+            # Update the filename in the model
+            setattr(blog_post, f'image{i}_filename', filename)
+        else:
+            # if the image is not in the request.FILES, then it needs to be deleted from the DB since
+            # we are now refreshing the Edit Art form every time it is opened
+            # Delete the old image if it exists
+            setattr(blog_post, f'image{i}_filename', None)
+            
+
+
+    # check if the user deleted any of the files via the removed input field that was
+    # made to cirumvent Alpine issues
+    # NOTE that image1 is not allowed to be removed by the user in the UI because an Artwork must
+    # have at least 1 image
+    # also check that the user didn't re-add a new image after clicking the trash bin icon for deletion
+    for i in range(1, 5):
+        if request.POST.get(f'removed{i}') == "true" and f'image{i}' not in request.FILES:
+            print(f'removing image {i} from blog post {blog_post.title}')
+            setattr(blog_post, f'image{i}_filename', None)
+        
+    blog_post.save()
+    return HttpResponseRedirect(reverse('blog'))
+
+
+
+@require_http_methods(["DELETE"])
+def delete_blog(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+    
+    # Delete images from GCP bucket if in production
+    if os.getenv("KP_PROD") == "true":
+        client = storage.Client()
+        bucket = client.bucket(settings.GS_BUCKET_NAME)
+        
+        image_fields = [blog_post.image1_filename, blog_post.image2_filename, 
+                        blog_post.image3_filename, blog_post.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                blob = bucket.blob(f'kp_app/images/{image_filename}')
+                if blob.exists():
+                    blob.delete()
+                    print(f"Deleted {image_filename} from GCP bucket")
+    else:
+        # Delete images from local storage if in development
+        image_fields = [blog_post.image1_filename, blog_post.image2_filename, 
+                        blog_post.image3_filename, blog_post.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', image_filename)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"Deleted {image_filename} from local storage")
+
+    # Delete the artwork from the Postgres database
+    blog_post.delete()
+    return HttpResponseRedirect(reverse('blog'))
 
 
 
@@ -522,7 +754,7 @@ def add_art(request):
             print('from Add Art modal, All required fields must be filled and at least one image uploaded')
             return HttpResponse('from Add Art modal, All required fields must be filled and at least one image uploaded', status=400)
 
-    return render(request, 'add_art.html')
+    return HttpResponse('from Add Art modal, add art call was not a POST', status=400)
 
 
 
@@ -546,7 +778,7 @@ def edit_artwork(request, artwork_id):
     if not request.FILES.get('image1'):
         # if the user didn't input the first image (required)
         response = HttpResponse(status=400, content="Edit Art form is missing first image")
-        response['HX-Trigger'] = 'addArtFailure'
+        response['HX-Trigger'] = 'editArtFailure'
         return response
 
 
@@ -629,15 +861,6 @@ def edit_artwork(request, artwork_id):
         
     artwork.save()
     return HttpResponseRedirect(reverse('art1'))
-
-
-
-#@require_http_methods(["DELETE"])
-#def delete_artwork(request, artwork_id):
-#    artwork = get_object_or_404(Artwork, id=artwork_id)
-#    artwork.delete()
-#    return HttpResponseRedirect(reverse('art1'))
-
 
 
 

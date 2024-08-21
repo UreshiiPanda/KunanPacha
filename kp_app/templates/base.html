@@ -176,6 +176,14 @@
      }) 
 
 
+     document.body.addEventListener("addBlogFailure", function(evt){
+        console.log("add blog alert failure: no first image provided");
+        alert("You must provide an image in the first image box");
+     }) 
+     document.body.addEventListener("editBlogFailure", function(evt){
+        console.log("edit blog alert failure: no first image provided");
+        alert("You must provide an image in the first image box");
+     }) 
      document.body.addEventListener("addArtFailure", function(evt){
         console.log("add art alert failure: no first image provided");
         alert("You must provide an image in the first image box");
