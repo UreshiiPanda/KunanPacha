@@ -655,6 +655,46 @@ video {
   top: 2rem;
 }
 
+.left-2 {
+  left: 0.5rem;
+}
+
+.right-2 {
+  right: 0.5rem;
+}
+
+.left-\[10px\] {
+  left: 10px;
+}
+
+.right-\[10px\] {
+  right: 10px;
+}
+
+.left-\[40px\] {
+  left: 40px;
+}
+
+.right-\[40px\] {
+  right: 40px;
+}
+
+.left-\[5\%\] {
+  left: 5%;
+}
+
+.right-\[5\%\] {
+  right: 5%;
+}
+
+.left-\[4\%\] {
+  left: 4%;
+}
+
+.right-\[4\%\] {
+  right: 4%;
+}
+
 .-z-10 {
   z-index: -10;
 }
@@ -679,12 +719,12 @@ video {
   z-index: 50;
 }
 
-.m-2 {
-  margin: 0.5rem;
-}
-
 .m-4 {
   margin: 1rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
 }
 
 .mx-1 {
@@ -864,6 +904,22 @@ video {
   height: 100vh;
 }
 
+.h-6 {
+  height: 1.5rem;
+}
+
+.h-\[70px\] {
+  height: 70px;
+}
+
+.h-\[200px\] {
+  height: 200px;
+}
+
+.h-\[400px\] {
+  height: 400px;
+}
+
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
@@ -886,6 +942,10 @@ video {
 
 .w-24 {
   width: 6rem;
+}
+
+.w-3\/5 {
+  width: 60%;
 }
 
 .w-32 {
@@ -916,12 +976,8 @@ video {
   width: 100vw;
 }
 
-.w-4\/5 {
-  width: 80%;
-}
-
-.w-3\/5 {
-  width: 60%;
+.w-6 {
+  width: 1.5rem;
 }
 
 .max-w-4xl {
@@ -934,6 +990,22 @@ video {
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.max-w-3xl {
+  max-width: 48rem;
+}
+
+.max-w-\[100px\] {
+  max-width: 100px;
+}
+
+.max-w-\[600px\] {
+  max-width: 600px;
+}
+
+.max-w-\[800px\] {
+  max-width: 800px;
 }
 
 .flex-1 {
@@ -1210,6 +1282,18 @@ video {
   --tw-bg-opacity: 0.8;
 }
 
+.bg-opacity-30 {
+  --tw-bg-opacity: 0.3;
+}
+
+.bg-opacity-20 {
+  --tw-bg-opacity: 0.2;
+}
+
+.bg-opacity-10 {
+  --tw-bg-opacity: 0.1;
+}
+
 .bg-\[image\:var\(--home1-image-url\)\] {
   background-image: var(--home1-image-url);
 }
@@ -1234,9 +1318,19 @@ video {
   background-repeat: no-repeat;
 }
 
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.object-scale-down {
+  -o-object-fit: scale-down;
+     object-fit: scale-down;
 }
 
 .p-1 {
@@ -1287,6 +1381,11 @@ video {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .pr-10 {

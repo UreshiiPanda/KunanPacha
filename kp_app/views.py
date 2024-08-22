@@ -290,13 +290,30 @@ def blog(request):
         # Filter out None values from image_urls
         filtered_images = [img for img in image_urls if img is not None]
         
-        all_blog_posts.append({
+       # all_blog_posts.append({
+       #     'id': post.id,
+       #     'title': post.title,
+       #     'description': post.description,
+       #     'images': filtered_images,  # Add the filtered images array
+       #     'date': post.created_at,
+       # })
+
+        # the template uses both an array of the images and the individual images separately
+        # as this was easier to do with the existing Alpine, so both will be included in the
+        # context objects
+        post_data = {
             'id': post.id,
             'title': post.title,
             'description': post.description,
-            'images': filtered_images,  # Add the filtered images array
+            'images': filtered_images,  # Keep the filtered images array
             'date': post.created_at,
-        })
+        }
+
+        # Add individual image variables
+        for i, image_url in enumerate(filtered_images, start=1):
+            post_data[f'image{i}'] = image_url
+
+        all_blog_posts.append(post_data)
 
 
     if request.headers.get('HX-Request') == 'true':
