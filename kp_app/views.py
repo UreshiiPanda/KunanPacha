@@ -16,6 +16,7 @@ import json
 from decimal import Decimal, InvalidOperation
 from .forms import LoginForm
 from .forms import RegistrationForm
+from .forms import BlogPostForm 
 import os
 from dotenv import load_dotenv
 
@@ -290,13 +291,6 @@ def blog(request):
         # Filter out None values from image_urls
         filtered_images = [img for img in image_urls if img is not None]
         
-       # all_blog_posts.append({
-       #     'id': post.id,
-       #     'title': post.title,
-       #     'description': post.description,
-       #     'images': filtered_images,  # Add the filtered images array
-       #     'date': post.created_at,
-       # })
 
         # the template uses both an array of the images and the individual images separately
         # as this was easier to do with the existing Alpine, so both will be included in the
@@ -316,12 +310,15 @@ def blog(request):
         all_blog_posts.append(post_data)
 
 
+
     if request.headers.get('HX-Request') == 'true':
         print("blog page came from HTMX")
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts})
+        form = BlogPostForm()
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form":form})
     else:
         print("blog page did NOT come from HTMX")
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts})
+        form = BlogPostForm()
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form":form})
 
 
 
@@ -444,14 +441,15 @@ def blog_page_edit(request):
 
 
 
-
-
 def add_blog(request):
     if request.method == 'POST':
         title = request.POST.get('blog_title')
-        description = request.POST.get('blog_description')
+        #description = request.POST.get('blog_description')
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
+        form = BlogPostForm(request.POST)
+        if form.is_valid():
+            description = form.cleaned_data['description']
 
         if not request.FILES.get('image1'):
             # if the user didn't input the first image (required)
@@ -460,7 +458,7 @@ def add_blog(request):
             return response
 
         # make sure there is at least 1 image, the rest are optional
-        if title and description and images[0]:
+        if title and images[0]:
             # Generate unique filenames for each image
             filenames = []
             # this still iterates from 0, but it makes the image naming convention start at 1
@@ -503,9 +501,9 @@ def add_blog(request):
             print('from Add Blog modal, All required fields must be filled and at least one image uploaded')
             return HttpResponse('from Add Blog modal, All required fields must be filled and at least one image uploaded', status=400)
 
-    return HttpResponse('from Add Blog modal, add_blog call was not a POST', status=400)
-
-
+    else:
+        form = BlogPostForm()
+        return render(request, 'blog.html', {'form': form})
 
 
 
@@ -535,7 +533,13 @@ def edit_blog(request, blog_id):
     # Update the basic fields
     # or leave them the same if the user didn't supply a new value
     blog_post.title = request.POST.get('title', blog_post.title)
-    blog_post.description = request.POST.get('description', blog_post.description)
+    #blog_post.description = request.POST.get('description', blog_post.description)
+
+    form = BlogPostForm(request.POST)
+    description = None
+    if form.is_valid():
+        description = form.cleaned_data['description']
+    blog_post.description = description if description else blog_post.description
 
 
     # Handle image updates

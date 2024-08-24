@@ -204,6 +204,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
 ]
 
+
 AUTH_USER_MODEL = 'auth.User'
 
 LOGIN_URL = '/login/'

@@ -1,6 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import BlogPost
+from django_prose_editor.fields import ProseEditorFormField
+
+
+class BlogPostForm(forms.Form):
+    description = ProseEditorFormField()
 
 
 class RegistrationForm(UserCreationForm):
@@ -9,6 +15,7 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+
 
 class EmailForm(forms.Form):
     name = forms.CharField(label="name", max_length=100)
