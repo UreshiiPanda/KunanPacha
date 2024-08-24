@@ -29,7 +29,6 @@ class Artwork(models.Model):
         return self.title
 
 
-
 class BlogPost(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()

@@ -2,12 +2,17 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import BlogPost
-from django_prose_editor.fields import ProseEditorFormField
-
+from django_summernote.fields import SummernoteTextFormField, SummernoteTextField
 
 class BlogPostForm(forms.Form):
-    description = ProseEditorFormField()
+    description = SummernoteTextFormField()
 
+#class BlogPostForm(forms.ModelForm):
+#    description = SummernoteTextField()
+#
+#    class Meta:
+#        model = BlogPost
+#        fields = ['description']
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)

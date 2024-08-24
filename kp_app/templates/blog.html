@@ -93,14 +93,14 @@
               </div>
               -->
 
-              <!-- Blog Description via a Django-Prose-Editor (rich text editor) form -->
+              <!-- Blog Description via a Django-Summernote (rich text editor) form -->
               {{ form.errors }} 
               {{ form.media }}  
               {{ form.as_div }}
 
   
               <div class="m-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Main Photos:</label>
                 <div class="flex flex-wrap space-x-4" id="imageContainer">
                   {% for i in '1234'|make_list %}
                   <div class="relative mb-4" id="imageWrapper{{ i }}">
@@ -208,7 +208,7 @@
               </div>
               -->
 
-              <!-- Blog Description via a Django-Prose-Editor (rich text editor) form -->
+              <!-- Blog Description via a Django-Summernote (rich text editor) form -->
               {{ form.errors }} 
               {{ form.media }}  
               {{ form.as_div }}
@@ -548,7 +548,7 @@
                                     $store.editBlogModal.currentBlogPost = {
                                         id: '{{post.id|escapejs}}',
                                         title: '{{post.title|escapejs}}',
-                                        description: '{{post.description}}',
+                                        description: '{{post.description|escapejs}}',
                                         image1: '{{post.image1|escapejs}}',
                                         image2: '{{post.image2|escapejs}}',
                                         image3: '{{post.image3|escapejs}}',

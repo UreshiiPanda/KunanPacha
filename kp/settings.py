@@ -35,6 +35,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
 # if in Development env
@@ -62,6 +64,7 @@ if os.environ.get("KP_PROD", "true") == "false":
             'PORT': 5432,
         }
     }
+
 
     
     # Add this after your DATABASES configuration
@@ -202,6 +205,7 @@ INSTALLED_APPS = [
     "storages", 
     "kp_app",
     'widget_tweaks',
+    'django_summernote',
 ]
 
 

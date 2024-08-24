@@ -539,6 +539,7 @@ def edit_blog(request, blog_id):
     description = None
     if form.is_valid():
         description = form.cleaned_data['description']
+    print("DESC: ", description)
     blog_post.description = description if description else blog_post.description
 
 
