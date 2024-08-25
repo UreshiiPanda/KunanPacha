@@ -260,6 +260,10 @@ def blog(request):
 
     # Fetch blog posts from the database
     blog_posts = BlogPost.objects.all().order_by('-created_at')
+    # use the num of blog_posts for pagination
+    print("BLOG POSTS NUM: ", len(blog_posts))
+    num_pages = len(blog_posts)//10 + 1
+    print("NUM BLOG PAGES: ", num_pages)
      
 
     # Prepare blog post data
@@ -313,13 +317,25 @@ def blog(request):
         # 2 separate forms were necessary to get around a weird Django error
         form_add = BlogPostForm(prefix='add')
         form_edit = BlogPostForm(prefix='edit')
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form_add":form_add, "form_edit":form_edit})
+        return render(request, "blog.html", {
+            "page_settings": page_settings, 
+            "blog_posts": all_blog_posts, 
+            "form_add":form_add, 
+            "form_edit":form_edit,
+            "num_pages": num_pages,
+            })
     else:
         print("blog page did NOT come from HTMX")
         # 2 separate forms were necessary to get around a weird Django error
         form_add = BlogPostForm(prefix='add')
         form_edit = BlogPostForm(prefix='edit')
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form_add":form_add, "form_edit":form_edit})
+        return render(request, "blog.html", {
+            "page_settings": page_settings, 
+            "blog_posts": all_blog_posts, 
+            "form_add":form_add, 
+            "form_edit":form_edit,
+            "num_pages": num_pages,
+            })
 
 
 

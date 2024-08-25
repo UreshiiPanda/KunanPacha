@@ -617,7 +617,12 @@
 
 
                 <div class="m-6 px-6">
-                    <p class="text-center">{{ post.description|safe }}</p>
+                    <div class="relative max-h-[300px] overflow-hidden">
+                        <div class="prose max-w-none">
+                            {{ post.description|safe }}
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                    </div>                
                 </div>
                 <a href="#" class="text-gray-400 mt-2 hover:underline">Continue reading...</a>
             </div>
