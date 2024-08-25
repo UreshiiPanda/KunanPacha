@@ -8,7 +8,7 @@ class BlogPostForm(forms.Form):
     description = SummernoteTextFormField()
 
 #class BlogPostForm(forms.ModelForm):
-#    description = SummernoteTextField()
+#    description = SummernoteTextFormField()
 #
 #    class Meta:
 #        model = BlogPost

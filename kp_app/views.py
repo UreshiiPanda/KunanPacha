@@ -14,14 +14,11 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
 import json
 from decimal import Decimal, InvalidOperation
-from .forms import LoginForm
-from .forms import RegistrationForm
-from .forms import BlogPostForm 
+from .forms import BlogPostForm, RegistrationForm, LoginForm
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 
 
@@ -313,12 +310,16 @@ def blog(request):
 
     if request.headers.get('HX-Request') == 'true':
         print("blog page came from HTMX")
-        form = BlogPostForm()
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form":form})
+        # 2 separate forms were necessary to get around a weird Django error
+        form_add = BlogPostForm(prefix='add')
+        form_edit = BlogPostForm(prefix='edit')
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form_add":form_add, "form_edit":form_edit})
     else:
         print("blog page did NOT come from HTMX")
-        form = BlogPostForm()
-        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form":form})
+        # 2 separate forms were necessary to get around a weird Django error
+        form_add = BlogPostForm(prefix='add')
+        form_edit = BlogPostForm(prefix='edit')
+        return render(request, "blog.html", {"page_settings": page_settings, "blog_posts": all_blog_posts, "form_add":form_add, "form_edit":form_edit})
 
 
 
@@ -447,9 +448,15 @@ def add_blog(request):
         #description = request.POST.get('blog_description')
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
-        form = BlogPostForm(request.POST)
+        form = BlogPostForm(request.POST, prefix='add')
         if form.is_valid():
             description = form.cleaned_data['description']
+        else:
+            print("Form errors:", form.errors)
+            response = HttpResponse(status=400, content="Add Blog form had an invalid Summernote description form")
+            response['HX-Trigger'] = 'BlogDescFailure'
+            return response
+
 
         if not request.FILES.get('image1'):
             # if the user didn't input the first image (required)
@@ -502,8 +509,7 @@ def add_blog(request):
             return HttpResponse('from Add Blog modal, All required fields must be filled and at least one image uploaded', status=400)
 
     else:
-        form = BlogPostForm()
-        return render(request, 'blog.html', {'form': form})
+        print("request for add_blog was not a POST")
 
 
 
@@ -535,11 +541,16 @@ def edit_blog(request, blog_id):
     blog_post.title = request.POST.get('title', blog_post.title)
     #blog_post.description = request.POST.get('description', blog_post.description)
 
-    form = BlogPostForm(request.POST)
+    form = BlogPostForm(request.POST, prefix='edit')
+    print("PREV DESCRIPTION: ", blog_post.description)
     description = None
     if form.is_valid():
         description = form.cleaned_data['description']
-    print("DESC: ", description)
+    else:
+        print("Form errors:", form.errors)
+        response = HttpResponse(status=400, content="Add Blog form had an invalid Summernote description form")
+        response['HX-Trigger'] = 'BlogDescFailure'
+        return response
     blog_post.description = description if description else blog_post.description
 
 

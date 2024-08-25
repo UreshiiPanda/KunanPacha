@@ -94,9 +94,9 @@
               -->
 
               <!-- Blog Description via a Django-Summernote (rich text editor) form -->
-              {{ form.errors }} 
-              {{ form.media }}  
-              {{ form.as_div }}
+              {{ form_add.errors }} 
+              {{ form_add.media }}  
+              {{ form_add.as_div }}
 
   
               <div class="m-4">
@@ -209,13 +209,13 @@
               -->
 
               <!-- Blog Description via a Django-Summernote (rich text editor) form -->
-              {{ form.errors }} 
-              {{ form.media }}  
-              {{ form.as_div }}
+              {{ form_edit.errors }} 
+              {{ form_edit.media }}  
+              {{ form_edit.as_div }}
 
   
               <div class="m-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Main Photos:</label>
                 <div class="flex flex-wrap space-x-4" id="imageEditContainer">
 
 
@@ -549,10 +549,10 @@
                                         id: '{{post.id|escapejs}}',
                                         title: '{{post.title|escapejs}}',
                                         description: '{{post.description|escapejs}}',
-                                        image1: '{{post.image1|escapejs}}',
-                                        image2: '{{post.image2|escapejs}}',
-                                        image3: '{{post.image3|escapejs}}',
-                                        image4: '{{post.image4|escapejs}}'
+                                        image1: 'null',
+                                        image2: 'null',
+                                        image3: 'null',
+                                        image4: 'null'
                                     };
                                     console.log('~~~~~currentBlogPost~~~~~~');
                                     console.log($store.editBlogModal.currentBlogPost.id);

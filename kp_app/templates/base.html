@@ -62,9 +62,9 @@
                          if (file) {
                              const reader = new FileReader();
                              reader.onload = (e) => {
-                                 console.log(this.currentArtwork[`image${index}`]);
-                                 this.currentArtwork[`image${index}`] = e.target.result;
-                                 console.log(this.currentArtwork[`image${index}`]);
+                                 console.log(this.currentBlogPost[`image${index}`]);
+                                 this.currentBlogPost[`image${index}`] = e.target.result;
+                                 console.log(this.currentBlogPost[`image${index}`]);
                              };
                              reader.readAsDataURL(file);
                           
@@ -175,6 +175,10 @@
      }) 
 
 
+     document.body.addEventListener("BlogDescFailure", function(evt){
+        console.log("add blog alert failure: add Blog form had an invalid Summernote description form");
+        alert("Your blog description was invalid, please try again");
+     }) 
      document.body.addEventListener("addBlogFailure", function(evt){
         console.log("add blog alert failure: no first image provided");
         alert("You must provide an image in the first image box");
