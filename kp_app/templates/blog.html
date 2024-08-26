@@ -630,6 +630,68 @@
             <hr class="my-8 border-t border-gray-300">
             {% endfor %}
         </div>
+
+
+
+        <!-- Blog Pagination -->
+
+        <div class="inline-flex justify-center gap-1 mt-4" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
+          <button
+            hx-get="{% url 'blog' page|add:'-1' %}"
+            hx-push-url="/blog/{{ page|add:'-1' }}"
+            hx-target="#blog-content"
+            hx-swap="none"
+            class="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            :class="{ 'opacity-50 cursor-not-allowed': currPage === 1 }"
+            :disabled="currPage === 1"
+          >
+            <span class="sr-only">Prev Page</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="size-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <div class="flex items-center">
+            <span x-text="currPage"></span>
+            <span class="mx-2">of</span>
+            <span x-text="totalPages"></span>
+          </div>
+
+          <button
+            hx-get="{% url 'blog' page|add:'1' %}"
+            hx-push-url="/blog/{{ page|add:'1' }}"
+            hx-target="#blog-content"
+            hx-swap="none"
+            class="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            :class="{ 'opacity-50 cursor-not-allowed': currPage === totalPages }"
+            :disabled="currPage === totalPages"
+          >
+            <span class="sr-only">Next Page</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="size-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+
     </div>
 
 

@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage
 import json
 from decimal import Decimal, InvalidOperation
 from .forms import BlogPostForm, RegistrationForm, LoginForm
@@ -217,7 +218,7 @@ def contact(request):
 
 
 
-def blog(request):
+def blog(request, page=1):
     blog_page_settings = BlogPageSettings.objects.first()
     if not blog_page_settings:
         blog_page_settings = BlogPageSettings.objects.create(
@@ -260,11 +261,19 @@ def blog(request):
 
     # Fetch blog posts from the database
     blog_posts = BlogPost.objects.all().order_by('-created_at')
-    # use the num of blog_posts for pagination
-    print("BLOG POSTS NUM: ", len(blog_posts))
+
+    # use the num of blog_posts for pagination values in the template
     num_pages = len(blog_posts)//10 + 1
-    print("NUM BLOG PAGES: ", num_pages)
-     
+
+    # Use Django's paginator with 10 items per page for blog_post pages
+    paginator = Paginator(blog_posts, 10)
+
+    try:
+        # Get the specified page
+        blog_posts = paginator.page(page)
+    except EmptyPage:
+        # If the page is out of range, deliver last page of results
+        blog_posts = paginator.page(paginator.num_pages)
 
     # Prepare blog post data
     all_blog_posts = []
@@ -323,6 +332,7 @@ def blog(request):
             "form_add":form_add, 
             "form_edit":form_edit,
             "num_pages": num_pages,
+            "page": page,
             })
     else:
         print("blog page did NOT come from HTMX")
@@ -335,6 +345,7 @@ def blog(request):
             "form_add":form_add, 
             "form_edit":form_edit,
             "num_pages": num_pages,
+            "page": page,
             })
 
 
