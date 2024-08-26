@@ -525,7 +525,9 @@
 
 
     <!-- BLOG RIGHT HALF -->
-    <div class="h-3/5 lg:h-full lg:w-3/5 flex flex-col overflow-y-auto">
+    <div 
+        id="blog-right-half"
+        class="h-3/5 lg:h-full lg:w-3/5 flex flex-col overflow-y-auto">
         <div class="hidden lg:block w-full">
             <!-- Large navbar for screens above lg -->
             {% include "navbar_blog.html" %}
@@ -624,7 +626,13 @@
                         <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
                     </div>                
                 </div>
-                <a href="#" class="text-gray-400 mt-2 hover:underline">Continue reading...</a>
+                <a 
+                    hx-get="{% url 'blog2' post.id %}"
+                    hx-target="#blog-right-half"
+                    hx-swap="innerHTML"
+                    hx-push-url="/blog2/{{ post.id }}"
+                    class="text-gray-400 mt-2 hover:underline hover:cursor-pointer">Continue Reading...
+                </a>
             </div>
             <!-- horizontal line -->
             <hr class="my-8 border-t border-gray-300">
@@ -635,13 +643,13 @@
 
         <!-- Blog Pagination -->
 
-        <div class="inline-flex justify-center gap-1 mt-4" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
+        <div class="inline-flex justify-center gap-1 m-6" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
           <button
             hx-get="{% url 'blog' page|add:'-1' %}"
             hx-push-url="/blog/{{ page|add:'-1' }}"
             hx-target="#blog-content"
-            hx-swap="none"
-            class="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            hx-swap="outerHTML"
+            class="inline-flex size-8 mx-2 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
             :class="{ 'opacity-50 cursor-not-allowed': currPage === 1 }"
             :disabled="currPage === 1"
           >
@@ -670,8 +678,8 @@
             hx-get="{% url 'blog' page|add:'1' %}"
             hx-push-url="/blog/{{ page|add:'1' }}"
             hx-target="#blog-content"
-            hx-swap="none"
-            class="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            hx-swap="outerHTML"
+            class="inline-flex mx-2 size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
             :class="{ 'opacity-50 cursor-not-allowed': currPage === totalPages }"
             :disabled="currPage === totalPages"
           >

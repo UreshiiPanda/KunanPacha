@@ -188,10 +188,10 @@
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
-                            hx-get="{% url 'blog' %}"
+                            hx-get="{% url 'blog' 1 %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/blog"
+                            hx-push-url="/blog/1"
                         >Blog
                     </a>
 

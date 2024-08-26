@@ -218,7 +218,7 @@ def contact(request):
 
 
 
-def blog(request, page=1):
+def blog(request, page="1"):
     blog_page_settings = BlogPageSettings.objects.first()
     if not blog_page_settings:
         blog_page_settings = BlogPageSettings.objects.create(
@@ -347,6 +347,60 @@ def blog(request, page=1):
             "num_pages": num_pages,
             "page": page,
             })
+
+
+def blog2(request, post_id):
+    # note that Django automatically adds an ID to every object in the models
+    post = get_object_or_404(BlogPost, id=post_id)
+    
+    if os.getenv("KP_PROD") == "false":
+        # Local environment
+        image_base_url = os.path.join(settings.STATIC_URL, 'kp_app/images/')
+        image_urls = [
+            os.path.join(image_base_url, post.image1_filename),
+            os.path.join(image_base_url, post.image2_filename) if post.image2_filename else None,
+            os.path.join(image_base_url, post.image3_filename) if post.image3_filename else None,
+            os.path.join(image_base_url, post.image4_filename) if post.image4_filename else None,
+        ]
+    else:
+        # Production environment (GCP)
+        image_base_url = f"{settings.STATIC_URL}kp_app/images/"
+        image_urls = [
+            f'{image_base_url}{post.image1_filename}',
+            f'{image_base_url}{post.image2_filename}' if post.image2_filename else None,
+            f'{image_base_url}{post.image3_filename}' if post.image3_filename else None,
+            f'{image_base_url}{post.image4_filename}' if post.image4_filename else None,
+        ]
+
+
+    # Filter out None values from image_urls
+    filtered_images = [img for img in image_urls if img is not None]
+    
+    # the template uses both an array of the images and the individual images separately
+    # as this was easier to do with the existing Alpine, so both will be included in the
+    # context objects
+    post_data = {
+        'id': post.id,
+        'title': post.title,
+        'description': post.description,
+        'images': filtered_images,  # Keep the filtered images array
+        'date': post.created_at,
+    }
+
+    # Add individual image variables
+    for i, image_url in enumerate(filtered_images, start=1):
+        post_data[f'image{i}'] = image_url
+
+
+    if request.headers.get('HX-Request') == 'true':
+        print("blog page 2 came from HTMX")
+        # 2 separate forms were necessary to get around a weird Django error
+        return render(request, "blog2.html", {"post": post_data})
+    else:
+        print("blog page 2 did NOT come from HTMX")
+        # 2 separate forms were necessary to get around a weird Django error
+        return render(request, "blog2.html", {"post": post_data})
+
 
 
 
@@ -518,8 +572,8 @@ def add_blog(request):
                         blob = bucket.blob(f'kp_app/images/{filename}')
                         blob.upload_from_file(image)
 
-            # Create Artwork object
-            # the create() func also performs .save() so we don't need to do artwork.save() after this
+            # Create BlogPost object
+            # the create() func also performs .save() so we don't need to do blog_post.save() after this
             blog_post = BlogPost.objects.create(
                 title=title,
                 description=description,
