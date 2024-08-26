@@ -629,7 +629,7 @@
                 <a 
                     hx-get="{% url 'blog2' post.id %}"
                     hx-target="#blog-right-half"
-                    hx-swap="innerHTML"
+                    hx-swap="innerHTML scroll:top"
                     hx-push-url="/blog2/{{ post.id }}"
                     class="text-gray-400 mt-2 hover:underline hover:cursor-pointer">Continue Reading...
                 </a>

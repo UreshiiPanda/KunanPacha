@@ -262,11 +262,12 @@ def blog(request, page="1"):
     # Fetch blog posts from the database
     blog_posts = BlogPost.objects.all().order_by('-created_at')
 
-    # use the num of blog_posts for pagination values in the template
-    num_pages = len(blog_posts)//10 + 1
 
     # Use Django's paginator with 10 items per page for blog_post pages
     paginator = Paginator(blog_posts, 10)
+    
+    # Get the number of pages from the paginator
+    num_pages = paginator.num_pages
 
     try:
         # Get the specified page
@@ -395,11 +396,52 @@ def blog2(request, post_id):
     if request.headers.get('HX-Request') == 'true':
         print("blog page 2 came from HTMX")
         # 2 separate forms were necessary to get around a weird Django error
-        return render(request, "blog2.html", {"post": post_data})
+        return render(request, "blog2_content.html", {"post": post_data})
     else:
         print("blog page 2 did NOT come from HTMX")
+
+        # we only need to reload the page_settings if the user does not come from HTMX
+        blog_page_settings = BlogPageSettings.objects.first()
+        if not blog_page_settings:
+            blog_page_settings = BlogPageSettings.objects.create(
+                blog_title="blog title here",
+                blog_text="blog text here",
+                edu_facebook="facebook here",
+                edu_instagram="instagram here",
+                font="sans-serif",
+                font_color="black",
+                font_style="normal",
+            )
+
+        if os.getenv("KP_PROD") == "true":
+            # Production environment (GCP)
+            page_settings = {
+                "blog_title": blog_page_settings.blog_title,
+                "blog_text": blog_page_settings.blog_text,
+                "blog_facebook": blog_page_settings.edu_facebook,
+                "blog_instagram": blog_page_settings.edu_instagram,
+                "blog_font": blog_page_settings.font,
+                "blog_font_color": blog_page_settings.font_color,
+                "blog_font_style": blog_page_settings.font_style,
+                "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
+                "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+            }
+        else:
+            # Local development environment
+            page_settings = {
+                "blog_title": blog_page_settings.blog_title,
+                "blog_text": blog_page_settings.blog_text,
+                "blog_facebook": blog_page_settings.edu_facebook,
+                "blog_instagram": blog_page_settings.edu_instagram,
+                "blog_font": blog_page_settings.font,
+                "blog_font_color": blog_page_settings.font_color,
+                "blog_font_style": blog_page_settings.font_style,
+                "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/bg1.jpg'),
+                "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art1.jpg'),
+            }
+
         # 2 separate forms were necessary to get around a weird Django error
-        return render(request, "blog2.html", {"post": post_data})
+        return render(request, "blog2.html", {"post": post_data, "page_settings": page_settings})
 
 
 
