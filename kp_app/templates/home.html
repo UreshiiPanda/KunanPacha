@@ -11,7 +11,7 @@
     {% load auth_tags %}
 
 
-    {% include "navbar.html" %}
+    {% include "navbar_home.html" %}
 
 
     <div  x-data="{home1_modal:false, home2_modal:false, home3_modal:false, home4_modal:false, contact_modal:false}"
@@ -291,18 +291,24 @@
                     <div 
                         :class="lineVariants[currentColor] || 'bg-black'"
                         class="absolute top-1/2 w-1/6 h-[2px] left-20 transform  -translate-y-1/2  hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-                        <span class="absolute -left-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&lt;</span>
+                        <span 
+                            :class="colorVariants[currentColor] || 'bg-black'"
+                            class="absolute -left-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&lt;</span>
                     </div>
                     
                     <!-- Right horizontal line with arrow -->
                     <div 
                         :class="lineVariants[currentColor] || 'bg-black'"
                         class="absolute top-1/2 w-1/6 h-[2px] right-20 transform -translate-y-1/2 hidden md:block" style="box-shadow: 0 2px 4px rgba(0,0,0,0.4);">
-                        <span class="absolute -right-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&gt;</span>
+                        <span 
+                            :class="colorVariants[currentColor] || 'bg-black'"
+                            class="absolute -right-14 -top-[21px] text-2xl translate-y-1" style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">&gt;</span>
                     </div>
                     
                     <!-- Title -->
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center z-20 px-4 max-w-[380px] break-words" style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);">
+                    <h1 
+                        :class="colorVariants[currentColor] || 'bg-black'"
+                        class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center z-20 px-4 max-w-[380px] break-words" style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);">
                         {{page_settings.title}}
                     </h1>
                 </div>

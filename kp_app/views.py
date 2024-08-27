@@ -171,6 +171,8 @@ def home(request):
 
 def contact(request):
     contact_page_settings = ContactPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
+
     if not contact_page_settings:
         contact_page_settings = ContactPageSettings.objects.create(
             edu_address="Vilcabamba, Ecuador",
@@ -182,6 +184,13 @@ def contact(request):
             font_color="black",
             font_style="normal",
         )
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+
 
     if os.getenv("KP_PROD") == "true":
         # Production environment (GCP)
@@ -195,6 +204,11 @@ def contact(request):
             "contact_font_color": contact_page_settings.font_color,
             "contact_font_style": contact_page_settings.font_style,
             "contact_image": f"{settings.STATIC_URL}kp_app/images/art4.jpg",
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
     else:
         # Local development environment
@@ -208,6 +222,11 @@ def contact(request):
             "contact_font_color": contact_page_settings.font_color,
             "contact_font_style": contact_page_settings.font_style,
             "contact_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art4.jpg'),
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
     if request.headers.get('HX-Request') == 'true':
         print("contact page came from HTMX")
@@ -220,6 +239,8 @@ def contact(request):
 
 def blog(request, page="1"):
     blog_page_settings = BlogPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
+
     if not blog_page_settings:
         blog_page_settings = BlogPageSettings.objects.create(
             blog_title="blog title here",
@@ -229,6 +250,12 @@ def blog(request, page="1"):
             font="sans-serif",
             font_color="black",
             font_style="normal",
+        )
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
         )
 
     if os.getenv("KP_PROD") == "true":
@@ -243,6 +270,11 @@ def blog(request, page="1"):
             "blog_font_style": blog_page_settings.font_style,
             "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
             "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
     else:
         # Local development environment
@@ -254,8 +286,13 @@ def blog(request, page="1"):
             "blog_font": blog_page_settings.font,
             "blog_font_color": blog_page_settings.font_color,
             "blog_font_style": blog_page_settings.font_style,
-            "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/bg1.jpg'),
-            "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art1.jpg'),
+            "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
+            "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
 
 
@@ -353,6 +390,7 @@ def blog(request, page="1"):
 def blog2(request, post_id):
     # note that Django automatically adds an ID to every object in the models
     post = get_object_or_404(BlogPost, id=post_id)
+
     
     if os.getenv("KP_PROD") == "false":
         # Local environment
@@ -412,6 +450,14 @@ def blog2(request, post_id):
                 font_color="black",
                 font_style="normal",
             )
+            
+        menu_settings = MenuSettings.objects.first()
+        if not menu_settings:
+            menu_settings = MenuSettings.objects.create(
+                font='sans-serif',
+                font_color='black',
+                font_style='normal',
+            )
 
         if os.getenv("KP_PROD") == "true":
             # Production environment (GCP)
@@ -425,6 +471,11 @@ def blog2(request, post_id):
                 "blog_font_style": blog_page_settings.font_style,
                 "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
                 "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+
+                "menu_font": menu_settings.font,
+                "menu_font_color": menu_settings.font_color,
+                "menu_font_style": menu_settings.font_style,
+
             }
         else:
             # Local development environment
@@ -436,8 +487,13 @@ def blog2(request, post_id):
                 "blog_font": blog_page_settings.font,
                 "blog_font_color": blog_page_settings.font_color,
                 "blog_font_style": blog_page_settings.font_style,
-                "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/bg1.jpg'),
-                "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art1.jpg'),
+                "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
+                "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+
+                "menu_font": menu_settings.font,
+                "menu_font_color": menu_settings.font_color,
+                "menu_font_style": menu_settings.font_style,
+
             }
 
         # 2 separate forms were necessary to get around a weird Django error
@@ -522,7 +578,7 @@ def blog_page_edit(request):
                 print(f"New contact image saved to GCS: {blob.public_url}")
             else:
                 # Local Development Environment
-                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'bg1.jpg')
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'blog_bg.jpg')
                 os.makedirs(os.path.dirname(image_path), exist_ok=True)
                 with open(image_path, 'wb+') as destination:
                     for chunk in blog_bg_image.chunks():
@@ -542,7 +598,7 @@ def blog_page_edit(request):
                 print(f"New contact image saved to GCS: {blob.public_url}")
             else:
                 # Local Development Environment
-                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art1.jpg')
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'blog_logo.jpg')
                 os.makedirs(os.path.dirname(image_path), exist_ok=True)
                 with open(image_path, 'wb+') as destination:
                     for chunk in blog_logo_image.chunks():
@@ -778,13 +834,22 @@ def delete_blog(request, blog_id):
 
 def art1(request):
     # Fetch the page settings from the DB
-    page_settings = Art1PageSettings.objects.first()
-    if not page_settings:
-        page_settings = Art1PageSettings.objects.create(
+    art_page_settings = Art1PageSettings.objects.first()
+    if not art_page_settings:
+        art_page_settings = Art1PageSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
             edu_email='jojohoughton22@gmail.com'
+        )
+
+
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
         )
 
     # Fetch artworks from the database
@@ -827,6 +892,32 @@ def art1(request):
             'created_at': artwork.created_at,
             'updated_at': artwork.updated_at,
         })
+
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+        }
+
 
 
     if request.headers.get('HX-Request') == 'true':
@@ -1061,13 +1152,21 @@ def art2(request, artwork_id):
     # note that Django automatically adds an ID to every object in the models
     artwork = get_object_or_404(Artwork, id=artwork_id)
     
-    page_settings = Art2PageSettings.objects.first()
-    if not page_settings:
-        page_settings = Art2PageSettings.objects.create(
+    art_page_settings = Art2PageSettings.objects.first()
+    if not art_page_settings:
+        art_page_settings = Art2PageSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
             edu_email='meow@email.com'
+        )
+
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
         )
 
 
@@ -1090,6 +1189,31 @@ def art2(request, artwork_id):
         'image3': image_base_url + artwork.image3_filename if artwork.image3_filename else None,
         'image4': image_base_url + artwork.image4_filename if artwork.image4_filename else None,
     }
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+        }
+
 
     context = {
         "image_obj": image_obj,
@@ -1649,3 +1773,17 @@ def home_page_4_edit(request):
         return response
 
 
+def get_navbar(request):
+    return render(request, 'navbar.html')
+
+
+def get_navbar_home(request):
+    return render(request, 'navbar_home.html')
+
+
+def get_navbar_blog_lg(request):
+    return render(request, 'navbar_blog.html')
+
+
+def get_navbar_blog_sm(request):
+    return render(request, 'navbar_blog_sm.html')

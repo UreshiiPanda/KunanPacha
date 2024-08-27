@@ -94,7 +94,7 @@
                             class="block hover:cursor-pointer mt-2 inline-block mr-4 " style="text-shadow: 0 2px 2px rgba(0,0,0,0.2);"
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 
-                                    $store.editMenuModal.showModal = false"
+                                    $store.editMenuModal.showModal = false" 
                             hx-get="{% url 'art1' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
@@ -131,7 +131,6 @@
                             {% csrf_token %}
                             <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
                         </form>
-                        <a x-data @click="$store.editPageModal.toggle()" class="inline-block font-normal not-italic text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white hover:cursor-pointer">Edit Page</a>
                     </div>
                         {% endif %}
                     {% endif %}
@@ -214,10 +213,6 @@
                                 {% csrf_token %}
                                 <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
                             </form>
-                            <button 
-                                class="inline-block font-normal not-italic text-sm px-4 py-2 leading-none border-2 border-white text-white hover:border-transparent hover:text-black hover:bg-white hover:cursor-pointer" 
-                                x-data 
-                                @click="$store.editPageModal.toggle(); smallMenu = false">Edit Page</button>
                         </div>
                         {% endif %}
                     {% endif %}
@@ -225,5 +220,6 @@
                 </div>
             </div>
         </div>
+
 
 

@@ -1,13 +1,11 @@
   
     {% load static %}
-    {% static 'kp_app/images/bg1.jpg' as bg_url %}
-    {% static 'kp_app/images/art1.jpg' as art1_url %}
     {% load auth_tags %}
 
 
 <div class="hidden lg:block w-full">
     <!-- Large navbar for screens above lg -->
-    {% include "navbar_blog.html" %}
+        <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
 </div>
 
 

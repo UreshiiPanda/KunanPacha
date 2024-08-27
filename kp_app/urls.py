@@ -38,6 +38,10 @@ urlpatterns = [
         path("add_blog", views.add_blog, name="add_blog"),
         path('edit_blog/<int:blog_id>', views.edit_blog, name='edit_blog'),
         path('delete_blog/<int:blog_id>/', views.delete_blog, name='delete_blog'),
+        path('get-navbar/', views.get_navbar, name='get_navbar'),
+        path('get-navbar-home/', views.get_navbar_home, name='get_navbar_home'),
+        path('get-navbar-blog_lg/', views.get_navbar_blog_lg, name='get_navbar_blog_lg'),
+        path('get-navbar-blog_sm/', views.get_navbar_blog_sm, name='get_navbar_blog_sm'),
         ]
 
 

@@ -96,14 +96,10 @@
                 {% if user.is_authenticated %}
                     {% if request.user|has_group:"Editor" %}
                     <div class="flex flex-col items-center space-y-2 mt-4">
-                        {% csrf_token %}
-                        <button 
-                            hx-post="{% url 'logout' %}"
-                            class="w-full text-sm px-4 py-2 border border-2 border-white text-white hover:bg-white hover:text-black transition-colors duration-300 hover:cursor-pointer">Logout</button>
-                        <button 
-                            class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white hover:border-transparent hover:text-black hover:bg-white hover:cursor-pointer" 
-                            x-data 
-                            @click="$store.editPageModal.toggle(); smallMenu = false">Edit Page</button>
+                        <form action="{% url 'logout' %}" method="post" class="mr-2">
+                            {% csrf_token %}
+                            <button type="submit" class="inline-block text-sm px-4 py-2 leading-none border-2 border-white text-white bg-black hover:border-black hover:text-black hover:bg-white">Logout</button>
+                        </form>
                     </div>
                     {% endif %}
                 {% endif %}
