@@ -35,8 +35,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
 # if in Development env
@@ -65,6 +63,8 @@ if os.environ.get("KP_PROD", "true") == "false":
         }
     }
 
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
     
     # Add this after your DATABASES configuration
@@ -164,6 +164,10 @@ else:
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     # bucket must be set to allow ACLs and it must not prevent public access
     # GS_DEFAULT_ACL = "publicRead" 
+
+    # media route for SummerNote
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
 
 
     if os.environ.get("USE_CLOUD_SQL_AUTH_PROXY") == "true":
