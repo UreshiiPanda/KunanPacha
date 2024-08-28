@@ -161,6 +161,18 @@ else:
         except Exception as e:
             print(f"Unexpected error when processing GCP_SERVICE_ACCOUNT_KEY: {str(e)}")
             GS_CREDENTIALS = None
+    else:
+        GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
+        if GCP_SERVICE_ACCOUNT_KEY:
+            GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+                json.loads(GCP_SERVICE_ACCOUNT_KEY)
+            )
+            print("GCP_SERVICE_ACCOUNT_KEY found in environment variables")
+        else:
+            # Handle the case where the key is not available
+            print("WARNING: GCP_SERVICE_ACCOUNT_KEY not found in environment variables")
+            GS_CREDENTIALS = None
+
 
     # Define static BLOB storage via django-storages[google]
     # so django-storages is being used here to interface with Google Cloud instead of 
