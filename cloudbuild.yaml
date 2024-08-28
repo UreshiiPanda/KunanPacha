@@ -59,12 +59,12 @@ steps:
       - 'sh'
       - '-c'
       - |
-        set -e
-        echo "Applying migrations..."
-        python manage.py showmigrations
-        python manage.py migrate --plan
-        python manage.py migrate
-        echo "Migrations applied successfully"id: Create migrations
+        set -e &&
+        echo "Applying migrations..." &&
+        python manage.py showmigrations &&
+        python manage.py migrate --plan &&
+        python manage.py migrate &&
+        echo "Migrations applied successfully"
     id: Apply migrations
 
   # 5. Collect static
