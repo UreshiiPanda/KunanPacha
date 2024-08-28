@@ -45,33 +45,7 @@ steps:
     id: Create superuser
 
 
-
-  # 4a. Check migrations
-  - name: gcr.io/google-appengine/exec-wrapper
-    args:
-      - '-i'
-      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-      - '-s'
-      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
-      - '-e'
-      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
-      - '-e'
-      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'sh'
-      - '-c'
-      - |
-        set -e
-        echo "Current migration state:"
-        python manage.py showmigrations
-        echo "Database migrations table content:"
-        python manage.py dbshell <<EOF
-        SELECT * FROM django_migrations WHERE app='kp_app';
-        EOF
-    id: Check migration state
-
-
-  # 4b. Apply migrations
+  # 4. Apply migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -90,6 +64,7 @@ steps:
         python manage.py migrate &&
         echo "Migrations applied successfully"
     id: Apply migrations
+
 
   # 5. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
