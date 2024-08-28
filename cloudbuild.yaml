@@ -44,7 +44,7 @@ steps:
         echo "Superuser created successfully"
     id: Create superuser
 
-  # 4. Create a new migration
+  # 4. Apply migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
       - '-i'
@@ -55,11 +55,17 @@ steps:
       - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-      - '--'
-      - 'python'
-      - 'manage.py'
-      - 'migrate'
-    id: Create migrations
+          - '--'
+      - 'sh'
+      - '-c'
+      - |
+        set -e
+        echo "Applying migrations..."
+        python manage.py showmigrations
+        python manage.py migrate --plan
+        python manage.py migrate
+        echo "Migrations applied successfully"id: Create migrations
+    id: Apply migrations
 
   # 5. Collect static
   - name: gcr.io/google-appengine/exec-wrapper
