@@ -44,6 +44,52 @@ steps:
         echo "Superuser created successfully"
     id: Create superuser
 
+
+
+
+  # 4. Reset migrations
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        set -e
+        echo "Resetting migrations for kp_app..."
+        python manage.py migrate kp_app zero --fake
+        echo "Migration reset complete."
+    id: Reset migrations
+
+  # 5. Apply new migrations
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'sh'
+      - '-c'
+      - |
+        set -e
+        echo "Applying new migrations..."
+        python manage.py migrate kp_app
+        echo "New migrations applied successfully."
+    id: Apply new migrations
+
+
   # 4. Apply migrations
   - name: gcr.io/google-appengine/exec-wrapper
     args:
