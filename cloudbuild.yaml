@@ -55,7 +55,6 @@ steps:
       - 'GCP_SERVICE_ACCOUNT_KEY=${_GCP_SERVICE_ACCOUNT_KEY}'
       - '-e'
       - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
-          - '--'
       - 'sh'
       - '-c'
       - |
