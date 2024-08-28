@@ -142,39 +142,13 @@ else:
     EMAIL_HOST_USER = env("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-    GCP_SERVICE_ACCOUNT_KEY_PATH = env("GCP_SERVICE_ACCOUNT_KEY")
-    if GCP_SERVICE_ACCOUNT_KEY_PATH:
-        # if connecting from Cloud SQL Proxy
-        if isinstance(GCP_SERVICE_ACCOUNT_KEY_PATH, str):
-            try:
-                with open(GCP_SERVICE_ACCOUNT_KEY_PATH, 'r') as key_file:
-                    GCP_SERVICE_ACCOUNT_KEY = key_file.read()
-                
-                GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-                    json.loads(GCP_SERVICE_ACCOUNT_KEY)
-                )
-                print("GCP_SERVICE_ACCOUNT_KEY successfully loaded and parsed")
-            except FileNotFoundError:
-                print(f"WARNING: Service account key file not found at {GCP_SERVICE_ACCOUNT_KEY_PATH}")
-                GS_CREDENTIALS = None
-            except json.JSONDecodeError as e:
-                print(f"Error parsing GCP_SERVICE_ACCOUNT_KEY: {str(e)}")
-                GS_CREDENTIALS = None
-            except Exception as e:
-                print(f"Unexpected error when processing GCP_SERVICE_ACCOUNT_KEY: {str(e)}")
-                GS_CREDENTIALS = None
-        # if connecting from Cloud Build/Run
-        else:
-            GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
-            if GCP_SERVICE_ACCOUNT_KEY:
-                GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-                    json.loads(GCP_SERVICE_ACCOUNT_KEY)
-                )
-                print("GCP_SERVICE_ACCOUNT_KEY found in environment variables")
-            else:
-                # Handle the case where the key is not available
-                print("WARNING: GCP_SERVICE_ACCOUNT_KEY not found in environment variables")
-                GS_CREDENTIALS = None
+    GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
+    if GCP_SERVICE_ACCOUNT_KEY:
+        print("GCP_SERVICE_ACCOUNT_KEY: ", GCP_SERVICE_ACCOUNT_KEY)
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+            json.loads(GCP_SERVICE_ACCOUNT_KEY)
+        )
+        print("GCP_SERVICE_ACCOUNT_KEY found in environment variables")
     else:
         # Handle the case where the key is not available
         print("WARNING: GCP_SERVICE_ACCOUNT_KEY not found in environment variables")
