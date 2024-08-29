@@ -1,0 +1,207 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% load static %}
+    {% load auth_tags %}
+
+
+    <div
+        x-data="{blog_modal:false}"
+        id="blog-content"
+        class="flex flex-col lg:flex-row h-screen w-screen relative">
+
+
+        <!-- BLOG LEFT HALF -->
+
+        <!-- Small navbar for screens below lg -->
+        <div class="lg:hidden fixed top-4 right-4 z-20">
+            <div id="navbar-container" hx-get="{% url 'get_navbar_blog_sm' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
+
+
+
+        <div 
+            x-data="{
+                currentFontStyle: '{{page_settings.font_style}}',
+                currentFont: '{{page_settings.font}}',
+                currentColor: '{{page_settings.font_color}}',
+                fontVariants: {
+                    'sans-serif': 'font-sans',
+                    'serif': 'font-serif',
+                    'mono': 'font-mono',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+                smallMenu: false
+            }" 
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+            class="h-2/5 lg:h-full lg:w-2/5 bg-cover bg-center relative" 
+            style="background-image: url('{{ page_settings.blog_bg_image }}');"
+            >
+
+
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <img 
+                    src="{{ page_settings.blog_logo_image }}" 
+                    alt="Blog Photo" 
+                    class="w-32 h-32 rounded-full mb-4 object-cover shadow-[0_50px_50px_rgba(0,0,0,0.2)]"
+                    style="box-shadow: 0 3px 3px rgba(0,0,0,0.4);"
+                    >
+                <h2 
+                    class="text-2xl font-bold text-center" 
+                    style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);" 
+                    >{{ page_settings.blog_title }}
+                </h2>
+                <p 
+                    class="text-center mt-2 shadow-text"
+                    style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);"
+                    >{{ page_settings.blog_text }}
+                </p>
+                
+                <div class="flex justify-center space-x-8 mt-4">
+                    <a href="https://www.instagram.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@meow" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    <!-- BLOG RIGHT HALF -->
+    <div 
+        id="blog-right-half"
+        class="h-3/5 lg:h-full lg:w-3/5 flex flex-col overflow-y-auto">
+
+    <div class="hidden lg:block w-full">
+        <!-- Large navbar for screens above lg -->
+        <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+    </div>
+
+
+    <!-- BLOG POSTS -->
+    <div class="space-y-12 px-4 py-8">
+
+        <div class="blog-post relative">
+
+
+            <!-- Back arrow button -->
+            <button 
+                class="text-gray-400 px-4 py-2 hover:text-gray-700"
+                hx-get="{% url 'blog' 1 %}"
+                hx-target="#blog-content"
+                hx-push-url="/blog/1"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </button>
+
+
+            <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
+            <p class="italic m-2 text-gray-400 text-center">Published: {{ post.date|date:"F j, Y" }}</p>
+
+
+            <!-- horizontal line -->
+            <div class="flex justify-center m-10">
+                <div class="w-1/5 border-t border-gray-300"></div>
+            </div>
+
+
+            <div class="relative mx-auto max-w-[600px]" 
+                 x-data="{ currentBlogImage: 0, blogImages: {{ post.images|safe }} }">
+                <div class="relative w-full h-[300px]">
+                    <img :src="blogImages[currentBlogImage]" 
+                         alt="Blog Image" 
+                         class="w-full h-full object-cover shadow-xl rounded-lg">
+                    <button @click="currentBlogImage = (currentBlogImage - 1 + blogImages.length) % blogImages.length" 
+                            class="absolute left-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <button @click="currentBlogImage = (currentBlogImage + 1) % blogImages.length" 
+                            class="absolute right-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="m-6 px-6">
+                {{ post.description|safe }}
+            </div>                
+        </div>
+    </div>
+
+    <!-- horizontal line -->
+    <hr class="my-8 border-t border-gray-300">
+
+
+
+    </div>
+
+
+
+
+</div>
+
+{% endblock %}
+

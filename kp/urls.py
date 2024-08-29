@@ -26,6 +26,7 @@ urlpatterns = [
     # this serves as a URL prefix and then whatever we put in include()
     # has its URL pattern added on after this one
     path("", include("kp_app.urls")),
+    path('summernote/', include('django_summernote.urls')),
 ]
 
 if settings.DEBUG:

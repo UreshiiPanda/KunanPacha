@@ -8,7 +8,7 @@
     {% load static %}
     {% load auth_tags %}
 
-
+    {% include "navbar.html" %}
 
     <div x-data
          id="art-content">
@@ -113,13 +113,14 @@
                             onchange="previewImage(this, 'imagePreview{{ i }}')"
                             >
 
-                      <img id="imagePreview{{ i }}" src="placeholder.jpg" 
+                      <img id="imagePreview{{ i }}" src="" 
                            {% if forloop.first %}
                                alt="Picture Required!" 
                             {% else %}
                                 alt="Select Picture"
                             {% endif %}
                            class="w-24 h-24 object-cover rounded cursor-pointer" 
+                           decoding="async"
                            onclick="document.getElementById('imageInput{{ i }}').click()">
 
                     <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper{{ i }}')">
@@ -154,9 +155,6 @@
 
 
         {% if artworks %}
-        <!-- for some reason the hx-put would not accept the Alpine variable nor a JS variable, 
-             so in lieu of that, a form is just being generated for every single artwork object 
-        -->
         <!-- EDIT ART Modal backdrop -->
         <div 
             x-cloak 
@@ -221,8 +219,9 @@
 
 
                             <img 
-                                src="placeholder.jpg"
+                                src=""
                                 alt="{% if forloop.first %}Picture Required!{% else %}Select Picture{% endif %}" 
+                                decoding="async"
                                 class="w-24 h-24 object-cover rounded cursor-pointer" 
                                 onclick="document.getElementById('imageEditInput{{ i }}').click()"
                                 id="imageEditPreview{{ i }}"  
@@ -417,7 +416,13 @@
                  hx-swap="innerHTML"
                  hx-target="#art-content"
                  hx-push-url="/art2/{{ artwork.id }}">
-                <img src="{{ artwork.image1 }}" alt="Image Not Found" class="p-4 h-full w-full object-cover">
+                <img 
+                    src="{{ artwork.image1 }}" 
+                    alt="Image Not Found" 
+                    decoding="async"
+                    class="p-4 h-full w-full object-cover"
+                    loading="lazy"
+                >
             </div>
 
             {% if user.is_authenticated %}
@@ -461,10 +466,10 @@
                                         print_price: '{{artwork.print_price|escapejs}}',
                                         description: '{{artwork.description|escapejs}}',
                                         dimensions: '{{artwork.dimensions|escapejs}}',
-                                        image1: '{{artwork.image1|escapejs}}',
-                                        image2: '{{artwork.image2|escapejs}}',
-                                        image3: '{{artwork.image3|escapejs}}',
-                                        image4: '{{artwork.image4|escapejs}}'
+                                        image1: 'null',
+                                        image2: 'null',
+                                        image3: 'null',
+                                        image4: 'null'
                                     };
                                     console.log('~~~~~currentArtwork~~~~~~');
                                     console.log($store.editArtModal.currentArtwork.id);
@@ -528,7 +533,7 @@
           const input = wrapper.querySelector('input[type="file"]');
           const img = wrapper.querySelector('img');
           input.value = '';
-          img.src = 'placeholder.jpg';
+          img.src = '';
         }
 
         function editArtworkPost() {

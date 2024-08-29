@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% load static %}
+    {% load auth_tags %}
+    <script src="{% static 'summernote/lang/summernote-en-US.min.js' %}"></script>
+
+
+<div
+    x-data="{blog_modal:false}"
+    id="blog-content"
+    class="flex flex-col lg:flex-row h-screen w-screen relative overflow-hidden">
+
+
+
+        {% if user.is_authenticated %}
+            {% if request.user|has_group:"Editor" %}
+            <button 
+                x-data
+                @click="
+                      $store.editBlogModal.currentBlogPost = {
+                           id: 0,
+                           title: '',
+                           date: '',
+                           description: '',
+                           image1: null,
+                           image2: null,
+                           image3: null,
+                           image4: null
+                       };
+                        console.log('~~~~~currentBlogPost~~~~~~');
+                        console.log($store.editBlogModal.currentBlogPost.id);
+                        console.log($store.editBlogModal.currentBlogPost.title);
+                        console.log($store.editBlogModal.currentBlogPost.text);
+                        console.log($store.editBlogModal.currentBlogPost.description);
+                        console.log($store.editBlogModal.currentBlogPost.image1);
+                        console.log($store.editBlogModal.currentBlogPost.image2);
+                        console.log($store.editBlogModal.currentBlogPost.image3);
+                        console.log($store.editBlogModal.currentBlogPost.image4);
+                        $store.addBlogModal.showModal = true" 
+                class="absolute mt-20 top-8 left-4 z-30 flex items-center px-3 py-2 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Add Blog
+            </button>
+            {% endif %}
+        {% endif %}
+
+
+
+        <!-- ADD BLOG Modal backdrop -->
+        <div x-cloak x-show="$store.addBlogModal.showModal" class=" fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- ADD BLOG Modal content -->
+          <div x-cloak x-show="$store.addBlogModal.showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 overflow-y-auto max-h-[90vh]">
+            
+              <h2 class="text-2xl font-bold mb-4">Add New Blog Post</h2>
+             
+            <form 
+                id="blogForm" 
+                enctype="multipart/form-data"
+                hx-encoding="multipart/form-data"
+                hx-post="{% url 'add_blog' %}"
+                hx-swap="none"
+                hx-cache="false"
+                hx-trigger="submit"
+                hx-on::after-request="Alpine.store('addBlogModal').showModal = false"
+            >
+            {% csrf_token %}
+              <div class="mb-4">
+                <label for="blog_title" class="block text-sm font-medium text-gray-700">Blog Title:</label>
+                <input type="text" id="blog_title" x-bind:value="$store.editBlogModal.currentBlogPost.title" name="blog_title" required placeholder="eg: unique title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <!--
+              <div class="mb-4">
+                <label for="blog_description" class="block text-sm font-medium text-gray-700">Description:</label>
+                <textarea 
+                    id="blog_description"  
+                    x-bind:value="$store.editBlogModal.currentBlogPost.description" 
+                    name="blog_description" 
+                    rows="3" 
+                    placeholder="eg: un postito de blog..." 
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+              </div>
+              -->
+
+              <!-- Blog Description via a Django-Summernote (rich text editor) form -->
+              {{ form_add.errors }} 
+              {{ form_add.media }}  
+              {{ form_add.as_div }}
+
+  
+              <div class="m-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Main Photos:</label>
+                <div class="flex flex-wrap space-x-4" id="imageContainer">
+                  {% for i in '1234'|make_list %}
+                  <div class="relative mb-4" id="imageWrapper{{ i }}">
+                    <input type="file" 
+                            id="imageInput{{ i }}" 
+                            name="image{{ i }}" 
+                            accept="image/*" 
+                            class="hidden" 
+                            onchange="previewImage(this, 'imagePreview{{ i }}')"
+                            >
+
+                      <img id="imagePreview{{ i }}" src="" 
+                           {% if forloop.first %}
+                               alt="Picture Required!" 
+                            {% else %}
+                                alt="Select Picture"
+                            {% endif %}
+                           class="w-24 h-24 object-cover rounded cursor-pointer" 
+                           decoding="async"
+                           onclick="document.getElementById('imageInput{{ i }}').click()">
+
+                    <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapper{{ i }}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="$store.addBlogModal.showModal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    hx-disabled-elt="this"
+                    hx-disable-if="form:not(:valid)"
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+        {% if blog_posts %}
+        <!-- EDIT BLOG Modal backdrop -->
+        <div 
+            x-cloak 
+            x-show="$store.editBlogModal.showModal" 
+            class=" fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
+          <!-- EDIT BLOG Modal content -->
+          <div
+            x-cloak 
+            x-show="$store.editBlogModal.showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-90"
+               x-transition:enter-end="opacity-100 scale-100"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="opacity-100 scale-100"
+               x-transition:leave-end="opacity-0 scale-90"
+               class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl mx-4 overflow-y-auto max-h-[90vh]">
+            
+            <h2 class="text-2xl font-bold mb-4">Edit Blog Post</h2>
+            
+            <form 
+                id="editBlogForm" 
+                enctype="multipart/form-data"
+                hx-encoding="multipart/form-data"
+                hx-trigger="submit"
+                hx-cache="false"
+                hx-swap="none"
+                hx-on::after-request="Alpine.store('editBlogModal').showModal = false"
+                >
+            {% csrf_token %}
+              <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
+                <input type="text" id="titleEdit"  x-bind:value="$store.editBlogModal.currentBlogPost.title" name="title" x-bind:placeholder="$store.editBlogModal.currentBlogPost.title" required  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <!--
+              <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
+                <textarea id="descriptionEdit"  
+                    x-bind:value="$store.editBlogModal.currentBlogPost.description" 
+                    name="description" 
+                    rows="3" 
+                    x-bind:placeholder="$store.editBlogModal.currentBlogPost.description" 
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </textarea>
+              </div>
+              -->
+
+              <!-- Blog Description via a Django-Summernote (rich text editor) form -->
+              {{ form_edit.errors }} 
+              {{ form_edit.media }}  
+              {{ form_edit.as_div }}
+
+  
+              <div class="m-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Main Photos:</label>
+                <div class="flex flex-wrap space-x-4" id="imageEditContainer">
+
+
+                    {% for i in '1234'|make_list %}
+                    <div x-data="{removed{{i}}:'false'}" class="relative mb-4" id="imageEditWrapper{{ i }}">
+
+
+                            <img 
+                                src=""
+                                alt="{% if forloop.first %}Picture Required!{% else %}Select Picture{% endif %}" 
+                                decoding="async"
+                                class="w-24 h-24 object-cover rounded cursor-pointer" 
+                                onclick="document.getElementById('imageEditInput{{ i }}').click()"
+                                id="imageEditPreview{{ i }}"  
+                            >
+                            <input 
+                                type="file" 
+                                id="imageEditInput{{i}}" 
+                                name="image{{i}}" 
+                                {% if forloop.first %}
+                                    class="hidden"
+                                {% else %} 
+                                    class="hidden" 
+                                {% endif %}
+                                onchange="previewImage(this, 'imageEditPreview{{ i }}')"
+                            > 
+                            <button 
+                                type="button" 
+                                @click="removed{{i}} = 'true'; 
+                                $store.editBlogModal.currentBlogPost.image{{i}} = '';
+                                removeImage('imageEditWrapper{{ i }}')"
+                                class="absolute top-0 right-0 bg-white p-1 shadow-sm"
+                                >  
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                  </svg>
+                            </button>
+
+                            <input 
+                                type="text" 
+                                x-ref="imageRemoveInput{{i}}" 
+                                id="imageRemoveInput{{i}}" 
+                                name="removed{{i}}" 
+                                class="hidden" 
+                                x-bind:value="removed{{i}}"
+                            > 
+                    </div>
+                    {% endfor %}
+
+
+
+                </div>
+              </div>
+
+              <div class="mt-6 flex space-x-4">
+                <button type="button" 
+                    @click="$store.editBlogModal.showModal = false" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                    Cancel
+                </button>
+
+                <button 
+                    type="submit"
+                    onclick="editBlogPost(Alpine.store('editBlogModal').currentBlogPost.id)" 
+                    class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                    hx-disabled-elt="this"
+                    hx-disable-if="form:not(:valid)"
+                    >
+                    Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+
+
+
+
+
+
+
+        <!-- Edit Blog Page Button -->        
+        {% if user.is_authenticated %}
+            {% if request.user|has_group:"Editor" %}
+            <button 
+                x-data 
+                @click="blog_modal = true" 
+                class="absolute top-4 left-4 flex items-center px-3 py-2 z-30 border-2 border-white text-white bg-black hover:text-black hover:bg-white hover:border-black text-sm font-medium">
+                Edit Page
+            </button>
+            {% endif %}
+        {% endif %}
+
+
+
+
+                <!-- Edit Blog Page Modal -->
+                <div x-cloak x-show="blog_modal" class="fixed inset-0 bg-black text-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div x-cloak x-show="blog_modal" 
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 scale-90"
+                       x-transition:enter-end="opacity-100 scale-100"
+                       x-transition:leave="transition ease-in duration-300"
+                       x-transition:leave-start="opacity-100 scale-100"
+                       x-transition:leave-end="opacity-0 scale-90"
+                       class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+
+                    <form 
+                        id="imageForm1" 
+                        enctype="multipart/form-data"
+                        hx-encoding="multipart/form-data"
+                        hx-post="{% url 'blog_page_edit' %}"
+                        hx-swap="none"
+                        hx-cache="false"
+                    >
+                    {% csrf_token %}
+                        <div class="mb-4">
+                          <label for="blog_title" class="block text-sm font-medium text-gray-700">Title:</label>
+                          <input type="text" id="blog_title" name="blog_title" placeholder="blog title here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="mb-4">
+                            <label for="blog_text" class="block text-sm font-medium text-gray-700">Blog Text:</label>
+                            <textarea id="blog_text" name="blog_text" placeholder="blog text here" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                          <label for="contact_facebook" class="block text-sm font-medium text-gray-700">Facebook Link:</label>
+                          <input type="text" id="contact_facebook" name="contact_facebook" placeholder="https://www.facebook.com/meow" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="contact_instagram" class="block text-sm font-medium text-gray-700">Instagram Link:</label>
+                          <input type="text" id="contact_instagram" name="contact_instagram" placeholder="https://www.instagram.com/meow" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
+                          <input type="text" id="font" name="blog_font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="mb-4">
+                          <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
+                          <input type="text" id="font_color" name="blog_font_color" placeholder="black" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="mb-4">
+                          <label for="font_style" class="block text-sm font-medium text-gray-700">Font Style:</label>
+                          <input type="text" id="font_style" name="blog_font_style" placeholder="italic, bold, normal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <!-- Existing image input -->
+
+                        <div class="mb-4">
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Photos:</label>
+                          <div class="flex space-x-4" id="imageBlogContainer">
+                            <div class="relative" id="imageWrapperBlog1">
+                              <input type="file" id="imageInputBlog1" name="blog_bg_image" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreviewBlog1')">
+                              <img id="imagePreviewBlog1" src="" decoding="async" alt="Select Background Picture" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInputBlog1').click()">
+                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapperBlog1')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <div class="relative" id="imageWrapperBlog2">
+                              <input type="file" id="imageInputBlog2" name="blog_logo_image" accept="image/*" class="hidden" onchange="previewImage(this, 'imagePreviewBlog2')">
+                              <img id="imagePreviewBlog2" src="" decoding="async" alt="Select Picture" class="w-24 h-24 object-cover rounded cursor-pointer" onclick="document.getElementById('imageInputBlog2').click()">
+                              <button type="button" class="absolute top-0 right-0 bg-white p-1 shadow-sm" onclick="removeImage('imageWrapperBlog2')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <!-- Repeat for imageWrapperBlog2 and imageWrapper3 -->
+                          </div>
+                        </div>
+
+                      <div class="mt-6 flex space-x-4">
+                        <button type="button" 
+                            @click="blog_modal = false" 
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                            Cancel
+                        </button>
+
+                        <button 
+                            type="submit"
+                            @click="blog_modal = false" 
+                            class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-white hover:text-black hover:border-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                            Submit
+                        </button>
+                      </div>
+
+                    </form>
+                </div>
+            </div>
+
+
+
+
+
+        <!-- BLOG LEFT HALF -->
+
+        <!-- Small navbar for screens below lg -->
+        <div class="lg:hidden fixed top-4 right-4 z-20">
+                <div id="navbar-container" hx-get="{% url 'get_navbar_blog_sm' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
+
+
+
+        <div 
+            x-data="{
+                currentFontStyle: '{{page_settings.font_style}}',
+                currentFont: '{{page_settings.font}}',
+                currentColor: '{{page_settings.font_color}}',
+                fontVariants: {
+                    'sans-serif': 'font-sans',
+                    'serif': 'font-serif',
+                    'mono': 'font-mono',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+                smallMenu: false
+            }" 
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+            class="h-2/5 lg:h-screen lg:w-2/5 bg-cover bg-center relative flex-shrink-0" 
+            style="background-image: url('{{ page_settings.blog_bg_image }}');"
+            >
+
+
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <img 
+                    src="{{ page_settings.blog_logo_image }}" 
+                    alt="Blog Photo" 
+                    class="w-32 h-32 rounded-full mb-4 object-cover shadow-[0_50px_50px_rgba(0,0,0,0.2)]"
+                    style="box-shadow: 0 3px 3px rgba(0,0,0,0.4);"
+                    >
+                <h2 
+                    class="text-2xl font-bold text-center" 
+                    style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);" 
+                    >{{ page_settings.blog_title }}
+                </h2>
+                <p 
+                    class="text-center mt-2 shadow-text"
+                    style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);"
+                    >{{ page_settings.blog_text }}
+                </p>
+                
+                <div class="flex justify-center space-x-8 mt-4">
+                    <a href="https://www.instagram.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://www.tiktok.com/@meow" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    <!-- BLOG RIGHT HALF -->
+    <div 
+        id="blog-right-half"
+        class="h-3/5 lg:h-screen lg:w-3/5 flex flex-col overflow-hidden">
+        <div class="hidden lg:block w-full">
+            <!-- Large navbar for screens above lg -->
+            <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
+
+        <!-- BLOG POSTS -->
+      <div class="flex-grow overflow-y-auto">
+        <div class="space-y-12 px-4 py-8">
+            {% for post in blog_posts %}
+            <div class="blog-post relative">
+                <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
+                <p class="italic m-2 text-gray-400 text-center">Published: {{ post.date|date:"F j, Y" }}</p>
+
+
+
+                {% if user.is_authenticated %}
+                    {% if request.user|has_group:"Editor" %}
+                    <div class="absolute top-2 right-2 flex space-x-2 z-10">
+                    <button 
+                            @click=" 
+                                    $store.editBlogModal.currentBlogPost = {
+                                        id: '{{post.id|escapejs}}',
+                                        title: '{{post.title|escapejs}}',
+                                        description: '{{post.description|escapejs}}',
+                                        image1: 'null',
+                                        image2: 'null',
+                                        image3: 'null',
+                                        image4: 'null'
+                                    };
+                                    console.log('~~~~~currentBlogPost~~~~~~');
+                                    console.log($store.editBlogModal.currentBlogPost.id);
+                                    console.log($store.editBlogModal.currentBlogPost.title);
+                                    console.log($store.editBlogModal.currentBlogPost.description);
+                                    console.log($store.editBlogModal.currentBlogPost.image1);
+                                    console.log($store.editBlogModal.currentBlogPost.image2);
+                                    console.log($store.editBlogModal.currentBlogPost.image3);
+                                    console.log($store.editBlogModal.currentBlogPost.image4);
+                                    $store.editBlogModal.showModal = true"
+
+                            class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
+                        <svg class="ml-1 h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+
+                        {% if blog_posts %}
+                            <button hx-delete="{% url 'delete_blog' post.id %}"
+                                    hx-confirm="Are you sure you want to delete this blog post?"
+                                    hx-target="#blog-content"
+                                    class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">
+                                <svg class="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+
+
+
+
+                <!-- horizontal line -->
+                <div class="flex justify-center m-10">
+                    <div class="w-1/5 border-t border-gray-300"></div>
+                </div>
+
+
+                <div class="relative mx-auto max-w-[600px]" 
+                     x-data="{ currentBlogImage: 0, blogImages: {{ post.images|safe }} }">
+                    <div class="relative w-full h-[300px]">
+                        <img :src="blogImages[currentBlogImage]" 
+                             alt="Blog Image" 
+                             class="w-full h-full object-cover shadow-xl rounded-lg">
+                        <button @click="currentBlogImage = (currentBlogImage - 1 + blogImages.length) % blogImages.length" 
+                                class="absolute left-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button @click="currentBlogImage = (currentBlogImage + 1) % blogImages.length" 
+                                class="absolute right-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="m-6 px-6">
+                    <div class="relative max-h-[300px] overflow-hidden">
+                        <div class="prose max-w-none">
+                            {{ post.description|safe }}
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                    </div>                
+                </div>
+                <a 
+                    hx-get="{% url 'blog2' post.id %}"
+                    hx-target="#blog-right-half"
+                    hx-swap="innerHTML scroll:top"
+                    hx-push-url="/blog2/{{ post.id }}"
+                    class="text-gray-400 mt-2 hover:underline hover:cursor-pointer">Continue Reading...
+                </a>
+            </div>
+            <!-- horizontal line -->
+            <hr class="my-8 border-t border-gray-300">
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+        <!-- Blog Pagination -->
+
+        <div class="inline-flex justify-center gap-1 m-6" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
+          <button
+            hx-get="{% url 'blog' page|add:'-1' %}"
+            hx-push-url="/blog/{{ page|add:'-1' }}"
+            hx-target="#blog-content"
+            hx-swap="outerHTML"
+            class="inline-flex size-8 mx-2 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            :class="{ 'opacity-50 cursor-not-allowed': currPage === 1 }"
+            :disabled="currPage === 1"
+          >
+            <span class="sr-only">Prev Page</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="size-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <div class="flex items-center">
+            <span x-text="currPage"></span>
+            <span class="mx-2">of</span>
+            <span x-text="totalPages"></span>
+          </div>
+
+          <button
+            hx-get="{% url 'blog' page|add:'1' %}"
+            hx-push-url="/blog/{{ page|add:'1' }}"
+            hx-target="#blog-content"
+            hx-swap="outerHTML"
+            class="inline-flex mx-2 size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+            :class="{ 'opacity-50 cursor-not-allowed': currPage === totalPages }"
+            :disabled="currPage === totalPages"
+          >
+            <span class="sr-only">Next Page</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="size-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+
+
+    </div>
+
+
+
+
+</div>
+
+        <!-- for image thumbnails & for removing them in the modals -->
+        <script>
+            function previewImage(input, previewId) {
+              const file = input.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  document.getElementById(previewId).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+              }
+            }
+
+            function removeImage(wrapperId) {
+              const wrapper = document.getElementById(wrapperId);
+              const input = wrapper.querySelector('input[type="file"]');
+              const img = wrapper.querySelector('img');
+              input.value = '';
+              img.src = '';
+            }
+
+            function editBlogPost() {
+                id = Alpine.store('editBlogModal').currentBlogPost.id
+                htmx.ajax('POST', '{% url 'edit_blog' 0 %}'.replace(0, id), {
+                   source: '#editBlogForm',
+
+                });
+            }
+        </script>
+
+
+
+{% endblock %}

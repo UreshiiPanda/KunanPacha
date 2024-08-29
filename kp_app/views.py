@@ -6,21 +6,20 @@ from google.cloud import storage
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork
+from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork, BlogPageSettings, BlogPost
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage
 import json
 from decimal import Decimal, InvalidOperation
-from .forms import LoginForm
-from .forms import RegistrationForm
+from .forms import BlogPostForm, RegistrationForm, LoginForm
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 
 
@@ -172,6 +171,8 @@ def home(request):
 
 def contact(request):
     contact_page_settings = ContactPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
+
     if not contact_page_settings:
         contact_page_settings = ContactPageSettings.objects.create(
             edu_address="Vilcabamba, Ecuador",
@@ -183,6 +184,13 @@ def contact(request):
             font_color="black",
             font_style="normal",
         )
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+
 
     if os.getenv("KP_PROD") == "true":
         # Production environment (GCP)
@@ -196,6 +204,11 @@ def contact(request):
             "contact_font_color": contact_page_settings.font_color,
             "contact_font_style": contact_page_settings.font_style,
             "contact_image": f"{settings.STATIC_URL}kp_app/images/art4.jpg",
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
     else:
         # Local development environment
@@ -209,6 +222,11 @@ def contact(request):
             "contact_font_color": contact_page_settings.font_color,
             "contact_font_style": contact_page_settings.font_style,
             "contact_image": os.path.join(settings.STATIC_URL, 'kp_app/images/art4.jpg'),
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
         }
     if request.headers.get('HX-Request') == 'true':
         print("contact page came from HTMX")
@@ -219,15 +237,619 @@ def contact(request):
 
 
 
+def blog(request, page="1"):
+    blog_page_settings = BlogPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
+
+    if not blog_page_settings:
+        blog_page_settings = BlogPageSettings.objects.create(
+            blog_title="blog title here",
+            blog_text="blog text here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "blog_title": blog_page_settings.blog_title,
+            "blog_text": blog_page_settings.blog_text,
+            "blog_facebook": blog_page_settings.edu_facebook,
+            "blog_instagram": blog_page_settings.edu_instagram,
+            "blog_font": blog_page_settings.font,
+            "blog_font_color": blog_page_settings.font_color,
+            "blog_font_style": blog_page_settings.font_style,
+            "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
+            "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "blog_title": blog_page_settings.blog_title,
+            "blog_text": blog_page_settings.blog_text,
+            "blog_facebook": blog_page_settings.edu_facebook,
+            "blog_instagram": blog_page_settings.edu_instagram,
+            "blog_font": blog_page_settings.font,
+            "blog_font_color": blog_page_settings.font_color,
+            "blog_font_style": blog_page_settings.font_style,
+            "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
+            "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+
+
+    # Fetch blog posts from the database
+    blog_posts = BlogPost.objects.all().order_by('-created_at')
+
+
+    # Use Django's paginator with 10 items per page for blog_post pages
+    paginator = Paginator(blog_posts, 10)
+    
+    # Get the number of pages from the paginator
+    num_pages = paginator.num_pages
+
+    try:
+        # Get the specified page
+        blog_posts = paginator.page(page)
+    except EmptyPage:
+        # If the page is out of range, deliver last page of results
+        blog_posts = paginator.page(paginator.num_pages)
+
+    # Prepare blog post data
+    all_blog_posts = []
+    for post in blog_posts:
+        if os.getenv("KP_PROD") == "false":
+            # Local environment
+            image_base_url = os.path.join(settings.STATIC_URL, 'kp_app/images/')
+            image_urls = [
+                os.path.join(image_base_url, post.image1_filename),
+                os.path.join(image_base_url, post.image2_filename) if post.image2_filename else None,
+                os.path.join(image_base_url, post.image3_filename) if post.image3_filename else None,
+                os.path.join(image_base_url, post.image4_filename) if post.image4_filename else None,
+            ]
+        else:
+            # Production environment (GCP)
+            image_base_url = f"{settings.STATIC_URL}kp_app/images/"
+            image_urls = [
+                f'{image_base_url}{post.image1_filename}',
+                f'{image_base_url}{post.image2_filename}' if post.image2_filename else None,
+                f'{image_base_url}{post.image3_filename}' if post.image3_filename else None,
+                f'{image_base_url}{post.image4_filename}' if post.image4_filename else None,
+            ]
+
+
+        # Filter out None values from image_urls
+        filtered_images = [img for img in image_urls if img is not None]
+        
+
+        # the template uses both an array of the images and the individual images separately
+        # as this was easier to do with the existing Alpine, so both will be included in the
+        # context objects
+        post_data = {
+            'id': post.id,
+            'title': post.title,
+            'description': post.description,
+            'images': filtered_images,  # Keep the filtered images array
+            'date': post.created_at,
+        }
+
+        # Add individual image variables
+        for i, image_url in enumerate(filtered_images, start=1):
+            post_data[f'image{i}'] = image_url
+
+        all_blog_posts.append(post_data)
+
+
+
+    if request.headers.get('HX-Request') == 'true':
+        print("blog page came from HTMX")
+        # 2 separate forms were necessary to get around a weird Django error
+        form_add = BlogPostForm(prefix='add')
+        form_edit = BlogPostForm(prefix='edit')
+        return render(request, "blog.html", {
+            "page_settings": page_settings, 
+            "blog_posts": all_blog_posts, 
+            "form_add":form_add, 
+            "form_edit":form_edit,
+            "num_pages": num_pages,
+            "page": page,
+            })
+    else:
+        print("blog page did NOT come from HTMX")
+        # 2 separate forms were necessary to get around a weird Django error
+        form_add = BlogPostForm(prefix='add')
+        form_edit = BlogPostForm(prefix='edit')
+        return render(request, "blog.html", {
+            "page_settings": page_settings, 
+            "blog_posts": all_blog_posts, 
+            "form_add":form_add, 
+            "form_edit":form_edit,
+            "num_pages": num_pages,
+            "page": page,
+            })
+
+
+def blog2(request, post_id):
+    # note that Django automatically adds an ID to every object in the models
+    post = get_object_or_404(BlogPost, id=post_id)
+
+    
+    if os.getenv("KP_PROD") == "false":
+        # Local environment
+        image_base_url = os.path.join(settings.STATIC_URL, 'kp_app/images/')
+        image_urls = [
+            os.path.join(image_base_url, post.image1_filename),
+            os.path.join(image_base_url, post.image2_filename) if post.image2_filename else None,
+            os.path.join(image_base_url, post.image3_filename) if post.image3_filename else None,
+            os.path.join(image_base_url, post.image4_filename) if post.image4_filename else None,
+        ]
+    else:
+        # Production environment (GCP)
+        image_base_url = f"{settings.STATIC_URL}kp_app/images/"
+        image_urls = [
+            f'{image_base_url}{post.image1_filename}',
+            f'{image_base_url}{post.image2_filename}' if post.image2_filename else None,
+            f'{image_base_url}{post.image3_filename}' if post.image3_filename else None,
+            f'{image_base_url}{post.image4_filename}' if post.image4_filename else None,
+        ]
+
+
+    # Filter out None values from image_urls
+    filtered_images = [img for img in image_urls if img is not None]
+    
+    # the template uses both an array of the images and the individual images separately
+    # as this was easier to do with the existing Alpine, so both will be included in the
+    # context objects
+    post_data = {
+        'id': post.id,
+        'title': post.title,
+        'description': post.description,
+        'images': filtered_images,  # Keep the filtered images array
+        'date': post.created_at,
+    }
+
+    # Add individual image variables
+    for i, image_url in enumerate(filtered_images, start=1):
+        post_data[f'image{i}'] = image_url
+
+
+    if request.headers.get('HX-Request') == 'true':
+        print("blog page 2 came from HTMX")
+        # 2 separate forms were necessary to get around a weird Django error
+        return render(request, "blog2_content.html", {"post": post_data})
+    else:
+        print("blog page 2 did NOT come from HTMX")
+
+        # we only need to reload the page_settings if the user does not come from HTMX
+        blog_page_settings = BlogPageSettings.objects.first()
+        if not blog_page_settings:
+            blog_page_settings = BlogPageSettings.objects.create(
+                blog_title="blog title here",
+                blog_text="blog text here",
+                edu_facebook="facebook here",
+                edu_instagram="instagram here",
+                font="sans-serif",
+                font_color="black",
+                font_style="normal",
+            )
+            
+        menu_settings = MenuSettings.objects.first()
+        if not menu_settings:
+            menu_settings = MenuSettings.objects.create(
+                font='sans-serif',
+                font_color='black',
+                font_style='normal',
+            )
+
+        if os.getenv("KP_PROD") == "true":
+            # Production environment (GCP)
+            page_settings = {
+                "blog_title": blog_page_settings.blog_title,
+                "blog_text": blog_page_settings.blog_text,
+                "blog_facebook": blog_page_settings.edu_facebook,
+                "blog_instagram": blog_page_settings.edu_instagram,
+                "blog_font": blog_page_settings.font,
+                "blog_font_color": blog_page_settings.font_color,
+                "blog_font_style": blog_page_settings.font_style,
+                "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
+                "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+
+                "menu_font": menu_settings.font,
+                "menu_font_color": menu_settings.font_color,
+                "menu_font_style": menu_settings.font_style,
+
+            }
+        else:
+            # Local development environment
+            page_settings = {
+                "blog_title": blog_page_settings.blog_title,
+                "blog_text": blog_page_settings.blog_text,
+                "blog_facebook": blog_page_settings.edu_facebook,
+                "blog_instagram": blog_page_settings.edu_instagram,
+                "blog_font": blog_page_settings.font,
+                "blog_font_color": blog_page_settings.font_color,
+                "blog_font_style": blog_page_settings.font_style,
+                "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
+                "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+
+                "menu_font": menu_settings.font,
+                "menu_font_color": menu_settings.font_color,
+                "menu_font_style": menu_settings.font_style,
+
+            }
+
+        # 2 separate forms were necessary to get around a weird Django error
+        return render(request, "blog2.html", {"post": post_data, "page_settings": page_settings})
+
+
+
+
+def blog_page_edit(request):
+    # Get the existing contact page settings
+    blog_page = BlogPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not blog_page:
+        blog_page = BlogPageSettings.objects.create(
+            blog_title="blog title here",
+            blog_text="blog text here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
+    # if the user changed the social media links, then the contact page will also need those updates
+    # Get the existing contact page settings
+    contact_page = ContactPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not contact_page:
+        contact_page = ContactPageSettings.objects.create(
+            edu_address="address here",
+            edu_phone="phone here",
+            edu_email="email here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
+
+
+    # Update fields only if new values are provided, otherwise just use the prev value
+    blog_page.blog_title = request.POST.get('blog_title') or blog_page.blog_title
+    blog_page.blog_text = request.POST.get('blog_text') or blog_page.blog_text
+    blog_page.edu_facebook = request.POST.get('contact_facebook') or blog_page.edu_facebook
+    blog_page.edu_instagram = request.POST.get('contact_instagram') or blog_page.edu_instagram
+    blog_page.font = request.POST.get('blog_font') or blog_page.font
+    blog_page.font_color = request.POST.get('blog_font_color') or blog_page.font_color
+    blog_page.font_style = request.POST.get('blog_font_style') or blog_page.font_style
+
+    blog_bg_image = request.FILES.get('blog_bg_image')
+    blog_logo_image = request.FILES.get('blog_logo_image')
+
+    # if the user changed the social media links, then the contact page will also need those updates
+    contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
+    contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
+
+ 
+    print(f"Updating Blog Page settings: {
+        blog_page.blog_title, 
+        blog_page.blog_text, 
+        blog_page.edu_facebook,
+        blog_page.edu_instagram,
+        blog_page.font,
+        blog_page.font_color,
+        blog_page.font_style,
+    }, Blog BG image: {'Provided' if blog_bg_image else 'Not provided'}, Blog Logo image: {'Provided' if blog_logo_image else 'Not provided'}")
+    
+    try:
+        if blog_bg_image:
+            if os.getenv("KP_PROD") == "true":
+                # GCP Production Environment
+                client = storage.Client()
+                bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob('kp_app/images/blog_bg.jpg')
+                blob.upload_from_string(
+                    blog_bg_image.read(),
+                    content_type=blog_bg_image.content_type
+                )
+                print(f"New contact image saved to GCS: {blob.public_url}")
+            else:
+                # Local Development Environment
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'blog_bg.jpg')
+                os.makedirs(os.path.dirname(image_path), exist_ok=True)
+                with open(image_path, 'wb+') as destination:
+                    for chunk in blog_bg_image.chunks():
+                        destination.write(chunk)
+                print(f"New Blog image saved to {image_path}")
+
+        if blog_logo_image:
+            if os.getenv("KP_PROD") == "true":
+                # GCP Production Environment
+                client = storage.Client()
+                bucket = client.get_bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob('kp_app/images/blog_logo.jpg')
+                blob.upload_from_string(
+                    blog_logo_image.read(),
+                    content_type=blog_logo_image.content_type
+                )
+                print(f"New contact image saved to GCS: {blob.public_url}")
+            else:
+                # Local Development Environment
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'blog_logo.jpg')
+                os.makedirs(os.path.dirname(image_path), exist_ok=True)
+                with open(image_path, 'wb+') as destination:
+                    for chunk in blog_logo_image.chunks():
+                        destination.write(chunk)
+                print(f"New Blog image saved to {image_path}")
+
+
+        blog_page.save()
+
+        # if the user changed the social media links, then the contact page will also need those updates
+        contact_page.save()
+        print("Blog Page settings updated with new user input and saved to the DB")
+        
+        return HttpResponseRedirect(reverse('blog'))
+    
+    except Exception as e:
+        print(f"Error saving Blog Page settings: {e}")
+        response = HttpResponse(status=400, content="Contact Blog Settings update failed")
+        return response
+
+
+
+def add_blog(request):
+    if request.method == 'POST':
+        title = request.POST.get('blog_title')
+        #description = request.POST.get('blog_description')
+        images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
+
+        form = BlogPostForm(request.POST, prefix='add')
+        if form.is_valid():
+            description = form.cleaned_data['description']
+        else:
+            print("Form errors:", form.errors)
+            response = HttpResponse(status=400, content="Add Blog form had an invalid Summernote description form")
+            response['HX-Trigger'] = 'BlogDescFailure'
+            return response
+
+
+        if not request.FILES.get('image1'):
+            # if the user didn't input the first image (required)
+            response = HttpResponse(status=400, content="Add Blog form is missing first image")
+            response['HX-Trigger'] = 'addBlogFailure'
+            return response
+
+        # make sure there is at least 1 image, the rest are optional
+        if title and images[0]:
+            # Generate unique filenames for each image
+            filenames = []
+            # this still iterates from 0, but it makes the image naming convention start at 1
+            for i, image in enumerate(images, start=1):
+                if image:
+                    ext = os.path.splitext(image.name)[1]
+                    filename = f"{title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+                    filenames.append(filename)
+
+                    # Save image
+                    if os.getenv("KP_PROD") == "false":
+
+                        # Local storage
+                        path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                        print(f"local path add_blog is adding to: {path}")
+                        with open(path, 'wb+') as destination:
+                            for chunk in image.chunks():
+                                destination.write(chunk)
+                    else:
+                        # GCP Cloud Storage
+                        client = storage.Client()
+                        bucket = client.bucket(settings.GS_BUCKET_NAME)
+                        blob = bucket.blob(f'kp_app/images/{filename}')
+                        blob.upload_from_file(image)
+
+            # Create BlogPost object
+            # the create() func also performs .save() so we don't need to do blog_post.save() after this
+            blog_post = BlogPost.objects.create(
+                title=title,
+                description=description,
+                # the blog_date field is auto-generated on the Model-level
+                image1_filename=filenames[0],
+                image2_filename=filenames[1] if len(filenames) > 1 else None,
+                image3_filename=filenames[2] if len(filenames) > 2 else None,
+                image4_filename=filenames[3] if len(filenames) > 3 else None
+            )
+
+            return HttpResponseRedirect(reverse('blog'))
+        else:
+            print('from Add Blog modal, All required fields must be filled and at least one image uploaded')
+            return HttpResponse('from Add Blog modal, All required fields must be filled and at least one image uploaded', status=400)
+
+    else:
+        print("request for add_blog was not a POST")
+
+
+
+#@require_http_methods(["PUT"])
+# the PUT was not detecting the FILES for some reason, but the POST works
+def edit_blog(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+
+
+    if request.FILES.get('image1'):
+        print(f'this is image1: {request.FILES.get("image1")}')
+    if request.FILES.get('image2'):
+        print(f'this is image2: {request.FILES.get("image2")}')
+    if request.FILES.get('image3'):
+        print(f'this is image3: {request.FILES.get("image3")}')
+    if request.FILES.get('image4'):
+        print(f'this is image4: {request.FILES.get("image4")}')
+
+    if not request.FILES.get('image1'):
+        # if the user didn't input the first image (required)
+        response = HttpResponse(status=400, content="Edit Blog form is missing first image")
+        response['HX-Trigger'] = 'editBlogFailure'
+        return response
+
+
+
+    # Update the basic fields
+    # or leave them the same if the user didn't supply a new value
+    blog_post.title = request.POST.get('title', blog_post.title)
+    #blog_post.description = request.POST.get('description', blog_post.description)
+
+    form = BlogPostForm(request.POST, prefix='edit')
+    print("PREV DESCRIPTION: ", blog_post.description)
+    description = None
+    if form.is_valid():
+        description = form.cleaned_data['description']
+    else:
+        print("Form errors:", form.errors)
+        response = HttpResponse(status=400, content="Add Blog form had an invalid Summernote description form")
+        response['HX-Trigger'] = 'BlogDescFailure'
+        return response
+    blog_post.description = description if description else blog_post.description
+
+
+    # Handle image updates
+    for i in range(1, 5):
+        image_field = f'image{i}'
+        if image_field in request.FILES:
+            image = request.FILES[image_field]
+            ext = os.path.splitext(image.name)[1]
+            filename = f"{blog_post.title.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+            print(f"filename of image {i} being updated: {filename} for artwork {blog_post.title}")
+            
+            # Save the new image
+            if os.getenv("KP_PROD") == "false":
+                # Local storage
+                path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                with open(path, 'wb+') as destination:
+                    for chunk in image.chunks():
+                        destination.write(chunk)
+            else:
+                # GCP Cloud Storage
+                client = storage.Client()
+                bucket = client.bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob(f'kp_app/images/{filename}')
+                blob.upload_from_file(image)
+
+            # Delete the old image if it exists
+            old_filename = getattr(blog_post, f'image{i}_filename')
+            if old_filename:
+                if os.getenv("KP_PROD") == "false":
+                    # Local Storage
+                    old_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', old_filename)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                else:
+                    # GCP Cloud Storage
+                    bucket = client.bucket(settings.GS_BUCKET_NAME)
+                    blob = bucket.blob(f'kp_app/images/{old_filename}')
+                    if blob.exists():
+                        blob.delete()
+
+            # Update the filename in the model
+            setattr(blog_post, f'image{i}_filename', filename)
+        else:
+            # if the image is not in the request.FILES, then it needs to be deleted from the DB since
+            # we are now refreshing the Edit Art form every time it is opened
+            # Delete the old image if it exists
+            setattr(blog_post, f'image{i}_filename', None)
+            
+
+
+    # check if the user deleted any of the files via the removed input field that was
+    # made to cirumvent Alpine issues
+    # NOTE that image1 is not allowed to be removed by the user in the UI because an Artwork must
+    # have at least 1 image
+    # also check that the user didn't re-add a new image after clicking the trash bin icon for deletion
+    for i in range(1, 5):
+        if request.POST.get(f'removed{i}') == "true" and f'image{i}' not in request.FILES:
+            print(f'removing image {i} from blog post {blog_post.title}')
+            setattr(blog_post, f'image{i}_filename', None)
+        
+    blog_post.save()
+    return HttpResponseRedirect(reverse('blog'))
+
+
+
+@require_http_methods(["DELETE"])
+def delete_blog(request, blog_id):
+    blog_post = get_object_or_404(BlogPost, id=blog_id)
+    
+    # Delete images from GCP bucket if in production
+    if os.getenv("KP_PROD") == "true":
+        client = storage.Client()
+        bucket = client.bucket(settings.GS_BUCKET_NAME)
+        
+        image_fields = [blog_post.image1_filename, blog_post.image2_filename, 
+                        blog_post.image3_filename, blog_post.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                blob = bucket.blob(f'kp_app/images/{image_filename}')
+                if blob.exists():
+                    blob.delete()
+                    print(f"Deleted {image_filename} from GCP bucket")
+    else:
+        # Delete images from local storage if in development
+        image_fields = [blog_post.image1_filename, blog_post.image2_filename, 
+                        blog_post.image3_filename, blog_post.image4_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', image_filename)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"Deleted {image_filename} from local storage")
+
+    # Delete the artwork from the Postgres database
+    blog_post.delete()
+    return HttpResponseRedirect(reverse('blog'))
+
+
+
 def art1(request):
     # Fetch the page settings from the DB
-    page_settings = Art1PageSettings.objects.first()
-    if not page_settings:
-        page_settings = Art1PageSettings.objects.create(
+    art_page_settings = Art1PageSettings.objects.first()
+    if not art_page_settings:
+        art_page_settings = Art1PageSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
             edu_email='jojohoughton22@gmail.com'
+        )
+
+
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
         )
 
     # Fetch artworks from the database
@@ -270,6 +892,32 @@ def art1(request):
             'created_at': artwork.created_at,
             'updated_at': artwork.updated_at,
         })
+
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+        }
+
 
 
     if request.headers.get('HX-Request') == 'true':
@@ -353,7 +1001,7 @@ def add_art(request):
             print('from Add Art modal, All required fields must be filled and at least one image uploaded')
             return HttpResponse('from Add Art modal, All required fields must be filled and at least one image uploaded', status=400)
 
-    return render(request, 'add_art.html')
+    return HttpResponse('from Add Art modal, add art call was not a POST', status=400)
 
 
 
@@ -377,7 +1025,7 @@ def edit_artwork(request, artwork_id):
     if not request.FILES.get('image1'):
         # if the user didn't input the first image (required)
         response = HttpResponse(status=400, content="Edit Art form is missing first image")
-        response['HX-Trigger'] = 'addArtFailure'
+        response['HX-Trigger'] = 'editArtFailure'
         return response
 
 
@@ -463,15 +1111,6 @@ def edit_artwork(request, artwork_id):
 
 
 
-#@require_http_methods(["DELETE"])
-#def delete_artwork(request, artwork_id):
-#    artwork = get_object_or_404(Artwork, id=artwork_id)
-#    artwork.delete()
-#    return HttpResponseRedirect(reverse('art1'))
-
-
-
-
 @require_http_methods(["DELETE"])
 def delete_artwork(request, artwork_id):
     artwork = get_object_or_404(Artwork, id=artwork_id)
@@ -513,13 +1152,21 @@ def art2(request, artwork_id):
     # note that Django automatically adds an ID to every object in the models
     artwork = get_object_or_404(Artwork, id=artwork_id)
     
-    page_settings = Art2PageSettings.objects.first()
-    if not page_settings:
-        page_settings = Art2PageSettings.objects.create(
+    art_page_settings = Art2PageSettings.objects.first()
+    if not art_page_settings:
+        art_page_settings = Art2PageSettings.objects.create(
             font='sans-serif',
             font_color='black',
             font_style='normal',
             edu_email='meow@email.com'
+        )
+
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
         )
 
 
@@ -542,6 +1189,31 @@ def art2(request, artwork_id):
         'image3': image_base_url + artwork.image3_filename if artwork.image3_filename else None,
         'image4': image_base_url + artwork.image4_filename if artwork.image4_filename else None,
     }
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "font": art_page_settings.font,
+            "font_color": art_page_settings.font_color,
+            "font_style": art_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+        }
+
 
     context = {
         "image_obj": image_obj,
@@ -652,6 +1324,24 @@ def contact_edit(request):
             font_style="normal",
         )
 
+
+    # if the user changed the social media links, then the contact page will also need those updates
+    # Get the existing contact page settings
+    blog_page = BlogPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not blog_page:
+        blog_page = BlogPageSettings.objects.create(
+            blog_title="blgo title here",
+            blog_text="blog text here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
+
     # Update fields only if new values are provided, otherwise just use the prev value
     contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
     contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
@@ -663,6 +1353,11 @@ def contact_edit(request):
     contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
 
     contact_image = request.FILES.get('contact_image')
+
+    # if the user changed the social media links, then the contact page will also need those updates
+    blog_page.edu_facebook = request.POST.get('contact_facebook') or blog_page.edu_facebook
+    blog_page.edu_instagram = request.POST.get('contact_instagram') or blog_page.edu_instagram
+
     
     print(f"Updating Contact Page settings: {
         contact_page.edu_address, 
@@ -697,6 +1392,10 @@ def contact_edit(request):
                 print(f"New contact image saved to {image_path}")
 
         contact_page.save()
+
+        # if the user changed the social media links, then the contact page will also need those updates
+        blog_page.save()
+
         print("Contact Page settings updated with new user input and saved to the DB")
         
         return HttpResponseRedirect(reverse('contact'))
@@ -724,6 +1423,22 @@ def contact_edit_home(request):
             font_style="normal",
         )
 
+    # if the user changed the social media links, then the contact page will also need those updates
+    # Get the existing contact page settings
+    blog_page = BlogPageSettings.objects.first()
+    
+    # If no settings exist, create a new one with default values
+    if not blog_page:
+        blog_page = BlogPageSettings.objects.create(
+            blog_title="blgo title here",
+            blog_text="blog text here",
+            edu_facebook="facebook here",
+            edu_instagram="instagram here",
+            font="sans-serif",
+            font_color="black",
+            font_style="normal",
+        )
+
     # Update fields only if new values are provided, otherwise just use the prev value
     contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
     contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
@@ -735,6 +1450,11 @@ def contact_edit_home(request):
     contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
 
     contact_image = request.FILES.get('contact_image')
+
+    # if the user changed the social media links, then the contact page will also need those updates
+    blog_page.edu_facebook = request.POST.get('contact_facebook') or blog_page.edu_facebook
+    blog_page.edu_instagram = request.POST.get('contact_instagram') or blog_page.edu_instagram
+
     
     print(f"Updating Contact Page settings: {
         contact_page.edu_address, 
@@ -769,6 +1489,10 @@ def contact_edit_home(request):
                 print(f"New contact image saved to {image_path}")
 
         contact_page.save()
+
+        # if the user changed the social media links, then the contact page will also need those updates
+        blog_page.save()
+
         print("Contact Page settings updated with new user input and saved to the DB")
         
         return HttpResponseRedirect(reverse('home'))  # Redirects to home page
@@ -778,132 +1502,6 @@ def contact_edit_home(request):
         response = HttpResponse(status=400, content="Contact Page Settings update failed")
         return response
 
-
-
-
-#def contact_edit_home(request):
-#    # Get the existing contact page settings
-#    contact_page = ContactPageSettings.objects.first()
-#    
-#    # If no settings exist, create a new one with default values
-#    if not contact_page:
-#        contact_page = ContactPageSettings.objects.create(
-#            edu_address="address here",
-#            edu_phone="phone here",
-#            edu_email="email here",
-#            edu_facebook="facebook here",
-#            edu_instagram="instagram here",
-#            font="sans-serif",
-#            font_color="black",
-#            font_style="normal",
-#        )
-#
-#    # Update fields only if new values are provided, otherwise just use the prev value
-#    contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
-#    contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
-#    contact_page.edu_email = request.POST.get('contact_email') or contact_page.edu_email
-#    contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
-#    contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
-#    contact_page.font = request.POST.get('contact_font') or contact_page.font
-#    contact_page.font_color = request.POST.get('contact_font_color') or contact_page.font_color
-#    contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
-#
-#    contact_image = request.FILES.get('contact_image')
-#    
-#    print(f"Updating Contact Page settings: {
-#        contact_page.edu_address, 
-#        contact_page.edu_phone, 
-#        contact_page.edu_email,
-#        contact_page.edu_facebook,
-#        contact_page.edu_instagram,
-#        contact_page.font,
-#        contact_page.font_color,
-#        contact_page.font_style,
-#    }, image: {'Provided' if contact_image else 'Not provided'}")
-#    
-#    try:
-#        if contact_image:
-#            # Save the image to the specific location
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in contact_image.chunks():
-#                    destination.write(chunk)
-#            print(f"New background image saved to {image_path}")
-#
-#        contact_page.save()
-#        print("Contact Page settings updated with new user input and saved to the DB")
-#        
-#        return HttpResponseRedirect(reverse('home'))  # Assuming you have a 'home' URL name
-#    
-#    except Exception as e:
-#        print(f"Error saving Contact Page settings: {e}")  # Log the error
-#        print("Contact Page Settings update failed")
-#        response = HttpResponse(status=400, content="Contact Page Settings update failed")  # Bad request
-#        return response
-#
-#
-#
-#
-#def contact_edit(request):
-#    # Get the existing contact page settings
-#    contact_page = ContactPageSettings.objects.first()
-#    
-#    # If no settings exist, create a new one with default values
-#    if not contact_page:
-#        contact_page = ContactPageSettings.objects.create(
-#            edu_address="address here",
-#            edu_phone="phone here",
-#            edu_email="email here",
-#            edu_facebook="facebook here",
-#            edu_instagram="instagram here",
-#            font="sans-serif",
-#            font_color="black",
-#            font_style="normal",
-#        )
-#
-#    # Update fields only if new values are provided, otherwise just use the prev value
-#    contact_page.edu_address = request.POST.get('contact_address') or contact_page.edu_address
-#    contact_page.edu_phone = request.POST.get('contact_phone') or contact_page.edu_phone
-#    contact_page.edu_email = request.POST.get('contact_email') or contact_page.edu_email
-#    contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
-#    contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
-#    contact_page.font = request.POST.get('contact_font') or contact_page.font
-#    contact_page.font_color = request.POST.get('contact_font_color') or contact_page.font_color
-#    contact_page.font_style = request.POST.get('contact_font_style') or contact_page.font_style
-#
-#    contact_image = request.FILES.get('contact_image')
-#    
-#    print(f"Updating Contact Page settings: {
-#        contact_page.edu_address, 
-#        contact_page.edu_phone, 
-#        contact_page.edu_email,
-#        contact_page.edu_facebook,
-#        contact_page.edu_instagram,
-#        contact_page.font,
-#        contact_page.font_color,
-#        contact_page.font_style,
-#    }, image: {'Provided' if contact_image else 'Not provided'}")
-#    
-#    try:
-#        if contact_image:
-#            # Save the image to the specific location
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art4.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in contact_image.chunks():
-#                    destination.write(chunk)
-#            print(f"New background image saved to {image_path}")
-#
-#        contact_page.save()
-#        print("Contact Page settings updated with new user input and saved to the DB")
-#        
-#        return HttpResponseRedirect(reverse('contact'))  # Assuming you have a 'home' URL name
-#    
-#    except Exception as e:
-#        print(f"Error saving Contact Page settings: {e}")  # Log the error
-#        print("Contact Page Settings update failed")
-#        response = HttpResponse(status=400, content="Contact Page Settings update failed")  # Bad request
-#        return response
-#
 
 
 
@@ -961,130 +1559,6 @@ def art2_page_edit(request):
             return response
     
     return HttpResponse(status=405, content="the Art2 Page Edit view was not a POST")
-
-
-#def home_page_1_edit(request):
-#    home_page = HomePage1Settings.objects.first()
-#    if not home_page:
-#        home_page = HomePage1Settings.objects.create(
-#            title='Default Title',
-#            font='sans-serif',
-#            font_color='black',
-#            font_style='normal'
-#        )
-#
-#    home_page.title = request.POST.get('title', home_page.title)
-#    home_page.font = request.POST.get('font', home_page.font).lower()
-#    home_page.font_color = request.POST.get('font_color', home_page.font_color).lower()
-#    home_page.font_style = request.POST.get('font_style', home_page.font_style).lower()
-#
-#    background_image = request.FILES.get('background_image')
-#    
-#    try:
-#        if background_image:
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'bg1.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in background_image.chunks():
-#                    destination.write(chunk)
-#            print(f"New background image saved to {image_path}")
-#
-#        home_page.save()
-#        print("Home Page 1 Settings successfully changed in the DB")
-#        return HttpResponseRedirect(reverse('home'))
-#    except Exception as e:
-#        print(f"Error saving Home Page 1 settings: {e}")
-#        response = HttpResponse(status=400, content="Home Page 1 Settings update failed")
-#        return response
-#
-#def home_page_2_edit(request):
-#    home_page_2 = HomePage2Settings.objects.first()
-#    if not home_page_2:
-#        home_page_2 = HomePage2Settings.objects.create(
-#            homepage2_text='Default Text',
-#            font='sans-serif',
-#            font_color='black',
-#            font_style='normal'
-#        )
-#
-#    home_page_2.homepage2_text = request.POST.get('homepage2_text', home_page_2.homepage2_text)
-#    home_page_2.font = request.POST.get('font', home_page_2.font).lower()
-#    home_page_2.font_color = request.POST.get('font_color', home_page_2.font_color).lower()
-#    home_page_2.font_style = request.POST.get('font_style', home_page_2.font_style).lower()
-#
-#    homepage_2_image_1 = request.FILES.get('homepage_2_image_1')
-#    
-#    try:
-#        if homepage_2_image_1:
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art1.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in homepage_2_image_1.chunks():
-#                    destination.write(chunk)
-#            print(f"New background image saved to {image_path}")
-#
-#        home_page_2.save()
-#        print("Home Page 2 Settings successfully changed in the DB")
-#        return HttpResponseRedirect(reverse('home'))
-#    except Exception as e:
-#        print(f"Error saving Home Page 2 settings: {e}")
-#        response = HttpResponse(status=400, content="Home Page 2 Settings update failed")
-#        return response
-#
-#def home_page_3_edit(request):
-#    home_page_3 = HomePage3Settings.objects.first()
-#    if not home_page_3:
-#        home_page_3 = HomePage3Settings.objects.create(
-#            homepage3_text='Default Text',
-#            font='sans-serif',
-#            font_color='black',
-#            font_style='normal'
-#        )
-#
-#    home_page_3.homepage3_text = request.POST.get('homepage3_text', home_page_3.homepage3_text)
-#    home_page_3.font = request.POST.get('font', home_page_3.font).lower()
-#    home_page_3.font_color = request.POST.get('font_color', home_page_3.font_color).lower()
-#    home_page_3.font_style = request.POST.get('font_style', home_page_3.font_style).lower()
-#
-#    try:
-#        home_page_3.save()
-#        print("Home Page 3 Settings successfully changed in the DB")
-#        return HttpResponseRedirect(reverse('home'))
-#    except Exception as e:
-#        print(f"Error saving Home Page 3 settings: {e}")
-#        response = HttpResponse(status=400, content="Home Page 3 Settings update failed")
-#        return response
-#
-#def home_page_4_edit(request):
-#    home_page_4 = HomePage4Settings.objects.first()
-#    if not home_page_4:
-#        home_page_4 = HomePage4Settings.objects.create(
-#            homepage4_text='Default Text',
-#            font='sans-serif',
-#            font_color='black',
-#            font_style='normal'
-#        )
-#
-#    home_page_4.homepage4_text = request.POST.get('homepage4_text', home_page_4.homepage4_text)
-#    home_page_4.font = request.POST.get('homepage4_font', home_page_4.font).lower()
-#    home_page_4.font_color = request.POST.get('homepage4_font_color', home_page_4.font_color).lower()
-#    home_page_4.font_style = request.POST.get('homepage4_font_style', home_page_4.font_style).lower()
-#
-#    homepage_4_image_1 = request.FILES.get('homepage_4_image_1')
-#
-#    try:
-#        if homepage_4_image_1:
-#            image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', 'art3.jpg')
-#            with open(image_path, 'wb+') as destination:
-#                for chunk in homepage_4_image_1.chunks():
-#                    destination.write(chunk)
-#            print(f"New background image saved to {image_path}")
-#
-#        home_page_4.save()
-#        print("Home Page 4 Settings successfully changed in the DB")
-#        return HttpResponseRedirect(reverse('home'))
-#    except Exception as e:
-#        print(f"Error saving Home Page 4 settings: {e}")
-#        response = HttpResponse(status=400, content="Home Page 4 Settings update failed")
-#        return response
 
 
 
@@ -1299,3 +1773,17 @@ def home_page_4_edit(request):
         return response
 
 
+def get_navbar(request):
+    return render(request, 'navbar.html')
+
+
+def get_navbar_home(request):
+    return render(request, 'navbar_home.html')
+
+
+def get_navbar_blog_lg(request):
+    return render(request, 'navbar_blog.html')
+
+
+def get_navbar_blog_sm(request):
+    return render(request, 'navbar_blog_sm.html')

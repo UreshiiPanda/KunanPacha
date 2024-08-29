@@ -63,6 +63,9 @@ if os.environ.get("KP_PROD", "true") == "false":
         }
     }
 
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
     
     # Add this after your DATABASES configuration
     db_host = DATABASES['default']['HOST']
@@ -141,6 +144,7 @@ else:
 
     GCP_SERVICE_ACCOUNT_KEY = env("GCP_SERVICE_ACCOUNT_KEY")
     if GCP_SERVICE_ACCOUNT_KEY:
+        print("GCP_SERVICE_ACCOUNT_KEY: ", GCP_SERVICE_ACCOUNT_KEY)
         GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
             json.loads(GCP_SERVICE_ACCOUNT_KEY)
         )
@@ -160,6 +164,10 @@ else:
     STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
     # bucket must be set to allow ACLs and it must not prevent public access
     # GS_DEFAULT_ACL = "publicRead" 
+
+    # media route for SummerNote
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
 
 
     if os.environ.get("USE_CLOUD_SQL_AUTH_PROXY") == "true":
@@ -202,7 +210,9 @@ INSTALLED_APPS = [
     "storages", 
     "kp_app",
     'widget_tweaks',
+    'django_summernote',
 ]
+
 
 AUTH_USER_MODEL = 'auth.User'
 
@@ -305,4 +315,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # end a session automatically after 12 hours
 SESSION_COOKIE_AGE = 43200  # in seconds (e.g., 12 hour)
 
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
 
