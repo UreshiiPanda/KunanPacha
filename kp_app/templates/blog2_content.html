@@ -1,72 +1,79 @@
   
-    {% load static %}
-    {% load auth_tags %}
+{% load static %}
+{% load auth_tags %}
 
 
-<div class="hidden lg:block w-full">
-    <!-- Large navbar for screens above lg -->
-        <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
-</div>
+<div class="h-full flex flex-col overflow-hidden">
+    <div class="hidden lg:block w-full flex-shrink-0">
+        <!-- Large navbar for screens above lg -->
+            <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+    </div>
 
 
 <!-- BLOG POSTS -->
-<div class="space-y-12 px-4 py-8">
+    <div class="flex-grow overflow-y-auto">
+        <div class="space-y-12 px-4 py-8">
 
-    <div class="blog-post relative">
-
-
-        <!-- Back arrow button -->
-        <button 
-            class="text-gray-400 px-4 py-2 hover:text-gray-700"
-            hx-get="{% url 'blog' 1 %}"
-            hx-target="#blog-content"
-            hx-push-url="/blog/1"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-        </button>
+            <div class="blog-post relative">
 
 
-        <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
-        <p class="italic m-2 text-gray-400 text-center">Published: {{ post.date|date:"F j, Y" }}</p>
-
-
-        <!-- horizontal line -->
-        <div class="flex justify-center m-10">
-            <div class="w-1/5 border-t border-gray-300"></div>
-        </div>
-
-
-        <div class="relative mx-auto max-w-[600px]" 
-             x-data="{ currentBlogImage: 0, blogImages: {{ post.images|safe }} }">
-            <div class="relative w-full h-[300px]">
-                <img :src="blogImages[currentBlogImage]" 
-                     alt="Blog Image" 
-                     class="w-full h-full object-cover shadow-xl rounded-lg">
-                <button @click="currentBlogImage = (currentBlogImage - 1 + blogImages.length) % blogImages.length" 
-                        class="absolute left-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                <!-- Back arrow button -->
+                <button 
+                    class="text-gray-400 px-4 py-2 hover:text-gray-700"
+                    hx-get="{% url 'blog' 1 %}"
+                    hx-target="#blog-content"
+                    hx-push-url="/blog/1"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
-                <button @click="currentBlogImage = (currentBlogImage + 1) % blogImages.length" 
-                        class="absolute right-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </button>
+
+
+                <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
+                <p class="italic m-2 text-gray-400 text-center">Published: {{ post.date|date:"F j, Y" }}</p>
+
+
+                <!-- horizontal line -->
+                <div class="flex justify-center m-10">
+                    <div class="w-1/5 border-t border-gray-300"></div>
+                </div>
+
+
+                <div class="relative mx-auto max-w-[600px]" 
+                     x-data="{ currentBlogImage: 0, blogImages: {{ post.images|safe }} }">
+                    <div class="relative w-full h-[300px]">
+                        <img :src="blogImages[currentBlogImage]" 
+                             alt="Blog Image" 
+                             class="w-full h-full object-cover shadow-xl rounded-lg">
+                        <button @click="currentBlogImage = (currentBlogImage - 1 + blogImages.length) % blogImages.length" 
+                                class="absolute left-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button @click="currentBlogImage = (currentBlogImage + 1) % blogImages.length" 
+                                class="absolute right-[4%] top-1/2 transform -translate-y-1/2 bg-black hover:bg-opacity-40 bg-opacity-10 text-white p-2 rounded">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="m-6 px-6">
+                    <div class="prose max-w-none">
+                        {{ post.description|safe }}
+                    </div>
+                </div>                
             </div>
         </div>
-
-
-        <div class="m-6 px-6">
-            {{ post.description|safe }}
-        </div>                
     </div>
-</div>
 
-<!-- horizontal line -->
-<hr class="my-8 border-t border-gray-300">
+    <!-- horizontal line -->
+    <hr class="my-8 border-t border-gray-300">
+
+</div>
 
 
