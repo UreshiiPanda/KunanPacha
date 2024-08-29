@@ -4,12 +4,13 @@
 
     {% load static %}
     {% load auth_tags %}
+    <script src="{% static 'summernote/lang/summernote-en-US.min.js' %}"></script>
 
 
 <div
     x-data="{blog_modal:false}"
     id="blog-content"
-    class="flex flex-col lg:flex-row h-screen w-screen relative">
+    class="flex flex-col lg:flex-row h-screen w-screen relative overflow-hidden">
 
 
 
@@ -473,7 +474,7 @@
                 fontVariants[currentFont] || 'font-sans', 
                 colorVariants[currentColor] || 'text-black',
             ]"
-            class="h-2/5 lg:h-full lg:w-2/5 bg-cover bg-center relative" 
+            class="h-2/5 lg:h-screen lg:w-2/5 bg-cover bg-center relative flex-shrink-0" 
             style="background-image: url('{{ page_settings.blog_bg_image }}');"
             >
 
@@ -523,13 +524,14 @@
     <!-- BLOG RIGHT HALF -->
     <div 
         id="blog-right-half"
-        class="h-3/5 lg:h-full lg:w-3/5 flex flex-col overflow-y-auto">
+        class="h-3/5 lg:h-screen lg:w-3/5 flex flex-col overflow-hidden">
         <div class="hidden lg:block w-full">
             <!-- Large navbar for screens above lg -->
             <div id="navbar-container" hx-get="{% url 'get_navbar_blog_lg' %}" hx-trigger="load" hx-swap="innerHTML"></div>
         </div>
 
         <!-- BLOG POSTS -->
+      <div class="flex-grow overflow-y-auto">
         <div class="space-y-12 px-4 py-8">
             {% for post in blog_posts %}
             <div class="blog-post relative">
@@ -634,6 +636,7 @@
             <hr class="my-8 border-t border-gray-300">
             {% endfor %}
         </div>
+    </div>
 
 
 
