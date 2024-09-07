@@ -95,10 +95,10 @@
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false"
-                            hx-get="{% url 'art1' %}"
+                            hx-get="{% url 'art_categories' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/art1"
+                            hx-push-url="/art_categories"
                             >Art
                         </a>
                         <a
@@ -150,7 +150,7 @@
                     </div>
                 <div class="flex items-center shadow-[0_10px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_30px_rgba(0,0,0,0.4)] transition-shadow duration-300">
                     <button @click="smallMenu = !smallMenu" class="block sm:hidden text-black">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"  xmlns="http://www.w3.org/2000/svg">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M3 6H21" stroke="black" stroke-width="1.0" />
                           <path d="M3 12H17" stroke="black" stroke-width="1.0" />
                           <path d="M3 18H21" stroke="black" stroke-width="1.0" />
@@ -171,15 +171,15 @@
                             >Home
                         </a>
 
-                    <a href="{% url 'art1' %}" 
+                    <a href="{% url 'art_categories' %}" 
                             class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
-                            hx-get="{% url 'art1' %}"
+                            hx-get="{% url 'art_categories' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/art1"
+                            hx-push-url="/art_categories"
                             >Art
                         </a>
 

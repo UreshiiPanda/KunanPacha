@@ -95,10 +95,10 @@
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false" 
-                            hx-get="{% url 'art1' %}"
+                            hx-get="{% url 'art_categories' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/art1"
+                            hx-push-url="/art_categories"
                             >Art
                         </a>
                         <a
@@ -170,15 +170,15 @@
                             >Home
                         </a>
 
-                    <a href="{% url 'art1' %}" 
+                    <a href="{% url 'art_categories' %}" 
                             class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 mr-4"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false;
                                     smallMenu = !smallMenu" 
-                            hx-get="{% url 'art1' %}"
+                            hx-get="{% url 'art_categories' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/art1"
+                            hx-push-url="/art_categories"
                             >Art
                         </a>
 

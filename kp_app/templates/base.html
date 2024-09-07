@@ -196,6 +196,14 @@
         console.log("edit art alert failure: no first image provided");
         alert("You must provide an image in the first image box");
      }) 
+     document.body.addEventListener("addArtCategoryFailure", function(evt){
+        console.log("add art category alert failure: no image provided");
+        alert("You must provide an image in the image box");
+     }) 
+     document.body.addEventListener("editArtCategoryFailure", function(evt){
+        console.log("edit art category alert failure: no image provided");
+        alert("You must provide an image in the image box");
+     }) 
      document.body.addEventListener("priceFailure", function(evt){
         console.log("art prices alert failure: invalid price numbers");
         alert("The prices were not valid numbers");
