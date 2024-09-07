@@ -78,6 +78,46 @@
                     }
                 }),
 
+
+                <!-- the editArtCategoryModal.currentCategory is being re-used for the addArtModal in the templates to avoid an excess var -->
+                Alpine.store('addArtCategoryModal', {
+                    showModal: false,
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("the ADD ART CATEGORY modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
+                    }
+                }),
+                Alpine.store('editArtCategoryModal', {
+                     showModal: false,
+
+                     currentCategory:{
+                         id: 0,
+                         name: '',
+                         image1: null,
+                    },
+                     previewImageEdit(event, index) {
+                         const file = event.target.files[0];
+                         if (file) {
+                             const reader = new FileReader();
+                             reader.onload = (e) => {
+                                 console.log(this.currentArtwork[`image${index}`]);
+                                 this.currentArtwork[`image${index}`] = e.target.result;
+                                 console.log(this.currentArtwork[`image${index}`]);
+                             };
+                             reader.readAsDataURL(file);
+                          
+                         }
+                     },
+         
+                    toggle() {
+                        this.showModal = ! this.showModal
+                        console.log("the EDIT ART modal has just been toggled to", this.showModal, "\nnote that the modal will silently be set to false if the user navigates")
+                    }
+                }),
+
+
+
                 <!-- the editArtModal.currentArtwork is being re-used for the addArtModal in the templates to avoid an excess var -->
                 Alpine.store('addArtModal', {
                     showModal: false,
@@ -200,9 +240,21 @@
         console.log("add art category alert failure: no image provided");
         alert("You must provide an image in the image box");
      }) 
+     document.body.addEventListener("addArtInvalidCategoryFailure", function(evt){
+        console.log("add art category alert failure: That Category does not exist");
+        alert("The Category you entered does not exist, you must create the category first");
+     }) 
+     document.body.addEventListener("addArtDuplicateCategoryFailure", function(evt){
+        console.log("add/edit art category alert failure: Art/Edit Category form was given duplicate name");
+        alert("The Category you entered already exists");
+     }) 
      document.body.addEventListener("editArtCategoryFailure", function(evt){
         console.log("edit art category alert failure: no image provided");
         alert("You must provide an image in the image box");
+     }) 
+     document.body.addEventListener("deleteArtCategoryFailure", function(evt){
+        console.log("delete art category alert failure: Cannot delete All art category");
+        alert("Cannot delete All art category");
      }) 
      document.body.addEventListener("priceFailure", function(evt){
         console.log("art prices alert failure: invalid price numbers");

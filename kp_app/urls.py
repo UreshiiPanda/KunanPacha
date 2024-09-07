@@ -11,12 +11,23 @@ urlpatterns = [
     # this says: when we're at the "/" (root) URL extension, call this home func
     path("", views.home, name="home"),
     path("contact", views.contact, name="contact"),
-    path("art1", views.art1, name="art1"),
+    path("art1/<int:category_id>/", views.art1, name="art1"),
     path("add_art", views.add_art, name="add_art"),
+    path("add_art_category", views.add_art_category, name="add_art_category"),
     path("art2/<int:artwork_id>/", views.art2, name="art2"),
     path("edit_artwork/<int:artwork_id>", views.edit_artwork, name="edit_artwork"),
     path(
         "delete_artwork/<int:artwork_id>/", views.delete_artwork, name="delete_artwork"
+    ),
+    path(
+        "edit_art_category/<int:art_category_id>",
+        views.edit_art_category,
+        name="edit_art_category",
+    ),
+    path(
+        "delete_art_category/<int:art_category_id>/",
+        views.delete_art_category,
+        name="delete_art_category",
     ),
     path("art-categories", views.art_categories, name="art_categories"),
     path("send_email", views.send_email, name="send_email"),
@@ -27,6 +38,11 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     # path("accounts/", include("django.contrib.auth.urls")),
+    path(
+        "art_categories_page_edit",
+        views.art_categories_page_edit,
+        name="art_categories_page_edit",
+    ),
     path("art1_page_edit", views.art1_page_edit, name="art1_page_edit"),
     path("art2_page_edit", views.art2_page_edit, name="art2_page_edit"),
     path("home_page_1_edit", views.home_page_1_edit, name="home_page_1_edit"),

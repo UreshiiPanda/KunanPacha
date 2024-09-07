@@ -21,6 +21,7 @@
                         $store.editArtModal.currentArtwork = {
                             id: 0,
                             title: '',
+                            art_category: '',
                             original_price: '',
                             print_price: '',
                             description: '',
@@ -33,6 +34,7 @@
                         console.log('~~~~~currentArtwork~~~~~~');
                         console.log($store.editArtModal.currentArtwork.id);
                         console.log($store.editArtModal.currentArtwork.title);
+                        console.log($store.editArtModal.currentArtwork.art_category);
                         console.log($store.editArtModal.currentArtwork.original_price);
                         console.log($store.editArtModal.currentArtwork.print_price);
                         console.log($store.editArtModal.currentArtwork.dimensions);
@@ -78,6 +80,11 @@
               <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
                 <input type="text" id="title" x-bind:value="$store.editArtModal.currentArtwork.title" name="title" required placeholder="eg: unique title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="art_category" class="block text-sm font-medium text-gray-700">Art Category:</label>
+                <input type="text" id="art_category" x-bind:value="$store.editArtModal.currentArtwork.art_category" name="art_category" required placeholder="eg: Paintings (use 'All' for default)" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
@@ -187,6 +194,11 @@
               <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
                 <input type="text" id="titleEdit"  x-bind:value="$store.editArtModal.currentArtwork.title" name="title" x-bind:placeholder="$store.editArtModal.currentArtwork.title" required  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+              </div>
+
+              <div class="mb-4">
+                <label for="art_category" class="block text-sm font-medium text-gray-700">Art Category:</label>
+                <input type="text" id="art_category" x-bind:value="$store.editArtModal.currentArtwork.art_category" name="art_category" required placeholder="$store.editArtModal.currentArtwork.title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
               </div>
 
               <div class="mb-4">
@@ -462,6 +474,7 @@
                                     $store.editArtModal.currentArtwork = {
                                         id: '{{artwork.id|escapejs}}',
                                         title: '{{artwork.title|escapejs}}',
+                                        title: '{{artwork.category|escapejs}}',
                                         original_price: '{{artwork.original_price|escapejs}}',
                                         print_price: '{{artwork.print_price|escapejs}}',
                                         description: '{{artwork.description|escapejs}}',
@@ -474,6 +487,7 @@
                                     console.log('~~~~~currentArtwork~~~~~~');
                                     console.log($store.editArtModal.currentArtwork.id);
                                     console.log($store.editArtModal.currentArtwork.title);
+                                    console.log($store.editArtModal.currentArtwork.art_category);
                                     console.log($store.editArtModal.currentArtwork.original_price);
                                     console.log($store.editArtModal.currentArtwork.print_price);
                                     console.log($store.editArtModal.currentArtwork.dimensions);
