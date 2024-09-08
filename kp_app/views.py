@@ -39,7 +39,6 @@ def art_categories(request):
             font='sans-serif',
             font_color='black',
             font_style='normal',
-            edu_email='jojohoughton22@gmail.com'
         )
 
 
