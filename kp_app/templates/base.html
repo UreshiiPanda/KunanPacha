@@ -101,9 +101,9 @@
                          if (file) {
                              const reader = new FileReader();
                              reader.onload = (e) => {
-                                 console.log(this.currentArtwork[`image${index}`]);
-                                 this.currentArtwork[`image${index}`] = e.target.result;
-                                 console.log(this.currentArtwork[`image${index}`]);
+                                 console.log(this.currentCategory[`image${index}`]);
+                                 this.currentCategory[`image${index}`] = e.target.result;
+                                 console.log(this.currentCategory[`image${index}`]);
                              };
                              reader.readAsDataURL(file);
                           

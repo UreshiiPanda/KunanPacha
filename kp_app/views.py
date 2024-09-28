@@ -101,10 +101,10 @@ def art_categories(request):
 
 
     if request.headers.get('HX-Request') == 'true':
-        print("art1 page came from HTMX")
+        print("art category page came from HTMX")
         return render(request, "art_categories_content.html", {"categories": category_data, "page_settings": page_settings})
     else:
-        print("art1 page did NOT come from HTMX")
+        print("art category page did NOT come from HTMX")
         return render(request, "art_categories.html", {"categories": category_data, "page_settings": page_settings})
 
 
@@ -114,11 +114,11 @@ def add_art_category(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         images = [request.FILES.get(f'image{i}') for i in range(1, 2)]
-
+    
         categories = ArtCategory.objects.all().order_by('name')
 
         # if new category name already exists
-        if request.POST.get('name') in [category.name for category in categories] or request.POST.get('name') in [category.name.lower() for category in categories]:
+        if name in [category.name for category in categories] or name.lower() in [category.name.lower() for category in categories]:
             response = HttpResponse(status=400, content="Add Art Category form was given duplicate name")
             response['HX-Trigger'] = 'addArtDuplicateCategoryFailure'
             return response
@@ -130,7 +130,7 @@ def add_art_category(request):
             response['HX-Trigger'] = 'addArtCategoryFailure'
             return response
 
-        # make sure there is at least 1 image, the rest are optional
+        # make sure there is an image
         if name and images[0]:
             # Generate unique filenames for each image
             filenames = []
@@ -146,7 +146,7 @@ def add_art_category(request):
 
                         # Local storage
                         path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
-                        print(f"local path add_art is adding to: {path}")
+                        print(f"local path add_art_category is adding to: {path}")
                         with open(path, 'wb+') as destination:
                             for chunk in image.chunks():
                                 destination.write(chunk)
@@ -161,7 +161,7 @@ def add_art_category(request):
             # the create() func also performs .save() so we don't need to do artwork.save() after this
             art_category = ArtCategory.objects.create(
                 name=name,
-                image1_filename=filenames[0],
+                image1_filename=filename,
             )
 
             return HttpResponseRedirect(reverse('art_categories'))
@@ -1237,9 +1237,11 @@ def add_art(request):
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
         # check for valid category
-        if category == "all": category = "All"
+        # if category == "all": category = "All"
         categories = ArtCategory.objects.all()
-        if category not in [category.name for category in categories]:
+        print(f"CURR CATEGORIES: {[category.name.lower() for category in categories]}")
+        print(f"ADD ART CURR CATEGORIES: {category.lower()}")
+        if category.lower() not in [category.name.lower() for category in categories]:
             response = HttpResponse(status=400, content="That Category does not exist")
             response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
             return response
@@ -1290,10 +1292,11 @@ def add_art(request):
             # Create Artwork object
             # the create() func also performs .save() so we don't need to do artwork.save() after this
             # and make sure to get the category id for the DB instead of the name
-            category_id = ArtCategory.objects.get(name=category)
+            category_obj = ArtCategory.objects.get(name=category)
+            category_id = category_obj.id
             artwork = Artwork.objects.create(
                 title=title,
-                category=category_id,
+                category=category_obj,
                 original_price=original_price,
                 print_price=print_price,
                 description=description,
@@ -1304,7 +1307,7 @@ def add_art(request):
                 image4_filename=filenames[3] if len(filenames) > 3 else None
             )
 
-            return HttpResponseRedirect(reverse('art1'))
+            return HttpResponseRedirect(reverse('art1', args=[category_id]))
         else:
             print('from Add Art modal, All required fields must be filled and at least one image uploaded')
             return HttpResponse('from Add Art modal, All required fields must be filled and at least one image uploaded', status=400)
@@ -1341,16 +1344,17 @@ def edit_artwork(request, artwork_id):
     # Update the basic fields
     # or leave them the same if the user didn't supply a new value
     artwork.title = request.POST.get('title', artwork.title)
-    artwork.category = request.POST.get('art_category', artwork.category)
+    new_category_name = request.POST.get('art_category', artwork.category.name)
+    new_category = ArtCategory.objects.get(name=new_category_name)
+    artwork.category = new_category
     artwork.original_price = request.POST.get('original_price', artwork.original_price)
     artwork.print_price = request.POST.get('print_price', artwork.print_price)
     artwork.description = request.POST.get('description', artwork.description)
     artwork.dimensions = request.POST.get('dimensions', artwork.dimensions)
 
     # check for valid category
-    if artwork.category == "all": category = "All"
     categories = ArtCategory.objects.all()
-    if artwork.category not in [category.name for category in categories]:
+    if new_category_name.lower() not in [category.name.lower() for category in categories]:
         response = HttpResponse(status=400, content="That Category does not exist")
         # re-use the addArt trigger cuz it's the same
         response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
@@ -1425,7 +1429,8 @@ def edit_artwork(request, artwork_id):
             setattr(artwork, f'image{i}_filename', None)
         
     artwork.save()
-    return HttpResponseRedirect(reverse('art1'))
+    return HttpResponseRedirect(reverse('art1', args=[artwork.category.id]))
+
 
 
 
@@ -1459,9 +1464,11 @@ def delete_artwork(request, artwork_id):
                     os.remove(image_path)
                     print(f"Deleted {image_filename} from local storage")
 
+    
+    category_id = artwork.category.id
     # Delete the artwork from the Postgres database
     artwork.delete()
-    return HttpResponseRedirect(reverse('art1'))
+    return HttpResponseRedirect(reverse('art1', args=[category_id]))
 
 
 
@@ -1535,7 +1542,8 @@ def art2(request, artwork_id):
 
     context = {
         "image_obj": image_obj,
-        "page_settings": page_settings
+        "page_settings": page_settings,
+        "art_category_id": artwork.category.id
     }
 
     if request.headers.get('HX-Request') == 'true':
@@ -1840,7 +1848,7 @@ def art_categories_page_edit(request):
         try:
             settings.save()
             print("Art Category Page Settings successfully changed in the DB")
-            return HttpResponseRedirect(reverse('art-categories'))
+            return HttpResponseRedirect(reverse('art_categories'))
         except Exception as e:
             print(f"Error saving settings: {e}")
             response = HttpResponse(status=400, content="Art Category Page Settings update failed")
@@ -1869,7 +1877,7 @@ def art1_page_edit(request):
         try:
             settings.save()
             print("Art1 Page Settings successfully changed in the DB")
-            return HttpResponseRedirect(reverse('art1'))
+            return HttpResponseRedirect(reverse('art_categories'))
         except Exception as e:
             print(f"Error saving settings: {e}")
             response = HttpResponse(status=400, content="Art1 Page Settings update failed")
