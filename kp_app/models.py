@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 
 
@@ -12,8 +11,33 @@ class Art1PageSettings(models.Model):
     font_style = models.CharField(max_length=100)
 
 
+class ArtCategoryPageSettings(models.Model):
+    font = models.CharField(max_length=100)
+    # this will come in as a tailwind color class (eg: red-500)
+    font_color = models.CharField(max_length=100)
+    font_style = models.CharField(max_length=100)
+
+
+class ArtCategory(models.Model):
+    name = models.CharField(max_length=100)
+    image1_filename = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+def get_default_category():
+    return ArtCategory.objects.get_or_create(name="All")[0].id
+
+
 class Artwork(models.Model):
     title = models.CharField(max_length=200)
+    category = models.ForeignKey(
+        ArtCategory,
+        on_delete=models.SET_DEFAULT,
+        default=get_default_category,
+        related_name="artworks",
+    )
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     print_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
@@ -58,17 +82,15 @@ class HomePage1Settings(models.Model):
     font_color = models.CharField(max_length=100)
     font_style = models.CharField(max_length=100)
 
-    # background_image from bucket
-
 
 class HomePage2Settings(models.Model):
+    homepage2_title = models.CharField(max_length=100, null=True, blank=True)
     homepage2_text = models.TextField()
+    homepage2_text_bottom = models.TextField(null=True, blank=True)
     font = models.CharField(max_length=100)
-   # this will come in as a tailwind color class (eg: red-500)
+    # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
     font_style = models.CharField(max_length=100)
-
-    # homepage_2_image_1 from bucket
 
 
 class HomePage3Settings(models.Model):
@@ -78,17 +100,17 @@ class HomePage3Settings(models.Model):
     font_color = models.CharField(max_length=100)
     font_style = models.CharField(max_length=100)
 
-    # homepage_3_image_1 from bucket
-
 
 class HomePage4Settings(models.Model):
-    homepage4_text = models.TextField()
+    homepage4_title = models.CharField(max_length=100, null=True, blank=True)
+    homepage4_text = models.TextField()  # this is center text
+    homepage4_text_left = models.TextField(null=True, blank=True)
+    homepage4_text_right = models.TextField(null=True, blank=True)
     font = models.CharField(max_length=100)
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
     font_style = models.CharField(max_length=100)
 
-    # homepage_4_image_1 from bucket
 
 class MenuSettings(models.Model):
     font = models.CharField(max_length=100)

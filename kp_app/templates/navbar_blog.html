@@ -95,10 +95,10 @@
                             :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'"
                             @click="$store.editPageModal.showModal = false; 
                                     $store.editMenuModal.showModal = false" 
-                            hx-get="{% url 'art1' %}"
+                            hx-get="{% url 'art_categories' %}"
                             hx-swap="innerHTML" 
                             hx-target="#content"
-                            hx-push-url="/art1"
+                            hx-push-url="/art-categories"
                             >Art
                         </a>
                         <a

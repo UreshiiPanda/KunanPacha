@@ -1,25 +1,318 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from django.core.mail import send_mail, BadHeaderError
-from django.core.files.storage import default_storage
-from google.cloud import storage
-from django.utils import timezone
+import json
+import os
+from decimal import Decimal, InvalidOperation
+
 from django.conf import settings
-from django.urls import reverse
-from .models import UserCredential, Art1PageSettings, Art2PageSettings, HomePage1Settings, HomePage2Settings, HomePage3Settings, HomePage4Settings, ContactPageSettings, MenuSettings, Artwork, BlogPageSettings, BlogPost
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import check_password, make_password
+from django.core.files.storage import default_storage
+from django.core.mail import BadHeaderError, send_mail
+from django.core.paginator import EmptyPage, Paginator
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
-from django.core.paginator import Paginator, EmptyPage
-import json
-from decimal import Decimal, InvalidOperation
-from .forms import BlogPostForm, RegistrationForm, LoginForm
-import os
 from dotenv import load_dotenv
+from google.cloud import storage
+
+from .forms import BlogPostForm, LoginForm, RegistrationForm
+from .models import (Art1PageSettings, Art2PageSettings, ArtCategory,
+                     ArtCategoryPageSettings, Artwork, BlogPageSettings,
+                     BlogPost, ContactPageSettings, HomePage1Settings,
+                     HomePage2Settings, HomePage3Settings, HomePage4Settings,
+                     MenuSettings, UserCredential)
 
 load_dotenv()
+
+
+
+def art_categories(request):                                                                                              
+    # Get all categories and order them by name
+    categories = ArtCategory.objects.all().order_by('name')
+
+    art_category_page_settings = ArtCategoryPageSettings.objects.first()
+    if not art_category_page_settings:
+        art_category_page_settings = ArtCategoryPageSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+
+
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='sans-serif',
+            font_color='black',
+            font_style='normal',
+        )
+ 
+
+    # Prepare category data
+    category_data = []
+    for category in categories:
+        if os.getenv("KP_PROD") == "false":
+            # Local environment
+            image_base_url = os.path.join(settings.STATIC_URL, 'kp_app/images/')
+            image_urls = [
+                os.path.join(image_base_url, category.image1_filename),
+            ]
+        else:
+            # Production environment (GCP)
+            image_base_url = f"{settings.STATIC_URL}kp_app/images/"
+            image_urls = [
+                f'{image_base_url}{category.image1_filename}',
+            ]
+
+        category_data.append({
+            'id': category.id,
+            'name': category.name,
+            'image1': image_urls[0],
+        })
+
+
+    if os.getenv("KP_PROD") == "true":
+        # Production environment (GCP)
+        page_settings = {
+            "font": art_category_page_settings.font,
+            "font_color": art_category_page_settings.font_color,
+            "font_style": art_category_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+
+        }
+    else:
+        # Local development environment
+        page_settings = {
+            "font": art_category_page_settings.font,
+            "font_color": art_category_page_settings.font_color,
+            "font_style": art_category_page_settings.font_style,
+
+            "menu_font": menu_settings.font,
+            "menu_font_color": menu_settings.font_color,
+            "menu_font_style": menu_settings.font_style,
+        }
+
+
+
+    if request.headers.get('HX-Request') == 'true':
+        print("art category page came from HTMX")
+        return render(request, "art_categories_content.html", {"categories": category_data, "page_settings": page_settings})
+    else:
+        print("art category page did NOT come from HTMX")
+        return render(request, "art_categories.html", {"categories": category_data, "page_settings": page_settings})
+
+
+
+
+def add_art_category(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        images = [request.FILES.get(f'image{i}') for i in range(1, 2)]
+    
+        categories = ArtCategory.objects.all().order_by('name')
+
+        # if new category name already exists
+        if name in [category.name for category in categories] or name.lower() in [category.name.lower() for category in categories]:
+            response = HttpResponse(status=400, content="Add Art Category form was given duplicate name")
+            response['HX-Trigger'] = 'addArtDuplicateCategoryFailure'
+            return response
+
+
+        if not request.FILES.get('image1'):
+            # if the user didn't input the first image (required)
+            response = HttpResponse(status=400, content="Add Art Category form is missing image")
+            response['HX-Trigger'] = 'addArtCategoryFailure'
+            return response
+
+        # make sure there is an image
+        if name and images[0]:
+            # Generate unique filenames for each image
+            filenames = []
+            # this still iterates from 0, but it makes the image naming convention start at 1
+            for i, image in enumerate(images, start=1):
+                if image:
+                    ext = os.path.splitext(image.name)[1]
+                    filename = f"{name.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+                    filenames.append(filename)
+
+                    # Save image
+                    if os.getenv("KP_PROD") == "false":
+
+                        # Local storage
+                        path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                        print(f"local path add_art_category is adding to: {path}")
+                        with open(path, 'wb+') as destination:
+                            for chunk in image.chunks():
+                                destination.write(chunk)
+                    else:
+                        # GCP Cloud Storage
+                        client = storage.Client()
+                        bucket = client.bucket(settings.GS_BUCKET_NAME)
+                        blob = bucket.blob(f'kp_app/images/{filename}')
+                        blob.upload_from_file(image)
+
+            # Create Art_Category object
+            # the create() func also performs .save() so we don't need to do artwork.save() after this
+            art_category = ArtCategory.objects.create(
+                name=name,
+                image1_filename=filename,
+            )
+
+            return HttpResponseRedirect(reverse('art_categories'))
+        else:
+            print('from Add Art Category modal, All required fields must be filled and at least one image uploaded')
+            return HttpResponse('from Add Art Category modal, All required fields must be filled and at least one image uploaded', status=400)
+
+    return HttpResponse('from Add Art Category modal, add art category call was not a POST', status=400)
+
+
+
+
+#@require_http_methods(["PUT"])
+# the PUT was not detecting the FILES for some reason, but the POST works
+def edit_art_category(request, art_category_id):
+    art_category = get_object_or_404(ArtCategory, id=art_category_id)
+    categories = ArtCategory.objects.all().order_by('name')
+
+
+    if request.FILES.get('image1'):
+        print(f'this is image1: {request.FILES.get("image1")}')
+
+    if not request.FILES.get('image1'):
+        # if the user didn't input the first image (required)
+        response = HttpResponse(status=400, content="Edit Art Category form is missing image")
+        response['HX-Trigger'] = 'editArtCategoryFailure'
+        return response
+
+
+    if art_category.name.lower() == "all" and request.POST.get('name').lower() != "all":
+        response = HttpResponse(status=400, content="Edit Art Category form tried to change All name")
+        response['HX-Trigger'] = 'deleteArtCategoryFailure'
+        return response
+
+
+    # if new category name already exists
+    if request.POST.get('name').lower() != "all" and (request.POST.get('name') in [category.name for category in categories] or request.POST.get('name').lower() in [category.name.lower() for category in categories]):
+        response = HttpResponse(status=400, content="Edit Art Category form was given duplicate name")
+        response['HX-Trigger'] = 'addArtDuplicateCategoryFailure'
+        return response
+
+
+
+
+
+    # Update the fields
+    # or leave them the same if the user didn't supply a new value
+    art_category.name = request.POST.get('name', art_category.name)
+
+
+    # Handle image updates
+    for i in range(1, 2):
+        image_field = f'image{i}'
+        if image_field in request.FILES:
+            image = request.FILES[image_field]
+            ext = os.path.splitext(image.name)[1]
+            filename = f"{art_category.name.replace(' ', '_')}_{i}_{timezone.now().timestamp()}{ext}"
+            print(f"filename of image {i} being updated: {filename} for artwork {art_category.name}")
+            
+            # Save the new image
+            if os.getenv("KP_PROD") == "false":
+                # Local storage
+                path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', filename)
+                with open(path, 'wb+') as destination:
+                    for chunk in image.chunks():
+                        destination.write(chunk)
+            else:
+                # GCP Cloud Storage
+                client = storage.Client()
+                bucket = client.bucket(settings.GS_BUCKET_NAME)
+                blob = bucket.blob(f'kp_app/images/{filename}')
+                blob.upload_from_file(image)
+
+            # Delete the old image if it exists
+            old_filename = getattr(art_category, f'image{i}_filename')
+            if old_filename:
+                if os.getenv("KP_PROD") == "false":
+                    # Local Storage
+                    old_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', old_filename)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                else:
+                    # GCP Cloud Storage
+                    bucket = client.bucket(settings.GS_BUCKET_NAME)
+                    blob = bucket.blob(f'kp_app/images/{old_filename}')
+                    if blob.exists():
+                        blob.delete()
+
+            # Update the filename in the model
+            setattr(art_category, f'image{i}_filename', filename)
+        else:
+            # if the image is not in the request.FILES, then it needs to be deleted from the DB since
+            # we are now refreshing the Edit Art form every time it is opened
+            # Delete the old image if it exists
+            setattr(art_category, f'image{i}_filename', None)
+            
+
+
+    # check if the user deleted any of the files via the removed input field that was
+    # made to cirumvent Alpine issues
+    # NOTE that image1 is not allowed to be removed by the user in the UI because an Artwork must
+    # have at least 1 image
+    # also check that the user didn't re-add a new image after clicking the trash bin icon for deletion
+    for i in range(1, 2):
+        if request.POST.get(f'removed{i}') == "true" and f'image{i}' not in request.FILES:
+            print(f'removing image {i} from artwork {art_category.name}')
+            setattr(art_category, f'image{i}_filename', None)
+        
+    art_category.save()
+    return HttpResponseRedirect(reverse('art_categories'))
+
+
+
+@require_http_methods(["DELETE"])
+def delete_art_category(request, art_category_id):
+    art_category = get_object_or_404(ArtCategory, id=art_category_id)
+
+    if art_category.name == "All":
+        response = HttpResponse(status=400, content="Cannot delete All art category")
+        response['HX-Trigger'] = 'deleteArtCategoryFailure'
+        return response
+    
+    # Delete images from GCP bucket if in production
+    if os.getenv("KP_PROD") == "true":
+        client = storage.Client()
+        bucket = client.bucket(settings.GS_BUCKET_NAME)
+        
+        image_fields = [art_category.image1_filename]
+        
+        for image_filename in image_fields:
+            if image_filename:
+                blob = bucket.blob(f'kp_app/images/{image_filename}')
+                if blob.exists():
+                    blob.delete()
+                    print(f"Deleted {image_filename} from GCP bucket")
+    else:
+        # Delete images from local storage if in development
+        image_fields = [art_category.image1_filename]
+ 
+        for image_filename in image_fields:
+            if image_filename:
+                image_path = os.path.join(settings.BASE_DIR, 'kp_app', 'static', 'kp_app', 'images', image_filename)
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"Deleted {image_filename} from local storage")
+
+    # Delete the artwork from the Postgres database
+    art_category.delete()
+    return HttpResponseRedirect(reverse('art_categories'))
+
+
 
 
 
@@ -832,8 +1125,14 @@ def delete_blog(request, blog_id):
 
 
 
-def art1(request):
-    # Fetch the page settings from the DB
+def art1(request, category_id):
+    # get artworks based on category
+    if category_id:                                                                                                       
+        artworks = Artwork.objects.filter(category_id=category_id).order_by('-created_at') 
+    else:                                                                                                                 
+        artworks = Artwork.objects.all().order_by('-created_at')
+
+
     art_page_settings = Art1PageSettings.objects.first()
     if not art_page_settings:
         art_page_settings = Art1PageSettings.objects.create(
@@ -852,8 +1151,6 @@ def art1(request):
             font_style='normal',
         )
 
-    # Fetch artworks from the database
-    artworks = Artwork.objects.all().order_by('-created_at')
      
 
     # Prepare artwork data
@@ -881,6 +1178,7 @@ def art1(request):
         artwork_data.append({
             'id': artwork.id,
             'title': artwork.title,
+            'art_category': artwork.category,
             'original_price': artwork.original_price,
             'print_price': artwork.print_price,
             'description': artwork.description,
@@ -933,12 +1231,21 @@ def art1(request):
 def add_art(request):
     if request.method == 'POST':
         title = request.POST.get('title')
+        category = request.POST.get('art_category')
         original_price = request.POST.get('original_price')
         print_price = request.POST.get('print_price')
         description = request.POST.get('description')
         dimensions = request.POST.get('dimensions')
         images = [request.FILES.get(f'image{i}') for i in range(1, 5)]
 
+        # check for valid category
+        # if category == "all": category = "All"
+        categories = ArtCategory.objects.all()
+        if category.lower() not in [category.name.lower() for category in categories]:
+            response = HttpResponse(status=400, content="That Category does not exist")
+            response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
+            return response
+ 
 
         try:
             Decimal(original_price)
@@ -956,7 +1263,7 @@ def add_art(request):
             return response
 
         # make sure there is at least 1 image, the rest are optional
-        if title and original_price and print_price and description and dimensions and images[0]:
+        if title and category and original_price and print_price and description and dimensions and images[0]:
             # Generate unique filenames for each image
             filenames = []
             # this still iterates from 0, but it makes the image naming convention start at 1
@@ -984,8 +1291,12 @@ def add_art(request):
 
             # Create Artwork object
             # the create() func also performs .save() so we don't need to do artwork.save() after this
+            # and make sure to get the category id for the DB instead of the name
+            category_obj = ArtCategory.objects.get(name=category)
+            category_id = category_obj.id
             artwork = Artwork.objects.create(
                 title=title,
+                category=category_obj,
                 original_price=original_price,
                 print_price=print_price,
                 description=description,
@@ -996,7 +1307,7 @@ def add_art(request):
                 image4_filename=filenames[3] if len(filenames) > 3 else None
             )
 
-            return HttpResponseRedirect(reverse('art1'))
+            return HttpResponseRedirect(reverse('art1', args=[category_id]))
         else:
             print('from Add Art modal, All required fields must be filled and at least one image uploaded')
             return HttpResponse('from Add Art modal, All required fields must be filled and at least one image uploaded', status=400)
@@ -1033,11 +1344,22 @@ def edit_artwork(request, artwork_id):
     # Update the basic fields
     # or leave them the same if the user didn't supply a new value
     artwork.title = request.POST.get('title', artwork.title)
+    new_category_name = request.POST.get('art_category', artwork.category.name)
     artwork.original_price = request.POST.get('original_price', artwork.original_price)
     artwork.print_price = request.POST.get('print_price', artwork.print_price)
     artwork.description = request.POST.get('description', artwork.description)
     artwork.dimensions = request.POST.get('dimensions', artwork.dimensions)
 
+    # check for valid category
+    categories = ArtCategory.objects.all()
+    if new_category_name.lower() not in [category.name.lower() for category in categories]:
+        response = HttpResponse(status=400, content="That Category does not exist")
+        # re-use the addArt trigger cuz it's the same
+        response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
+        return response
+
+    new_category = ArtCategory.objects.get(name=new_category_name)
+    artwork.category = new_category
 
     try:
         Decimal(artwork.original_price)
@@ -1107,7 +1429,8 @@ def edit_artwork(request, artwork_id):
             setattr(artwork, f'image{i}_filename', None)
         
     artwork.save()
-    return HttpResponseRedirect(reverse('art1'))
+    return HttpResponseRedirect(reverse('art1', args=[artwork.category.id]))
+
 
 
 
@@ -1141,9 +1464,11 @@ def delete_artwork(request, artwork_id):
                     os.remove(image_path)
                     print(f"Deleted {image_filename} from local storage")
 
+    
+    category_id = artwork.category.id
     # Delete the artwork from the Postgres database
     artwork.delete()
-    return HttpResponseRedirect(reverse('art1'))
+    return HttpResponseRedirect(reverse('art1', args=[category_id]))
 
 
 
@@ -1217,7 +1542,8 @@ def art2(request, artwork_id):
 
     context = {
         "image_obj": image_obj,
-        "page_settings": page_settings
+        "page_settings": page_settings,
+        "art_category_id": artwork.category.id
     }
 
     if request.headers.get('HX-Request') == 'true':
@@ -1332,7 +1658,7 @@ def contact_edit(request):
     # If no settings exist, create a new one with default values
     if not blog_page:
         blog_page = BlogPageSettings.objects.create(
-            blog_title="blgo title here",
+            blog_title="blog title here",
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
@@ -1503,6 +1829,33 @@ def contact_edit_home(request):
         return response
 
 
+def art_categories_page_edit(request):
+    if request.method == 'POST':
+        settings = ArtCategoryPageSettings.objects.first()
+        if not settings:
+            settings = ArtCategoryPageSettings.objects.create(
+                font='sans-serif',
+                font_color='black',
+                font_style='normal',
+                edu_email='default@email.com'
+            )
+
+        settings.font = request.POST.get('font', settings.font).lower()
+        settings.font_color = request.POST.get('font_color', settings.font_color).lower()
+        settings.font_style = request.POST.get('font_style', settings.font_style).lower()
+        settings.edu_email = request.POST.get('email', settings.edu_email)
+
+        try:
+            settings.save()
+            print("Art Category Page Settings successfully changed in the DB")
+            return HttpResponseRedirect(reverse('art_categories'))
+        except Exception as e:
+            print(f"Error saving settings: {e}")
+            response = HttpResponse(status=400, content="Art Category Page Settings update failed")
+            return response
+    
+    return HttpResponse(status=405, content="the Art Category Page Edit view was not a POST")
+
 
 
 def art1_page_edit(request):
@@ -1524,7 +1877,7 @@ def art1_page_edit(request):
         try:
             settings.save()
             print("Art1 Page Settings successfully changed in the DB")
-            return HttpResponseRedirect(reverse('art1'))
+            return HttpResponseRedirect(reverse('art_categories'))
         except Exception as e:
             print(f"Error saving settings: {e}")
             response = HttpResponse(status=400, content="Art1 Page Settings update failed")

@@ -90,7 +90,7 @@
             </div>
             <div class="flex flex-col items-center space-y-4">
                 <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 hover:cursor-pointer mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'home' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/">Home</a>
-                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 hover:cursor-pointer mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'art1' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/art1">Art</a>
+                <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 hover:cursor-pointer mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'art_categories' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/art-categories">Art</a>
                 <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 hover:cursor-pointer mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'blog' 1 %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/blog/1">Blog</a>
                 <a class="block mt-4 inline-block mt-0 text-white hover:text-gray-500 hover:cursor-pointer mr-4" @click="$store.editPageModal.showModal = false; $store.editMenuModal.showModal = false; smallMenu = false" hx-get="{% url 'contact' %}" hx-swap="innerHTML" hx-target="#content" hx-push-url="/contact">Contact</a>
                 {% if user.is_authenticated %}
