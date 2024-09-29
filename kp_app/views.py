@@ -190,19 +190,21 @@ def edit_art_category(request, art_category_id):
         response['HX-Trigger'] = 'editArtCategoryFailure'
         return response
 
+
+    if art_category.name.lower() == "all" and request.POST.get('name').lower() != "all":
+        response = HttpResponse(status=400, content="Edit Art Category form tried to change All name")
+        response['HX-Trigger'] = 'deleteArtCategoryFailure'
+        return response
+
+
     # if new category name already exists
-    if art_category.name != request.POST.get('name') and (
-            request.POST.get('name') in [category.name for category in categories] or
-            request.POST.get('name') in [category.name.lower() for category in categories]):
+    if request.POST.get('name').lower() != "all" and (request.POST.get('name') in [category.name for category in categories] or request.POST.get('name').lower() in [category.name.lower() for category in categories]):
         response = HttpResponse(status=400, content="Edit Art Category form was given duplicate name")
         response['HX-Trigger'] = 'addArtDuplicateCategoryFailure'
         return response
 
 
-    if art_category.name != "All" and (request.POST.get('name') == 'all' or request.POST.get('name') == 'All'):
-        response = HttpResponse(status=400, content="Edit Art Category form was given All name")
-        response['HX-Trigger'] = 'addArtDuplicateCategoryFailure'
-        return response
+
 
 
     # Update the fields
@@ -1239,8 +1241,6 @@ def add_art(request):
         # check for valid category
         # if category == "all": category = "All"
         categories = ArtCategory.objects.all()
-        print(f"CURR CATEGORIES: {[category.name.lower() for category in categories]}")
-        print(f"ADD ART CURR CATEGORIES: {category.lower()}")
         if category.lower() not in [category.name.lower() for category in categories]:
             response = HttpResponse(status=400, content="That Category does not exist")
             response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
@@ -1345,8 +1345,6 @@ def edit_artwork(request, artwork_id):
     # or leave them the same if the user didn't supply a new value
     artwork.title = request.POST.get('title', artwork.title)
     new_category_name = request.POST.get('art_category', artwork.category.name)
-    new_category = ArtCategory.objects.get(name=new_category_name)
-    artwork.category = new_category
     artwork.original_price = request.POST.get('original_price', artwork.original_price)
     artwork.print_price = request.POST.get('print_price', artwork.print_price)
     artwork.description = request.POST.get('description', artwork.description)
@@ -1360,6 +1358,8 @@ def edit_artwork(request, artwork_id):
         response['HX-Trigger'] = 'addArtInvalidCategoryFailure'
         return response
 
+    new_category = ArtCategory.objects.get(name=new_category_name)
+    artwork.category = new_category
 
     try:
         Decimal(artwork.original_price)

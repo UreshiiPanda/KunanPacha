@@ -19,7 +19,7 @@ class ArtCategoryPageSettings(models.Model):
 
 
 class ArtCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     image1_filename = models.CharField(max_length=255)
 
     def __str__(self):
@@ -84,7 +84,9 @@ class HomePage1Settings(models.Model):
 
 
 class HomePage2Settings(models.Model):
+    homepage2_title = models.CharField(max_length=100, null=True, blank=True)
     homepage2_text = models.TextField()
+    homepage2_text_bottom = models.TextField(null=True, blank=True)
     font = models.CharField(max_length=100)
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
@@ -100,7 +102,10 @@ class HomePage3Settings(models.Model):
 
 
 class HomePage4Settings(models.Model):
-    homepage4_text = models.TextField()
+    homepage4_title = models.CharField(max_length=100, null=True, blank=True)
+    homepage4_text = models.TextField()  # this is center text
+    homepage4_text_left = models.TextField(null=True, blank=True)
+    homepage4_text_right = models.TextField(null=True, blank=True)
     font = models.CharField(max_length=100)
     # this will come in as a tailwind color class (eg: red-500)
     font_color = models.CharField(max_length=100)
