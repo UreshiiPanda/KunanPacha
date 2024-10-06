@@ -91,7 +91,7 @@ else:
     DEBUG = False
 
     # Allow CSRF to work in Prod
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "kp-run-pdjzxrqjaq-uc.a.run.app"]
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "kp-run-pdjzxrqjaq-uc.a.run.app", "eparasarte.com"]
     CSRF_TRUSTED_ORIGINS = [
         "http://localhost:8000",
         "https://kp-run-pdjzxrqjaq-uc.a.run.app",
