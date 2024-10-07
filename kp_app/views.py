@@ -36,7 +36,7 @@ def art_categories(request):
     art_category_page_settings = ArtCategoryPageSettings.objects.first()
     if not art_category_page_settings:
         art_category_page_settings = ArtCategoryPageSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -45,7 +45,7 @@ def art_categories(request):
     menu_settings = MenuSettings.objects.first()
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -327,34 +327,34 @@ def home(request):
     if not home_page_1_settings:
         home_page_1_settings = HomePage1Settings.objects.create(
             title='Title Here',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
     if not home_page_2_settings:
         home_page_2_settings = HomePage2Settings.objects.create(
             homepage2_text='Text for home page 2 here',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
     if not home_page_3_settings:
         home_page_3_settings = HomePage3Settings.objects.create(
             homepage3_text='Text for home page 3 here',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
     if not home_page_4_settings:
         home_page_4_settings = HomePage4Settings.objects.create(
             homepage4_text='Text for home page 4 here',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -365,7 +365,7 @@ def home(request):
             edu_email="edu@gmail.com",
             edu_facebook="www.facebook.com",
             edu_instagram="www.instagram.com",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -473,13 +473,13 @@ def contact(request):
             edu_email="edu@gmail.com",
             edu_facebook="www.facebook.com",
             edu_instagram="www.instagram.com",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -540,13 +540,13 @@ def blog(request, page="1"):
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -739,7 +739,7 @@ def blog2(request, post_id):
                 blog_text="blog text here",
                 edu_facebook="facebook here",
                 edu_instagram="instagram here",
-                font="sans-serif",
+                font="barlow",
                 font_color="black",
                 font_style="normal",
             )
@@ -747,7 +747,7 @@ def blog2(request, post_id):
         menu_settings = MenuSettings.objects.first()
         if not menu_settings:
             menu_settings = MenuSettings.objects.create(
-                font='sans-serif',
+                font='barlow',
                 font_color='black',
                 font_style='normal',
             )
@@ -806,7 +806,7 @@ def blog_page_edit(request):
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -823,7 +823,7 @@ def blog_page_edit(request):
             edu_email="email here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -1136,17 +1136,17 @@ def art1(request, category_id):
     art_page_settings = Art1PageSettings.objects.first()
     if not art_page_settings:
         art_page_settings = Art1PageSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
-            edu_email='jojohoughton22@gmail.com'
+            edu_email='edu@gmail.com'
         )
 
 
     menu_settings = MenuSettings.objects.first()
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -1191,6 +1191,8 @@ def art1(request, category_id):
             'updated_at': artwork.updated_at,
         })
 
+    # check if the request is from the art2 page, in order to handle navbar loading appropriately
+    from_art2 = 'X-From-Art2' in request.headers and request.headers['X-From-Art2'] == 'true'
 
     if os.getenv("KP_PROD") == "true":
         # Production environment (GCP)
@@ -1198,6 +1200,7 @@ def art1(request, category_id):
             "font": art_page_settings.font,
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
+            "edu_email": art_page_settings.edu_email,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -1210,6 +1213,7 @@ def art1(request, category_id):
             "font": art_page_settings.font,
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
+            "edu_email": art_page_settings.edu_email,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -1220,10 +1224,10 @@ def art1(request, category_id):
 
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
-        return render(request, "art1_content.html", {"artworks": artwork_data, "page_settings": page_settings})
+        return render(request, "art1_content.html", {"artworks": artwork_data, "page_settings": page_settings, "from_art2": from_art2})
     else:
         print("art1 page did NOT come from HTMX")
-        return render(request, "art1.html", {"artworks": artwork_data, "page_settings": page_settings})
+        return render(request, "art1.html", {"artworks": artwork_data, "page_settings": page_settings, "from_art2": from_art2})
 
 
 
@@ -1480,16 +1484,16 @@ def art2(request, artwork_id):
     art_page_settings = Art2PageSettings.objects.first()
     if not art_page_settings:
         art_page_settings = Art2PageSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
-            edu_email='meow@email.com'
+            edu_email='edu@gmail.com'
         )
 
     menu_settings = MenuSettings.objects.first()
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal',
         )
@@ -1521,6 +1525,7 @@ def art2(request, artwork_id):
             "font": art_page_settings.font,
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
+            "edu_email": art_page_settings.edu_email,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -1533,6 +1538,7 @@ def art2(request, artwork_id):
             "font": art_page_settings.font,
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
+            "edu_email": art_page_settings.edu_email,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -1560,11 +1566,11 @@ def send_email(request):
         message = request.POST.get("message", "")
         user_email = request.POST.get("email", "")
         from_email = settings.EMAIL_HOST_USER
-        email_subject = 'New Message from KP website'
+        email_subject = 'Eparasarte New Message'
         email_body = f'\nName: {name}\n\nEmail: {user_email}\n\nMessage: {message}'
         if name and message and from_email:
             try:
-                send_mail(email_subject, email_body, from_email, ["jojohoughton22@gmail.com"], fail_silently=False)
+                send_mail(email_subject, email_body, from_email, ["paras.eduardo@gmail.com"], fail_silently=False)
                 print("Email successfully sent")
             except BadHeaderError:
                 response = HttpResponse(status=500, content="Invalid header found when sending email")
@@ -1645,7 +1651,7 @@ def contact_edit(request):
             edu_email="email here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -1662,7 +1668,7 @@ def contact_edit(request):
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -1744,7 +1750,7 @@ def contact_edit_home(request):
             edu_email="email here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -1760,7 +1766,7 @@ def contact_edit_home(request):
             blog_text="blog text here",
             edu_facebook="facebook here",
             edu_instagram="instagram here",
-            font="sans-serif",
+            font="barlow",
             font_color="black",
             font_style="normal",
         )
@@ -1834,16 +1840,14 @@ def art_categories_page_edit(request):
         settings = ArtCategoryPageSettings.objects.first()
         if not settings:
             settings = ArtCategoryPageSettings.objects.create(
-                font='sans-serif',
+                font='barlow',
                 font_color='black',
                 font_style='normal',
-                edu_email='default@email.com'
             )
 
         settings.font = request.POST.get('font', settings.font).lower()
         settings.font_color = request.POST.get('font_color', settings.font_color).lower()
         settings.font_style = request.POST.get('font_style', settings.font_style).lower()
-        settings.edu_email = request.POST.get('email', settings.edu_email)
 
         try:
             settings.save()
@@ -1863,7 +1867,7 @@ def art1_page_edit(request):
         settings = Art1PageSettings.objects.first()
         if not settings:
             settings = Art1PageSettings.objects.create(
-                font='sans-serif',
+                font='barlow',
                 font_color='black',
                 font_style='normal',
                 edu_email='default@email.com'
@@ -1891,7 +1895,7 @@ def art2_page_edit(request):
         settings = Art2PageSettings.objects.first()
         if not settings:
             settings = Art2PageSettings.objects.create(
-                font='sans-serif',
+                font='barlow',
                 font_color='black',
                 font_style='normal',
                 edu_email='default@email.com'
@@ -1919,7 +1923,7 @@ def home_page_menu_edit(request):
     menu = MenuSettings.objects.first()
     if not menu:
         menu = MenuSettings.objects.create(
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal'
         )
@@ -1968,7 +1972,7 @@ def home_page_1_edit(request):
     if not home_page:
         home_page = HomePage1Settings.objects.create(
             title='Default Title',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal'
         )
@@ -2014,7 +2018,7 @@ def home_page_2_edit(request):
     if not home_page_2:
         home_page_2 = HomePage2Settings.objects.create(
             homepage2_text='Default Text',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal'
         )
@@ -2060,7 +2064,7 @@ def home_page_3_edit(request):
     if not home_page_3:
         home_page_3 = HomePage3Settings.objects.create(
             homepage3_text='Default Text',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal'
         )
@@ -2084,7 +2088,7 @@ def home_page_4_edit(request):
     if not home_page_4:
         home_page_4 = HomePage4Settings.objects.create(
             homepage4_text='Default Text',
-            font='sans-serif',
+            font='barlow',
             font_color='black',
             font_style='normal'
         )

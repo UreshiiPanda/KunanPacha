@@ -1,12 +1,15 @@
 
-
+<!-- NOTE: the art2_content page should NOT have that  hx-headers='{"X-From-Art2": "true"}'  line in it -->
 {% extends "base.html" %} 
 
 {% block content %}
 
     {% load static %}
 
-    {% include "navbar.html" %}
+        <div class="w-full">
+            <!-- Large navbar for screens above lg -->
+            <div id="navbar-container" hx-get="{% url 'get_navbar' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
 
 
         <!-- Back arrow button -->
@@ -14,8 +17,9 @@
             <button 
                 class="text-gray-400 px-4 py-2 hover:text-gray-700"
                 hx-get="{% url 'art1' art_category_id %}"
-                hx-target="#art-content"
+                hx-target="#content"
                 hx-push-url="/art1/{{art_category_id}}"
+                hx-headers='{"X-From-Art2": "true"}'
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -48,7 +52,7 @@
               <div class="mb-4">
                 <label for="font" class="block text-sm font-medium text-gray-700">Font</label>
                 <input type="text" id="font" name="font"
-                       placeholder="Enter font (eg: sans-serif)"
+                       placeholder="Enter font (eg: barlow)"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
               </div>
         
@@ -107,9 +111,9 @@
                 currentFont: '{{page_settings.font}}',
                 currentColor: '{{page_settings.font_color}}',
                 fontVariants: {
-                    'sans-serif': 'font-sans',
-                    'serif': 'font-serif',
-                    'mono': 'font-mono',
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
                     // Add more font variants as needed
                 },
                 colorVariants: {
@@ -196,7 +200,7 @@
             <div class="mt-20">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="p-6 text-2xl font-bold">{{ image_obj.title }}</h2>
-                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{image_obj.title|urlencode}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                    <a href="mailto:{{page_settings.edu_email}}?subject=Eparasarte: {{image_obj.title|urlencode}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                         <svg class="h-10 w-10 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z"></path>
                             <rect x="3" y="5" width="18" height="14" rx="1"></rect>
