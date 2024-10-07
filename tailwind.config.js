@@ -5,8 +5,13 @@ module.exports = {
     "./**/templates/*.html",
   ],
   theme: {
-    extend: {},
-    screens: {
+    extend: {
+      fontFamily: {
+        'barlow': ['Barlow Condensed', 'barlow'],
+        'baskervville': ['Baskervville SC', 'serif'],
+        'playfair': ['Playfair Display', 'serif'],
+      },
+    },    screens: {
       'sm': '480px',   // Small screens, mobile phones
       'md': '768px',   // Medium screens, tablets
       'lg': '1024px',  // Large screens, laptops/desktops

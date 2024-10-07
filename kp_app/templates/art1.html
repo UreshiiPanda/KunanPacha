@@ -8,8 +8,11 @@
     {% load static %}
     {% load auth_tags %}
 
-    {% include "navbar.html" %}
 
+        <div class="w-full">
+            <!-- Large navbar for screens above lg -->
+            <div id="navbar-container" hx-get="{% url 'get_navbar' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
 
 
     <div x-data
@@ -347,7 +350,7 @@
               <div class="mb-4">
                 <label for="font" class="block text-sm font-medium text-gray-700">Font</label>
                 <input type="text" id="font" name="font" 
-                        placeholder="Enter font (eg: sans-serif)"
+                        placeholder="Enter font (eg: barlow)"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
               </div>
 
@@ -403,9 +406,9 @@
                 currentFont: '{{page_settings.font}}',
                 currentColor: '{{page_settings.font_color}}',
                 fontVariants: {
-                    'sans-serif': 'font-sans',
-                    'serif': 'font-serif',
-                    'mono': 'font-mono',
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
                 },
                 colorVariants: {
                     'red-500': 'text-red-500',
@@ -466,7 +469,7 @@
                 <h3 class="text-lg text-left pr-10 break-words">{{ artwork.title }}</h3>
                     <div class="absolute top-4 right-4 flex space-x-2">
                 {% endif %}
-                    <a href="mailto:{{page_settings.edu_email}}?subject=KP Art Piece: {{artwork.title}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
+                    <a href="mailto:{{page_settings.edu_email}}?subject=Eparasarte: {{artwork.title}}" class="inline-block text-gray-600 hover:text-gray-900 transition-colors duration-300">
                         {% if user.is_authenticated %}
                             {% if request.user|has_group:"Editor" %}
                             <svg class="h-8 w-8 text-black" width="24" height="24" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">

@@ -351,7 +351,7 @@
 
                         <div class="mb-4">
                           <label for="font" class="block text-sm font-medium text-gray-700">Font:</label>
-                          <input type="text" id="font" name="blog_font" placeholder="sans-serif" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                          <input type="text" id="font" name="blog_font" placeholder="barlow, baskervville, playfair" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="mb-4">
                           <label for="font_color" class="block text-sm font-medium text-gray-700">Font Color:</label>
@@ -426,9 +426,9 @@
                 currentFont: '{{page_settings.font}}',
                 currentColor: '{{page_settings.font_color}}',
                 fontVariants: {
-                    'sans-serif': 'font-sans',
-                    'serif': 'font-serif',
-                    'mono': 'font-mono',
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
                 },
                 colorVariants: {
                     'red-500': 'text-red-500',
@@ -492,12 +492,12 @@
                     >{{ page_settings.blog_title }}
                 </h2>
                 <p 
-                    class="text-center mt-2 shadow-text"
+                    class="text-center mt-4 shadow-text"
                     style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);"
                     >{{ page_settings.blog_text }}
                 </p>
                 
-                <div class="flex justify-center space-x-8 mt-4">
+                <div class="flex justify-center space-x-8 mt-8">
                     <a href="https://www.instagram.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -508,11 +508,6 @@
                     <a href="https://www.facebook.com/" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
                         <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                        </svg>
-                    </a>
-                    <a href="https://www.tiktok.com/@meow" :class="hoverColorVariants[colorVariants[currentColor]] || 'hover:text-gray-400'" target="_blank">
-                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
                         </svg>
                     </a>
                 </div>
