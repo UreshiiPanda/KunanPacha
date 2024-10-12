@@ -563,6 +563,7 @@ def blog(request, page="1"):
             "blog_font_style": blog_page_settings.font_style,
             "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
             "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+            "is_blog_two": False,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -581,6 +582,7 @@ def blog(request, page="1"):
             "blog_font_style": blog_page_settings.font_style,
             "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
             "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+            "is_blog_two": False,
 
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
@@ -719,6 +721,10 @@ def blog2(request, post_id):
         'date': post.created_at,
     }
 
+    content_page_setting = {
+            "is_blog_two": True,
+    }
+
     # Add individual image variables
     for i, image_url in enumerate(filtered_images, start=1):
         post_data[f'image{i}'] = image_url
@@ -727,7 +733,7 @@ def blog2(request, post_id):
     if request.headers.get('HX-Request') == 'true':
         print("blog page 2 came from HTMX")
         # 2 separate forms were necessary to get around a weird Django error
-        return render(request, "blog2_content.html", {"post": post_data})
+        return render(request, "blog2_content.html", {"post": post_data, "content_page_settings": content_page_setting})
     else:
         print("blog page 2 did NOT come from HTMX")
 
@@ -764,6 +770,7 @@ def blog2(request, post_id):
                 "blog_font_style": blog_page_settings.font_style,
                 "blog_bg_image": f"{settings.STATIC_URL}kp_app/images/blog_bg.jpg",
                 "blog_logo_image": f"{settings.STATIC_URL}kp_app/images/blog_logo.jpg",
+                "is_blog_two": True,
 
                 "menu_font": menu_settings.font,
                 "menu_font_color": menu_settings.font_color,
@@ -782,6 +789,7 @@ def blog2(request, post_id):
                 "blog_font_style": blog_page_settings.font_style,
                 "blog_bg_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_bg.jpg'),
                 "blog_logo_image": os.path.join(settings.STATIC_URL, 'kp_app/images/blog_logo.jpg'),
+                "is_blog_two": True,
 
                 "menu_font": menu_settings.font,
                 "menu_font_color": menu_settings.font_color,
@@ -845,6 +853,14 @@ def blog_page_edit(request):
     # if the user changed the social media links, then the contact page will also need those updates
     contact_page.edu_facebook = request.POST.get('contact_facebook') or contact_page.edu_facebook
     contact_page.edu_instagram = request.POST.get('contact_instagram') or contact_page.edu_instagram
+
+
+    # Update contact_facebook and instagram and add "https://www." if not present
+    if blog_page.edu_facebook and not blog_page.edu_facebook.startswith("https://www."):
+        blog_page.edu_facebook = "https://www." + blog_page.edu_facebook
+
+    if blog_page.edu_instagram and not blog_page.edu_instagram.startswith("https://www."):
+        blog_page.edu_instagram = "https://www." + blog_page.edu_instagram
 
  
     print(f"Updating Blog Page settings: {
