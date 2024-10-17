@@ -95,6 +95,7 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         "http://localhost:8000",
         "https://kp-run-pdjzxrqjaq-uc.a.run.app",
+        "https://eparasarte.com/",
     ]
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
