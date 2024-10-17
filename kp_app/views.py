@@ -2159,4 +2159,16 @@ def get_navbar_blog_lg(request):
 
 
 def get_navbar_blog_sm(request):
-    return render(request, 'navbar_blog_sm.html')
+    blog_nav_settings = BlogPageSettings.objects.first()
+
+    if not blog_nav_settings:
+        page_settings = {
+            "fontColor": 'black',
+        }
+    else:
+        page_settings = {
+            "fontColor": blog_nav_settings.font_color,
+        }
+
+    return render(request, 'navbar_blog_sm.html', page_settings)
+
