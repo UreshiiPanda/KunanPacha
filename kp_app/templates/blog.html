@@ -495,7 +495,7 @@
                     >{{ page_settings.blog_title }}
                 </h2>
                 <p 
-                    class="text-center mt-4 shadow-text"
+                    class="text-center p-6 mt-4 shadow-text"
                     style="text-shadow: 0 3px 3px rgba(0,0,0,0.4);"
                     >{{ page_settings.blog_text }}
                 </p>
@@ -532,7 +532,7 @@
       <div class="flex-grow overflow-y-auto">
         <div class="space-y-12 px-4 py-8">
             {% for post in blog_posts %}
-            <div class="blog-post relative">
+            <div class="blog-post text-black relative">
                 <h2 class="text-2xl font-bold m-4 text-center">{{ post.title }}</h2>
                 <p class="italic m-2 text-gray-400 text-center">Published: {{ post.date|date:"F j, Y" }}</p>
 
@@ -640,7 +640,7 @@
 
         <!-- Blog Pagination -->
 
-        <div class="inline-flex justify-center gap-1 m-6" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
+        <div class=" text-black inline-flex justify-center gap-1 m-6" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
           <button
             hx-get="{% url 'blog' page|add:'-1' %}"
             hx-push-url="/blog/{{ page|add:'-1' }}"
