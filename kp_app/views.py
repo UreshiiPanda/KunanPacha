@@ -370,6 +370,15 @@ def home(request):
             font_style="normal",
         )
 
+    # Update contact_facebook and instagram and add "https://www." if not present
+    if contact_page_settings.edu_facebook and not contact_page_settings.edu_facebook.startswith("https://www."):
+        contact_page_settings.edu_facebook = "https://www." + contact_page_settings.edu_facebook
+
+    if contact_page_settings.edu_instagram and not contact_page_settings.edu_instagram.startswith("https://www."):
+        contact_page_settings.edu_instagram = "https://www." + contact_page_settings.edu_instagram
+
+
+
     if os.getenv("KP_PROD") == "true":
         print("in home view in views.py, in PROD env, getting images from GCP")
         page_settings = {
@@ -477,6 +486,16 @@ def contact(request):
             font_color="black",
             font_style="normal",
         )
+
+
+    # Update contact_facebook and instagram and add "https://www." if not present
+    if contact_page_settings.edu_facebook and not contact_page_settings.edu_facebook.startswith("https://www."):
+        contact_page_settings.edu_facebook = "https://www." + contact_page_settings.edu_facebook
+
+    if contact_page_settings.edu_instagram and not contact_page_settings.edu_instagram.startswith("https://www."):
+        contact_page_settings.edu_instagram = "https://www." + contact_page_settings.edu_instagram
+
+
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
             font='barlow',
