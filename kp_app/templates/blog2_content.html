@@ -11,7 +11,63 @@
 
 
 <!-- BLOG POSTS -->
-    <div class="flex-grow overflow-y-auto">
+    <div 
+            x-data="{
+                currentFontStyle: '{{page_settings.blog_font_style}}',
+                currentFont: '{{page_settings.blog_font}}',
+                currentColor: '{{page_settings.blog_font_color}}',
+                fontVariants: {
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+            }" 
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+
+
+        class="flex-grow overflow-y-auto">
+
         <div class="space-y-12 px-4 py-8">
 
             <div class="blog-post text-black relative">

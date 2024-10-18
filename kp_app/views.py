@@ -2174,20 +2174,37 @@ def get_navbar_home(request):
 
 
 def get_navbar_blog_lg(request):
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='barlow',
+            font_color='black',
+            font_style='normal',
+        )
+
+    page_settings = {
+        "menu_font": menu_settings.font,
+        "menu_font_color": menu_settings.font_color,
+        "menu_font_style": menu_settings.font_style,
+    }
+
     return render(request, 'navbar_blog.html')
 
 
 def get_navbar_blog_sm(request):
-    blog_nav_settings = BlogPageSettings.objects.first()
+    menu_settings = MenuSettings.objects.first()
+    if not menu_settings:
+        menu_settings = MenuSettings.objects.create(
+            font='barlow',
+            font_color='black',
+            font_style='normal',
+        )
 
-    if not blog_nav_settings:
-        page_settings = {
-            "fontColor": 'black',
-        }
-    else:
-        page_settings = {
-            "fontColor": blog_nav_settings.font_color,
-        }
+    page_settings = {
+        "menu_font": menu_settings.font,
+        "menu_font_color": menu_settings.font_color,
+        "menu_font_style": menu_settings.font_style,
+    }
 
     return render(request, 'navbar_blog_sm.html', page_settings)
 
