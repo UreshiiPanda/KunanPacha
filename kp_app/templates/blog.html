@@ -8,62 +8,7 @@
 
 
 <div
-    
-            x-data="{
-                currentFontStyle: '{{page_settings.blog_font_style}}',
-                currentFont: '{{page_settings.blog_font}}',
-                currentColor: '{{page_settings.blog_font_color}}',
-                fontVariants: {
-                    'barlow': 'font-barlow',
-                    'baskervville': 'font-baskervville',
-                    'playfair': 'font-playfair',
-                },
-                colorVariants: {
-                    'red-500': 'text-red-500',
-                    'blue-500': 'text-blue-500',
-                    'green-500': 'text-green-500',
-                    'gray-900': 'text-gray-900',
-                    'gray-800': 'text-gray-800',
-                    'gray-700': 'text-gray-700',
-                    'gray-600': 'text-gray-600',
-                    'gray-500': 'text-gray-500',
-                    'gray-400': 'text-gray-400',
-                    'gray-300': 'text-gray-300',
-                    'gray-200': 'text-gray-200',
-                    'gray-100': 'text-gray-100',
-                    'black': 'text-black',
-                    'white': 'text-white',
-                },
-                hoverColorVariants: {
-                   'text-red-500': 'hover:text-blue-500',
-                   'text-blue-500': 'hover:text-red-500',
-                   'text-green-500': 'hover-text-orange-500',
-                   'text-gray-900': 'hover:text-gray-400',
-                   'text-gray-800': 'hover:text-gray-400',
-                   'text-gray-700': 'hover:text-gray-400',
-                   'text-gray-600': 'hover:text-gray-300',
-                   'text-gray-500': 'hover:text-black',
-                   'text-gray-400': 'hover:text-gray-800',
-                   'text-gray-300': 'hover:text-gray-800',
-                   'text-gray-200': 'hover:text-gray-800',
-                   'text-gray-100': 'hover:text-gray-700',
-                   'text-black': 'hover:text-gray-400',
-                   'text-white': 'hover:text-gray-700',
-                },
-                styleVariants: {
-                    'italic': 'italic',
-                    'bold': 'font-bold',
-                    'normal': '',
-                },
-                blog_modal: false
-            }" 
-            :class="[
-                styleVariants[currentFontStyle] || '',
-                fontVariants[currentFont] || 'font-sans', 
-                colorVariants[currentColor] || 'text-black',
-            ]"
-
-
+    x-data="{blog_modal: false}"
     id="blog-content"
     class="flex flex-col lg:flex-row h-screen w-screen relative overflow-hidden">
 
@@ -476,7 +421,63 @@
 
 
         <div 
-            x-data="{smallMenu: false}"
+            x-data="{
+                currentFontStyle: '{{page_settings.blog_font_style}}',
+                currentFont: '{{page_settings.blog_font}}',
+                currentColor: '{{page_settings.blog_font_color}}',
+                fontVariants: {
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+                smallMenu: false
+            }"
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+
+
+
+
             class="h-2/5 lg:h-screen lg:w-2/5 bg-cover bg-center relative flex-shrink-0" 
             style="background-image: url('{{ page_settings.blog_bg_image }}');"
             >
@@ -529,7 +530,64 @@
         </div>
 
         <!-- BLOG POSTS -->
-      <div class="flex-grow overflow-y-auto">
+      <div class="flex-grow overflow-y-auto"
+            x-data="{
+                currentFontStyle: '{{page_settings.blog_font_style}}',
+                currentFont: '{{page_settings.blog_font}}',
+                currentColor: '{{page_settings.blog_font_color}}',
+                fontVariants: {
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+                smallMenu: false
+            }"
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+        >
+
+
+
         <div class="space-y-12 px-4 py-8">
             {% for post in blog_posts %}
             <div class="blog-post text-black relative">
@@ -640,12 +698,71 @@
 
         <!-- Blog Pagination -->
 
-        <div class=" text-black inline-flex justify-center gap-1 m-6" x-data="{ currPage: {{page}}, totalPages: {{ num_pages }} }">
+        <div class=" text-black inline-flex justify-center gap-1 m-6" 
+            x-data="{
+
+                currPage: {{page}}, 
+                totalPages: {{ num_pages }},
+
+                currentFontStyle: '{{page_settings.blog_font_style}}',
+                currentFont: '{{page_settings.blog_font}}',
+                currentColor: '{{page_settings.blog_font_color}}',
+                fontVariants: {
+                    'barlow': 'font-barlow',
+                    'baskervville': 'font-baskervville',
+                    'playfair': 'font-playfair',
+                },
+                colorVariants: {
+                    'red-500': 'text-red-500',
+                    'blue-500': 'text-blue-500',
+                    'green-500': 'text-green-500',
+                    'gray-900': 'text-gray-900',
+                    'gray-800': 'text-gray-800',
+                    'gray-700': 'text-gray-700',
+                    'gray-600': 'text-gray-600',
+                    'gray-500': 'text-gray-500',
+                    'gray-400': 'text-gray-400',
+                    'gray-300': 'text-gray-300',
+                    'gray-200': 'text-gray-200',
+                    'gray-100': 'text-gray-100',
+                    'black': 'text-black',
+                    'white': 'text-white',
+                },
+                hoverColorVariants: {
+                   'text-red-500': 'hover:text-blue-500',
+                   'text-blue-500': 'hover:text-red-500',
+                   'text-green-500': 'hover-text-orange-500',
+                   'text-gray-900': 'hover:text-gray-400',
+                   'text-gray-800': 'hover:text-gray-400',
+                   'text-gray-700': 'hover:text-gray-400',
+                   'text-gray-600': 'hover:text-gray-300',
+                   'text-gray-500': 'hover:text-black',
+                   'text-gray-400': 'hover:text-gray-800',
+                   'text-gray-300': 'hover:text-gray-800',
+                   'text-gray-200': 'hover:text-gray-800',
+                   'text-gray-100': 'hover:text-gray-700',
+                   'text-black': 'hover:text-gray-400',
+                   'text-white': 'hover:text-gray-700',
+                },
+                styleVariants: {
+                    'italic': 'italic',
+                    'bold': 'font-bold',
+                    'normal': '',
+                },
+            }"
+            :class="[
+                styleVariants[currentFontStyle] || '',
+                fontVariants[currentFont] || 'font-sans', 
+                colorVariants[currentColor] || 'text-black',
+            ]"
+        >
+
+
           <button
             hx-get="{% url 'blog' page|add:'-1' %}"
             hx-push-url="/blog/{{ page|add:'-1' }}"
             hx-target="#blog-content"
-            hx-swap="outerHTML"
+            hx-swap="innerHTML"
             class="inline-flex size-8 mx-2 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
             :class="{ 'opacity-50 cursor-not-allowed': currPage === 1 }"
             :disabled="currPage === 1"
@@ -675,7 +792,7 @@
             hx-get="{% url 'blog' page|add:'1' %}"
             hx-push-url="/blog/{{ page|add:'1' }}"
             hx-target="#blog-content"
-            hx-swap="outerHTML"
+            hx-swap="innerHTML"
             class="inline-flex mx-2 size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
             :class="{ 'opacity-50 cursor-not-allowed': currPage === totalPages }"
             :disabled="currPage === totalPages"
