@@ -4,7 +4,8 @@
 <br><br>
 
 
-### Find the current iteration of the project here:    eparasarte.com 
+### Find the current iteration of the project here:
+eparasarte.com
 <br>
 
 
@@ -12,7 +13,7 @@
 ## About The Project
 This is an art website/blog built for a friend to display his artwork and blog posts. This project has been
 put together in a hacky way as this is my first time using Django, HTMX, and Alpine JS. The site gives my friend/any
-approved user the ability to change the images/fonts/font-colors/etc. and it behaves mostly like an SPA.
+approved user the ability to make CRUD-style changes to the images/fonts/font-colors/etc.
 <br>
 
 
