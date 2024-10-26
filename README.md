@@ -3,9 +3,9 @@
 #### 🚧 currently under construction 🚧
 <br><br>
 
+### Find the current iteration of the project here:  
+[eparasarte.com](https://eparasarte.com)
 
-### Find the current iteration of the project here:
-eparasarte.com
 <br>
 
 
