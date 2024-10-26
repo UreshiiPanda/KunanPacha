@@ -1159,14 +1159,18 @@ def delete_blog(request, blog_id):
     return HttpResponseRedirect(reverse('blog'))
 
 
-
 def art1(request, category_id):
     # get artworks based on category
-    if category_id:                                                                                                       
-        artworks = Artwork.objects.filter(category_id=category_id).order_by('-created_at') 
-    else:                                                                                                                 
+    if category_id:
+        category = get_object_or_404(ArtCategory, id=category_id)
+        if category.name.lower() == "all":
+            # If "All" category, get all artworks from all categories
+            artworks = Artwork.objects.all().order_by('-created_at')
+        else:
+            # Otherwise, get artworks from specific category
+            artworks = Artwork.objects.filter(category_id=category_id).order_by('-created_at')
+    else:
         artworks = Artwork.objects.all().order_by('-created_at')
-
 
     art_page_settings = Art1PageSettings.objects.first()
     if not art_page_settings:
@@ -1177,7 +1181,6 @@ def art1(request, category_id):
             edu_email='edu@gmail.com'
         )
 
-
     menu_settings = MenuSettings.objects.first()
     if not menu_settings:
         menu_settings = MenuSettings.objects.create(
@@ -1185,8 +1188,6 @@ def art1(request, category_id):
             font_color='black',
             font_style='normal',
         )
-
-     
 
     # Prepare artwork data
     artwork_data = []
@@ -1236,11 +1237,9 @@ def art1(request, category_id):
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
             "edu_email": art_page_settings.edu_email,
-
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
             "menu_font_style": menu_settings.font_style,
-
         }
     else:
         # Local development environment
@@ -1249,22 +1248,25 @@ def art1(request, category_id):
             "font_color": art_page_settings.font_color,
             "font_style": art_page_settings.font_style,
             "edu_email": art_page_settings.edu_email,
-
             "menu_font": menu_settings.font,
             "menu_font_color": menu_settings.font_color,
             "menu_font_style": menu_settings.font_style,
         }
 
-
-
     if request.headers.get('HX-Request') == 'true':
         print("art1 page came from HTMX")
-        return render(request, "art1_content.html", {"artworks": artwork_data, "page_settings": page_settings, "from_art2": from_art2})
+        return render(request, "art1_content.html", {
+            "artworks": artwork_data, 
+            "page_settings": page_settings, 
+            "from_art2": from_art2
+        })
     else:
         print("art1 page did NOT come from HTMX")
-        return render(request, "art1.html", {"artworks": artwork_data, "page_settings": page_settings, "from_art2": from_art2})
-
-
+        return render(request, "art1.html", {
+            "artworks": artwork_data, 
+            "page_settings": page_settings, 
+            "from_art2": from_art2
+        })
 
 
 def add_art(request):

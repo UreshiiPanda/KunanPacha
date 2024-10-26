@@ -379,7 +379,7 @@
                                                                                                                            
                  {% if categories %}                                                                                       
                      <button hx-delete="{% url 'delete_art_category' category.id %}"                                           
-                             hx-confirm="Are you sure you want to delete this category?"                                   
+                             hx-confirm="Are you sure you want to delete this category? All of the artworks from a deleted category will be moved to the All category"
                              hx-target="#art-categories-content"                                                           
                              class="text-gray-600 hover:text-gray-900 transition-colors duration-300 mx-1">                
                             <svg class="h-8 w-8 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
